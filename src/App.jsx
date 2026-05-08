@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts";
-
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip as ChartTooltip2, Filler } from "chart.js";
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ChartTooltip2, Filler);
 // ─── Sample fund data ────────────────────────────────────────────────────────
 
 function generateReturns(annualReturn, fee, years, volatility, seed) {
@@ -386,36 +387,41 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, onSpanChange, tota
         </div>
       </div>
 
-      <div style={{ height: "260px" }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-            <ReferenceLine y={100} stroke="rgba(255,255,255,0.15)" strokeDasharray="5 4" />
-            <XAxis dataKey="month" tickFormatter={tickFormatter}
-              tick={{ fill: "#444", fontSize: 10, fontFamily: "'Syne', sans-serif" }}
-              axisLine={false} tickLine={false} interval="preserveStartEnd"
-            />
-            <YAxis domain={[minV - pad, maxV + pad]}
-              tickFormatter={v => `${(v - 100).toFixed(0)}%`}
-              tick={{ fill: "#444", fontSize: 10, fontFamily: "'Syne', sans-serif" }}
-              axisLine={false} tickLine={false} width={42}
-            />
-            <Tooltip content={<ChartTooltip showB={showB} totalA={totalA} totalB={totalB} />} />
-            <Line type="monotone" dataKey="A" stroke={ACCENT_A_LIGHT} strokeWidth={2.5}
-              dot={false} activeDot={{ r: 5, fill: ACCENT_A_LIGHT, strokeWidth: 0 }}
-              connectNulls animationDuration={500}
-            />
-            {showB && (
-              <Line type="monotone" dataKey="B" stroke={ACCENT_B} strokeWidth={2.5}
-                dot={false} strokeDasharray="6 4"
-                activeDot={{ r: 5, fill: ACCENT_B, strokeWidth: 0 }}
-                connectNulls animationDuration={500}
-              />
-            )}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
+<div style={{ height: 260, width: "100%", minHeight: 260 }}>
+  <Line
+    data={{
+      labels: chartData.map(d => d.month),
+      datasets: [
+        {
+          label: "A",
+          data: chartData.map(d => d.A),
+          borderColor: ACCENT_A_LIGHT,
+          borderWidth: 2.5,
+          pointRadius: 0,
+          tension: 0.4,
+        },
+        ...(showB ? [{
+          label: "B",
+          data: chartData.map(d => d.B),
+          borderColor: ACCENT_B,
+          borderWidth: 2.5,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          tension: 0.4,
+        }] : []),
+      ],
+    }}
+    options={{
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } },
+      scales: {
+        x: { display: true, grid: { display: false }, ticks: { color: "#444", font: { size: 10 }, maxTicksLimit: 8 } },
+        y: { display: true, grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#444", font: { size: 10 }, callback: v => `${(v - 100).toFixed(0)}%` } },
+      },
+    }}
+  />
+</div>
       {showB && seriesA.length > 0 && seriesB.length > 0 && (() => {
         const diff = retA - retB;
         const winnerCol = diff >= 0 ? ACCENT_A_LIGHT : ACCENT_B;
