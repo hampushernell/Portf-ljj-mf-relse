@@ -49,7 +49,7 @@ const TIME_SPANS = [
 const ACCENT_A       = "#0018F5";  // portfölj A – ikon & graf
 const ACCENT_A_LIGHT = "#7b93ff";  // portfölj A – text & avgift
 const ACCENT_B       = "#38bdf8";  // portfölj B – ikon, graf & text
-const BG             = "#00092f";
+const BG             = "#01061d";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const formatKr = v => new Intl.NumberFormat("sv-SE", { style: "currency", currency: "SEK", maximumFractionDigits: 0 }).format(v);
