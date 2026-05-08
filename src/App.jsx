@@ -1,7 +1,5 @@
-import { useState, useMemo } from "react";
-import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip as ChartTooltip2, Filler } from "chart.js";
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ChartTooltip2, Filler);
+import { useState, useMemo, useRef, useCallback } from "react";
+
 // ─── Sample fund data ────────────────────────────────────────────────────────
 
 function generateReturns(annualReturn, fee, years, volatility, seed) {
@@ -47,10 +45,11 @@ const TIME_SPANS = [
   { label: "10 år",  months: 120 },
 ];
 
-// ─── Color palette ────────────────────────────────────────────────────────────
-const ACCENT_A = "#0018F5";
-const ACCENT_A_LIGHT = "#7b93ff";
-const ACCENT_B = "#38bdf8";
+// ─── Color palette ─────────────────────────────────────────────────────────
+const ACCENT_A       = "#0018F5";  // portfölj A – ikon & graf
+const ACCENT_A_LIGHT = "#7b93ff";  // portfölj A – text & avgift
+const ACCENT_B       = "#38bdf8";  // portfölj B – ikon, graf & text
+const BG             = "#070a14";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const formatKr = v => new Intl.NumberFormat("sv-SE", { style: "currency", currency: "SEK", maximumFractionDigits: 0 }).format(v);
@@ -107,30 +106,132 @@ function BriefcaseIcon({ color }) {
   );
 }
 
-// ─── Custom chart tooltip ─────────────────────────────────────────────────────
-function ChartTooltip({ active, payload, showB, totalA, totalB }) {
-  if (!active || !payload?.length) return null;
-  const a = payload.find(p => p.dataKey === "A");
-  const b = payload.find(p => p.dataKey === "B");
+// ─── Pure SVG Chart ───────────────────────────────────────────────────────────
+function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
+  const W = 800, H = 220, PL = 48, PR = 12, PT = 10, PB = 28;
+  const chartW = W - PL - PR;
+  const chartH = H - PT - PB;
+
+  const allVals = [...seriesA.map(d => d.value), ...(showB ? seriesB.map(d => d.value) : [])];
+  const minV = Math.min(...allVals, 95);
+  const maxV = Math.max(...allVals, 105);
+  const pad  = (maxV - minV) * 0.12;
+  const yMin = minV - pad;
+  const yMax = maxV + pad;
+
+  const toX = i => PL + (i / (seriesA.length - 1)) * chartW;
+  const toY = v => PT + chartH - ((v - yMin) / (yMax - yMin)) * chartH;
+
+  const makePath = series => series.map((d, i) => `${i === 0 ? "M" : "L"}${toX(i).toFixed(1)},${toY(d.value).toFixed(1)}`).join(" ");
+
+  const pathA = seriesA.length > 1 ? makePath(seriesA) : null;
+  const pathB = showB && seriesB.length > 1 ? makePath(seriesB) : null;
+
+  const yTicks = [];
+  const step = (yMax - yMin) / 4;
+  for (let i = 0; i <= 4; i++) {
+    const v = yMin + i * step;
+    yTicks.push({ v, y: toY(v) });
+  }
+
+  const xTicks = [];
+  const n = seriesA.length;
+  const tickCount = Math.min(6, n);
+  for (let i = 0; i < tickCount; i++) {
+    const idx = Math.round((i / (tickCount - 1)) * (n - 1));
+    xTicks.push({ idx, x: toX(idx) });
+  }
+
+  const [tooltip, setTooltip] = useState(null);
+  const svgRef = useRef(null);
+
+  const handleMouseMove = useCallback(e => {
+    if (!svgRef.current || !seriesA.length) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (W / rect.width);
+    const idx = Math.round(((mx - PL) / chartW) * (seriesA.length - 1));
+    const clamped = Math.max(0, Math.min(seriesA.length - 1, idx));
+    setTooltip({
+      x: toX(clamped),
+      idx: clamped,
+      vA: seriesA[clamped]?.value,
+      vB: showB ? seriesB[clamped]?.value : null,
+    });
+  }, [seriesA, seriesB, showB]);
+
+  const baselineY = toY(100);
+
   return (
-    <div style={{
-      background: "#0d1120", border: "1px solid rgba(255,255,255,0.13)",
-      borderRadius: "10px", padding: "12px 16px",
-      fontSize: "12px", fontFamily: "'Syne', sans-serif",
-      boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
-    }}>
-      {a && (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: showB && b ? "6px" : 0 }}>
-          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: ACCENT_A_LIGHT }} />
-          <span style={{ color: "#f0ede8" }}>A: <strong style={{ color: (a.value - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(a.value - 100)}</strong></span>
-          {totalA > 0 && <span style={{ color: "#666" }}>{formatKr(totalA * ((a.value - 100) / 100))}</span>}
-        </div>
-      )}
-      {showB && b && (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: ACCENT_B }} />
-          <span style={{ color: "#f0ede8" }}>B: <strong style={{ color: (b.value - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(b.value - 100)}</strong></span>
-          {totalB > 0 && <span style={{ color: "#666" }}>{formatKr(totalB * ((b.value - 100) / 100))}</span>}
+    <div style={{ position: "relative", width: "100%" }}>
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${W} ${H}`}
+        style={{ width: "100%", height: "auto", display: "block" }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setTooltip(null)}
+      >
+        {yTicks.map(({ v, y }, i) => (
+          <g key={i}>
+            <line x1={PL} y1={y} x2={W - PR} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
+            <text x={PL - 6} y={y + 4} textAnchor="end" fill="#444" fontSize="10" fontFamily="DM Sans, sans-serif">
+              {`${(v - 100).toFixed(0)}%`}
+            </text>
+          </g>
+        ))}
+
+        <line x1={PL} y1={baselineY} x2={W - PR} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
+
+        {xTicks.map(({ idx, x }, i) => (
+          <text key={i} x={x} y={H - 6} textAnchor="middle" fill="#444" fontSize="10" fontFamily="DM Sans, sans-serif">
+            {idx === 0 ? "Start" : `m${idx}`}
+          </text>
+        ))}
+
+        {/* Series A – exakt portföljfärg */}
+        {pathA && (
+          <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        )}
+
+        {/* Series B – exakt portföljfärg */}
+        {pathB && (
+          <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round" strokeLinejoin="round"/>
+        )}
+
+        {tooltip && (
+          <>
+            <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+            {tooltip.vA && <circle cx={tooltip.x} cy={toY(tooltip.vA)} r="5" fill={ACCENT_A} stroke={BG} strokeWidth="2"/>}
+            {tooltip.vB && <circle cx={tooltip.x} cy={toY(tooltip.vB)} r="5" fill={ACCENT_B} stroke={BG} strokeWidth="2"/>}
+          </>
+        )}
+      </svg>
+
+      {tooltip && (
+        <div style={{
+          position: "absolute", top: "10px",
+          left: tooltip.x / W * 100 > 60 ? "auto" : `calc(${tooltip.x / W * 100}% + 10px)`,
+          right: tooltip.x / W * 100 > 60 ? `calc(${(1 - tooltip.x / W) * 100}% + 10px)` : "auto",
+          background: "#0d1120", border: "1px solid rgba(255,255,255,0.13)",
+          borderRadius: "8px", padding: "8px 12px",
+          fontSize: "12px", fontFamily: "'Syne', sans-serif",
+          pointerEvents: "none", zIndex: 10,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+        }}>
+          <div style={{ color: "#5a6e8a", fontSize: "10px", marginBottom: "4px" }}>Månad {tooltip.idx}</div>
+          {tooltip.vA && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: tooltip.vB ? "3px" : 0 }}>
+              <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: ACCENT_A }} />
+              <span style={{ color: "#f0ede8" }}>A: <strong style={{ color: (tooltip.vA - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(tooltip.vA - 100)}</strong></span>
+              {totalA > 0 && <span style={{ color: "#5a6e8a", fontSize: "11px" }}>{formatKr(totalA * (tooltip.vA - 100) / 100)}</span>}
+            </div>
+          )}
+          {tooltip.vB && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: ACCENT_B }} />
+              <span style={{ color: "#f0ede8" }}>B: <strong style={{ color: (tooltip.vB - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(tooltip.vB - 100)}</strong></span>
+              {totalB > 0 && <span style={{ color: "#5a6e8a", fontSize: "11px" }}>{formatKr(totalB * (tooltip.vB - 100) / 100)}</span>}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -228,7 +329,7 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
 }
 
 // ─── Portfolio Panel ──────────────────────────────────────────────────────────
-function PortfolioPanel({ label, accent, accentRgb, funds, allocations, inputMode, manualAmount, onAddFund, onUpdateAlloc, onRemoveFund }) {
+function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onAddFund, onUpdateAlloc, onRemoveFund }) {
   const portfolioTotal = inputMode === "kr" ? portfolioKrTotal(funds, allocations) : manualAmount;
   const fee = getWeightedFee(funds, allocations, inputMode, portfolioTotal);
   const totalPct = inputMode === "pct"
@@ -286,7 +387,7 @@ function PortfolioPanel({ label, accent, accentRgb, funds, allocations, inputMod
           <div style={{ display: "flex", gap: "10px" }}>
             <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px" }}>
               <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>Avgift/år</div>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "17px", fontWeight: 700, color: accent }}>{fmtFee(fee)}</div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "17px", fontWeight: 700, color: accentText }}>{fmtFee(fee)}</div>
               {portfolioTotal > 0 && <div style={{ fontSize: "10px", color: "#5a6e8a", marginTop: "2px" }}>{formatKr(portfolioTotal * fee / 100)}</div>}
             </div>
             <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px" }}>
@@ -305,41 +406,17 @@ function PortfolioPanel({ label, accent, accentRgb, funds, allocations, inputMod
   );
 }
 
-// ─── Return Chart ─────────────────────────────────────────────────────────────
+// ─── Return Chart wrapper ─────────────────────────────────────────────────────
 function ReturnChart({ seriesA, seriesB, showB, selectedSpan, onSpanChange, totalA, totalB }) {
   const retA = portfolioReturn(seriesA);
   const retB = portfolioReturn(seriesB);
-
-  const chartData = useMemo(() => {
-    const maxLen = Math.max(seriesA.length, showB ? seriesB.length : 0);
-    return Array.from({ length: maxLen }, (_, i) => ({
-      month: i,
-      A: seriesA[i]?.value ?? null,
-      B: showB && seriesB[i] ? seriesB[i].value : null,
-    }));
-  }, [seriesA, seriesB, showB]);
-
-  const span = TIME_SPANS.find(t => t.label === selectedSpan);
-  const tickFormatter = month => {
-    const months = span?.months || 60;
-    if (months <= 3)  return `v${Math.round(month * 4.3)}`;
-    if (months <= 12) return `m${month}`;
-    const yr = Math.floor(month / 12);
-    const mo = month % 12;
-    return mo === 0 ? `År ${yr}` : "";
-  };
-
-  const allVals = chartData.flatMap(d => [d.A, d.B].filter(Boolean));
-  const minV = Math.min(...allVals, 95);
-  const maxV = Math.max(...allVals, 105);
-  const pad  = (maxV - minV) * 0.1;
 
   return (
     <div style={{
       background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)",
       borderRadius: "14px", padding: "22px 24px",
     }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "20px", gap: "12px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
         <div>
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: "0 0 8px" }}>
             Historisk avkastning
@@ -347,7 +424,7 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, onSpanChange, tota
           <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
             {seriesA.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={ACCENT_A_LIGHT} strokeWidth="2.5" strokeLinecap="round" /></svg>
+                <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={ACCENT_A} strokeWidth="2.5" strokeLinecap="round" /></svg>
                 <span style={{ fontSize: "12px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>
                   A: <span style={{ color: retA >= 0 ? "#6ee7b7" : "#f87171", fontWeight: 700 }}>{fmtPct(retA)}</span>
                 </span>
@@ -387,51 +464,18 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, onSpanChange, tota
         </div>
       </div>
 
-<div style={{ height: 260, width: "100%", minHeight: 260 }}>
-  <Line
-    data={{
-      labels: chartData.map(d => d.month),
-      datasets: [
-        {
-          label: "A",
-          data: chartData.map(d => d.A),
-          borderColor: ACCENT_A_LIGHT,
-          borderWidth: 2.5,
-          pointRadius: 0,
-          tension: 0.4,
-        },
-        ...(showB ? [{
-          label: "B",
-          data: chartData.map(d => d.B),
-          borderColor: ACCENT_B,
-          borderWidth: 2.5,
-          borderDash: [6, 4],
-          pointRadius: 0,
-          tension: 0.4,
-        }] : []),
-      ],
-    }}
-    options={{
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } },
-      scales: {
-        x: { display: true, grid: { display: false }, ticks: { color: "#444", font: { size: 10 }, maxTicksLimit: 8 } },
-        y: { display: true, grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#444", font: { size: 10 }, callback: v => `${(v - 100).toFixed(0)}%` } },
-      },
-    }}
-  />
-</div>
+      <SVGChart seriesA={seriesA} seriesB={seriesB} showB={showB} totalA={totalA} totalB={totalB} />
+
       {showB && seriesA.length > 0 && seriesB.length > 0 && (() => {
         const diff = retA - retB;
-        const winnerCol = diff >= 0 ? ACCENT_A_LIGHT : ACCENT_B;
+        const winnerCol = diff >= 0 ? ACCENT_A : ACCENT_B;
         const winner    = diff >= 0 ? "A" : "B";
         const refTotal  = totalA > 0 ? totalA : totalB;
         return (
           <div style={{
             marginTop: "16px", padding: "12px 16px",
-            background: `rgba(${diff >= 0 ? "77,101,255" : "56,189,248"}, 0.07)`,
-            border: `1px solid rgba(${diff >= 0 ? "77,101,255" : "56,189,248"}, 0.2)`,
+            background: `rgba(${diff >= 0 ? "0,24,245" : "56,189,248"}, 0.07)`,
+            border: `1px solid rgba(${diff >= 0 ? "0,24,245" : "56,189,248"}, 0.2)`,
             borderRadius: "9px", display: "flex", alignItems: "center", gap: "10px",
           }}>
             <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: winnerCol, flexShrink: 0 }} />
@@ -459,7 +503,7 @@ function CompareBar({ label, val1, val2, unit = "", higherIsBetter = true }) {
       <div style={{ fontSize: "10px", color: "#5a6e8a", marginBottom: "5px", fontFamily: "'Syne', sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 1fr", gap: "6px", alignItems: "center" }}>
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <div style={{ height: "7px", width: `${w1}%`, background: ACCENT_A_LIGHT, borderRadius: "4px", opacity: b1 ? 1 : 0.3, transition: "width 0.5s ease" }} />
+          <div style={{ height: "7px", width: `${w1}%`, background: ACCENT_A, borderRadius: "4px", opacity: b1 ? 1 : 0.3, transition: "width 0.5s ease" }} />
         </div>
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: "10px", color: ACCENT_A_LIGHT, fontFamily: "'Syne', sans-serif" }}>{disp(val1)}</div>
@@ -504,7 +548,7 @@ export default function App() {
   const remF2    = id => { setFunds2(p => p.filter(f => f.id !== id)); setAllocs2(p => { const n={...p}; delete n[id]; return n; }); };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#070a14", color: "#f0ede8", fontFamily: "'DM Sans', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: BG, color: "#f0ede8", fontFamily: "'DM Sans', sans-serif" }}>
       <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
       {/* ── Header ── */}
@@ -521,7 +565,6 @@ export default function App() {
         </div>
 
         <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-          {/* Mode toggle */}
           <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
             {["pct", "kr"].map(m => (
               <button key={m} onClick={() => setInputMode(m)} style={{
@@ -533,7 +576,6 @@ export default function App() {
             ))}
           </div>
 
-          {/* Amount */}
           {inputMode === "pct" && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <span style={{ fontSize: "11px", color: "#5a6e8a" }}>Belopp per portfölj:</span>
@@ -549,7 +591,6 @@ export default function App() {
             </div>
           )}
 
-          {/* Compare toggle */}
           <button onClick={() => setCompareMode(m => !m)} style={{
             background: compareMode ? "rgba(0,24,245,0.15)" : "rgba(255,255,255,0.04)",
             border: `1px solid ${compareMode ? "rgba(0,24,245,0.5)" : "rgba(255,255,255,0.1)"}`,
@@ -562,21 +603,19 @@ export default function App() {
 
       <div style={{ padding: "22px 36px", display: "flex", flexDirection: "column", gap: "18px" }}>
 
-        {/* ── Portfolio panels ── */}
         <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
-          <PortfolioPanel label="Portfölj A" accent={ACCENT_A} accentRgb="0,24,245"
+          <PortfolioPanel label="Portfölj A" accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
             funds={funds1} allocations={allocs1} inputMode={inputMode} manualAmount={manualAmount}
             onAddFund={addFund1} onUpdateAlloc={updA} onRemoveFund={remF1}
           />
           {compareMode && (
-            <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248"
+            <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
               funds={funds2} allocations={allocs2} inputMode={inputMode} manualAmount={manualAmount}
               onAddFund={addFund2} onUpdateAlloc={updB} onRemoveFund={remF2}
             />
           )}
         </div>
 
-        {/* ── Chart ── */}
         {(funds1.length > 0 || (compareMode && funds2.length > 0)) && (
           <ReturnChart
             seriesA={seriesA} seriesB={seriesB}
@@ -586,14 +625,13 @@ export default function App() {
           />
         )}
 
-        {/* ── Comparison summary ── */}
         {compareMode && funds1.length > 0 && funds2.length > 0 && (
           <div style={{
             background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)",
             borderRadius: "14px", padding: "20px 24px",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-              <div style={{ fontSize: "9px", color: ACCENT_A_LIGHT, background: "rgba(77,101,255,0.1)", padding: "3px 9px", borderRadius: "20px", fontFamily: "'Syne', sans-serif", fontWeight: 600 }}>A</div>
+              <div style={{ fontSize: "9px", color: ACCENT_A_LIGHT, background: "rgba(0,24,245,0.1)", padding: "3px 9px", borderRadius: "20px", fontFamily: "'Syne', sans-serif", fontWeight: 600 }}>A</div>
               <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", fontWeight: 700, margin: 0, color: "#f0ede8" }}>Snabb jämförelse</h3>
               <div style={{ fontSize: "9px", color: ACCENT_B, background: "rgba(56,189,248,0.1)", padding: "3px 9px", borderRadius: "20px", fontFamily: "'Syne', sans-serif", fontWeight: 600 }}>B</div>
             </div>
@@ -607,14 +645,21 @@ export default function App() {
                 <CompareBar label={`Avkastning i kr (${span})`} val1={totalA * retA / 100} val2={totalB * retB / 100} higherIsBetter={true} />
               )}
             </div>
+
+            {/* Vinnarkort – samma stil som portföljsammanfattning */}
             <div style={{ marginTop: "16px", display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
               {[
-                { label: "Lägre avgift",        winner: fee1 <= fee2 ? "A" : "B", col: fee1 <= fee2 ? ACCENT_A_LIGHT : ACCENT_B },
-                { label: `Bäst avk. (${span})`, winner: retA >= retB  ? "A" : "B", col: retA >= retB  ? ACCENT_A_LIGHT : ACCENT_B },
-              ].map(({ label: lbl, winner, col }) => (
-                <div key={lbl} style={{ textAlign: "center", padding: "10px 20px", background: `${col}15`, border: `1px solid ${col}30`, borderRadius: "9px" }}>
-                  <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>{lbl}</div>
-                  <div style={{ fontSize: "18px", fontFamily: "'Syne', sans-serif", fontWeight: 800, color: col }}>Portfölj {winner}</div>
+                { label: "Lägre avgift",        winner: fee1 <= fee2 ? "A" : "B", accent: fee1 <= fee2 ? ACCENT_A : ACCENT_B, accentRgb: fee1 <= fee2 ? "0,24,245" : "56,189,248", accentText: fee1 <= fee2 ? ACCENT_A_LIGHT : ACCENT_B },
+                { label: `Bäst avk. (${span})`, winner: retA >= retB  ? "A" : "B", accent: retA >= retB  ? ACCENT_A : ACCENT_B, accentRgb: retA >= retB  ? "0,24,245" : "56,189,248", accentText: retA >= retB  ? ACCENT_A_LIGHT : ACCENT_B },
+              ].map(({ label: lbl, winner, accent, accentRgb, accentText }) => (
+                <div key={lbl} style={{
+                  textAlign: "center", padding: "14px 24px",
+                  background: `rgba(${accentRgb}, 0.06)`,
+                  border: `1px solid rgba(${accentRgb}, 0.2)`,
+                  borderRadius: "10px",
+                }}>
+                  <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px", fontFamily: "'Syne', sans-serif" }}>{lbl}</div>
+                  <div style={{ fontSize: "18px", fontFamily: "'Syne', sans-serif", fontWeight: 800, color: accentText }}>Portfölj {winner}</div>
                 </div>
               ))}
             </div>
