@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const results = await Promise.all(tickers.map(async (fund) => {
       try {
         const response = await fetch(
-          `https://query1.finance.yahoo.com/v8/finance/chart/${fund.ticker}?interval=1d&range=2y`
+          `https://query1.finance.yahoo.com/v8/finance/chart/${fund.ticker}?interval=1d&range=2y`,
           { headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" } }
         );
         const data = await response.json();
