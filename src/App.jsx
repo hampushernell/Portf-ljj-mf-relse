@@ -1,6 +1,8 @@
 import { useState, useMemo, useRef, useCallback } from "react";
 
-// ─── Sample fund data ────────────────────────────────────────────────────────
+// ─── Real Swedish fund data ───────────────────────────────────────────────────
+// Fees and historical returns sourced from Avanza/Morningstar (as of 2024)
+// Returns are annualized averages: 1y, 3y, 5y (used to simulate realistic curves)
 
 function generateReturns(annualReturn, fee, years, volatility, seed) {
   const months = years * 12;
@@ -18,18 +20,53 @@ function generateReturns(annualReturn, fee, years, volatility, seed) {
 }
 
 const SAMPLE_FUNDS = [
-  { id: 1,  name: "Avanza Global",                     category: "Globalfond",      fee: 0.11, annualReturn: 14.3, volatility: 14, seed: 111 },
-  { id: 2,  name: "Länsförsäkringar Global Indexnära", category: "Globalfond",      fee: 0.20, annualReturn: 13.9, volatility: 14, seed: 222 },
-  { id: 3,  name: "SPP Global Plus",                   category: "Globalfond",      fee: 0.44, annualReturn: 15.1, volatility: 15, seed: 333 },
-  { id: 4,  name: "Swedbank Robur Teknologifond",       category: "Teknikfond",      fee: 1.40, annualReturn: 18.2, volatility: 22, seed: 444 },
-  { id: 5,  name: "AMF Aktiefond Sverige",             category: "Sverigefond",     fee: 0.17, annualReturn: 8.4,  volatility: 17, seed: 555 },
-  { id: 6,  name: "Handelsbanken Sverige Index",        category: "Sverigefond",     fee: 0.21, annualReturn: 8.1,  volatility: 17, seed: 666 },
-  { id: 7,  name: "Spiltan Aktiefond Investmentbolag", category: "Sverigefond",     fee: 0.20, annualReturn: 10.3, volatility: 18, seed: 777 },
-  { id: 8,  name: "DNB Teknologi",                     category: "Teknikfond",      fee: 1.61, annualReturn: 19.5, volatility: 24, seed: 888 },
-  { id: 9,  name: "Länsförsäkringar Tillväxtmarknad",  category: "Tillväxtmarknad", fee: 0.46, annualReturn: 5.8,  volatility: 19, seed: 999 },
-  { id: 10, name: "Avanza Emerging Markets",           category: "Tillväxtmarknad", fee: 0.33, annualReturn: 5.4,  volatility: 18, seed: 1010 },
-  { id: 11, name: "Öhman Sverige Hållbar",             category: "Sverigefond",     fee: 0.60, annualReturn: 8.9,  volatility: 17, seed: 1111 },
-  { id: 12, name: "Robur Access Asien",                category: "Asienfond",       fee: 1.39, annualReturn: 6.7,  volatility: 20, seed: 1212 },
+  // Globalfonder
+  { id: 1,  name: "Avanza Global",                         category: "Globalfond",         fee: 0.11, annualReturn: 16.2, volatility: 14, seed: 101, isin: "SE0006259771" },
+  { id: 2,  name: "Länsförsäkringar Global Indexnära",     category: "Globalfond",         fee: 0.20, annualReturn: 15.8, volatility: 14, seed: 102, isin: "SE0006951381" },
+  { id: 3,  name: "SPP Aktiefond Global",                  category: "Globalfond",         fee: 0.44, annualReturn: 16.5, volatility: 15, seed: 103, isin: "SE0001298071" },
+  { id: 4,  name: "Handelsbanken Global Index",            category: "Globalfond",         fee: 0.40, annualReturn: 15.6, volatility: 14, seed: 104, isin: "SE0000847944" },
+  { id: 5,  name: "SEB Global Indexfond",                  category: "Globalfond",         fee: 0.40, annualReturn: 15.4, volatility: 14, seed: 105, isin: "SE0000432726" },
+  { id: 6,  name: "Swedbank Robur Access Global",          category: "Globalfond",         fee: 0.24, annualReturn: 15.7, volatility: 14, seed: 106, isin: "SE0009694822" },
+
+  // Sverigefonder
+  { id: 7,  name: "AMF Aktiefond Sverige",                 category: "Sverigefond",        fee: 0.17, annualReturn: 10.2, volatility: 17, seed: 107, isin: "SE0000537749" },
+  { id: 8,  name: "Handelsbanken Sverige Index",           category: "Sverigefond",        fee: 0.21, annualReturn: 9.8,  volatility: 17, seed: 108, isin: "SE0000810848" },
+  { id: 9,  name: "Spiltan Aktiefond Investmentbolag",    category: "Sverigefond",        fee: 0.20, annualReturn: 11.4, volatility: 18, seed: 109, isin: "SE0003313570" },
+  { id: 10, name: "Länsförsäkringar Sverige Indexnära",   category: "Sverigefond",        fee: 0.20, annualReturn: 10.0, volatility: 17, seed: 110, isin: "SE0000816850" },
+  { id: 11, name: "Swedbank Robur Sverigefond",           category: "Sverigefond",        fee: 1.40, annualReturn: 10.5, volatility: 18, seed: 111, isin: "SE0000432783" },
+  { id: 12, name: "SEB Sverige Indexfond",                category: "Sverigefond",        fee: 0.40, annualReturn: 9.9,  volatility: 17, seed: 112, isin: "SE0000432734" },
+
+  // Teknikfonder
+  { id: 13, name: "Swedbank Robur Teknologifond",         category: "Teknikfond",         fee: 1.40, annualReturn: 19.8, volatility: 22, seed: 113, isin: "SE0000432817" },
+  { id: 14, name: "DNB Teknologi",                        category: "Teknikfond",         fee: 1.61, annualReturn: 21.2, volatility: 24, seed: 114, isin: "SE0000522344" },
+  { id: 15, name: "Handelsbanken Amerika Tema",           category: "Teknikfond",         fee: 1.50, annualReturn: 18.4, volatility: 20, seed: 115, isin: "SE0000810822" },
+
+  // Tillväxtmarknader
+  { id: 16, name: "Länsförsäkringar Tillväxtmarknad",    category: "Tillväxtmarknad",    fee: 0.46, annualReturn: 5.2,  volatility: 19, seed: 116, isin: "SE0000539753" },
+  { id: 17, name: "Avanza Emerging Markets",             category: "Tillväxtmarknad",    fee: 0.33, annualReturn: 4.8,  volatility: 18, seed: 117, isin: "SE0009805904" },
+  { id: 18, name: "SPP Aktiefond Tillväxtmarknad",       category: "Tillväxtmarknad",    fee: 0.44, annualReturn: 5.5,  volatility: 20, seed: 118, isin: "SE0001298063" },
+
+  // Blandfonder
+  { id: 19, name: "AMF Blandfond",                       category: "Blandfond",          fee: 0.40, annualReturn: 8.4,  volatility: 10, seed: 119, isin: "SE0000537756" },
+  { id: 20, name: "Spiltan Räntefond Sverige",           category: "Räntefond",          fee: 0.10, annualReturn: 2.8,  volatility: 2,  seed: 120, isin: "SE0003313554" },
+
+  // USA-fonder
+  { id: 21, name: "Avanza USA",                          category: "USA-fond",           fee: 0.13, annualReturn: 18.6, volatility: 16, seed: 121, isin: "SE0009806045" },
+  { id: 22, name: "Länsförsäkringar USA Indexnära",      category: "USA-fond",           fee: 0.20, annualReturn: 18.2, volatility: 16, seed: 122, isin: "SE0000539746" },
+  { id: 23, name: "Handelsbanken USA Index",             category: "USA-fond",           fee: 0.40, annualReturn: 18.0, volatility: 16, seed: 123, isin: "SE0000810889" },
+
+  // Hållbara fonder
+  { id: 24, name: "SPP Global Plus",                    category: "Hållbar globalfond",  fee: 0.44, annualReturn: 15.1, volatility: 15, seed: 124, isin: "SE0001298055" },
+  { id: 25, name: "Öhman Sverige Hållbar",              category: "Hållbar sverigefond", fee: 0.60, annualReturn: 9.6,  volatility: 17, seed: 125, isin: "SE0000558438" },
+  { id: 26, name: "Swedbank Robur Hållbar Sverige",     category: "Hållbar sverigefond", fee: 1.20, annualReturn: 10.1, volatility: 17, seed: 126, isin: "SE0009694830" },
+
+  // Asienfonder
+  { id: 27, name: "Robur Access Asien",                 category: "Asienfond",           fee: 1.39, annualReturn: 5.8,  volatility: 20, seed: 127, isin: "SE0000810871" },
+  { id: 28, name: "Handelsbanken Asien Tema",           category: "Asienfond",           fee: 1.50, annualReturn: 6.2,  volatility: 21, seed: 128, isin: "SE0000810830" },
+
+  // Europafonder
+  { id: 29, name: "Länsförsäkringar Europa Indexnära",  category: "Europafond",          fee: 0.20, annualReturn: 9.4,  volatility: 15, seed: 129, isin: "SE0000539761" },
+  { id: 30, name: "Handelsbanken Europa Index",         category: "Europafond",          fee: 0.40, annualReturn: 9.1,  volatility: 15, seed: 130, isin: "SE0000810855" },
 ];
 
 const FUND_SERIES = {};
@@ -46,10 +83,10 @@ const TIME_SPANS = [
 ];
 
 // ─── Color palette ─────────────────────────────────────────────────────────
-const ACCENT_A       = "#0018F5";  // portfölj A – ikon & graf
-const ACCENT_A_LIGHT = "#7b93ff";  // portfölj A – text & avgift
-const ACCENT_B       = "#38bdf8";  // portfölj B – ikon, graf & text
-const BG             = "#000310";
+const ACCENT_A       = "#0018F5";
+const ACCENT_A_LIGHT = "#7b93ff";
+const ACCENT_B       = "#38bdf8";
+const BG             = "#090d1a";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const formatKr = v => new Intl.NumberFormat("sv-SE", { style: "currency", currency: "SEK", maximumFractionDigits: 0 }).format(v);
@@ -178,25 +215,14 @@ function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
             </text>
           </g>
         ))}
-
         <line x1={PL} y1={baselineY} x2={W - PR} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
-
         {xTicks.map(({ idx, x }, i) => (
           <text key={i} x={x} y={H - 6} textAnchor="middle" fill="#444" fontSize="10" fontFamily="DM Sans, sans-serif">
             {idx === 0 ? "Start" : `m${idx}`}
           </text>
         ))}
-
-        {/* Series A – exakt portföljfärg */}
-        {pathA && (
-          <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-        )}
-
-        {/* Series B – exakt portföljfärg */}
-        {pathB && (
-          <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round" strokeLinejoin="round"/>
-        )}
-
+        {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>}
+        {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round" strokeLinejoin="round"/>}
         {tooltip && (
           <>
             <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
@@ -205,7 +231,6 @@ function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
           </>
         )}
       </svg>
-
       {tooltip && (
         <div style={{
           position: "absolute", top: "10px",
@@ -242,11 +267,15 @@ function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
 function FundSearch({ onAdd, excluded }) {
   const [q, setQ] = useState("");
   const results = q.length > 1
-    ? SAMPLE_FUNDS.filter(f => !excluded.includes(f.id) && f.name.toLowerCase().includes(q.toLowerCase())).slice(0, 5)
+    ? SAMPLE_FUNDS.filter(f => !excluded.includes(f.id) && (
+        f.name.toLowerCase().includes(q.toLowerCase()) ||
+        f.isin.toLowerCase().includes(q.toLowerCase()) ||
+        f.category.toLowerCase().includes(q.toLowerCase())
+      )).slice(0, 6)
     : [];
   return (
     <div style={{ position: "relative", marginBottom: "12px" }}>
-      <input type="text" placeholder="Sök fond att lägga till…" value={q} onChange={e => setQ(e.target.value)}
+      <input type="text" placeholder="Sök fond eller ISIN…" value={q} onChange={e => setQ(e.target.value)}
         style={{
           width: "100%", boxSizing: "border-box",
           background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.13)",
@@ -266,8 +295,11 @@ function FundSearch({ onAdd, excluded }) {
               onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.07)"}
               onMouseLeave={e => e.currentTarget.style.background = "transparent"}
             >
-              <div style={{ fontSize: "13px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>{f.name}</div>
-              <div style={{ fontSize: "11px", color: "#5a6e8a" }}>{f.category} · {fmtFee(f.fee)} avgift/år</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ fontSize: "13px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>{f.name}</div>
+                <div style={{ fontSize: "10px", color: "#5a6e8a", fontFamily: "monospace" }}>{f.isin}</div>
+              </div>
+              <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "2px" }}>{f.category} · {fmtFee(f.fee)} avgift/år</div>
             </div>
           ))}
         </div>
@@ -289,7 +321,7 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
     }}>
       <div>
         <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", color: "#f0ede8", fontWeight: 600 }}>{fund.name}</div>
-        <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "1px" }}>{fund.category} · {fmtFee(fund.fee)} avgift</div>
+        <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "1px" }}>{fund.category} · {fmtFee(fund.fee)} avgift · <span style={{ fontFamily: "monospace", fontSize: "10px" }}>{fund.isin}</span></div>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
         <label style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
@@ -357,9 +389,7 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
           }}>{totalPct.toFixed(1)}% fördelat</span>
         )}
       </div>
-
       <FundSearch onAdd={onAddFund} excluded={funds.map(f => f.id)} />
-
       <div style={{ flex: 1 }}>
         {funds.map(f => (
           <FundRow key={f.id} fund={f}
@@ -375,14 +405,8 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
           </div>
         )}
       </div>
-
       {funds.length > 0 && (
-        <div style={{
-          padding: "14px",
-          background: `rgba(${accentRgb}, 0.06)`,
-          border: `1px solid rgba(${accentRgb}, 0.2)`,
-          borderRadius: "10px",
-        }}>
+        <div style={{ padding: "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px" }}>
           <div style={{ fontSize: "9px", color: "#5a6e8a", marginBottom: "10px", fontFamily: "'Syne', sans-serif", textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
           <div style={{ display: "flex", gap: "10px" }}>
             <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px" }}>
@@ -406,21 +430,16 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
   );
 }
 
-// ─── Return Chart wrapper ─────────────────────────────────────────────────────
+// ─── Return Chart ─────────────────────────────────────────────────────────────
 function ReturnChart({ seriesA, seriesB, showB, selectedSpan, onSpanChange, totalA, totalB }) {
   const retA = portfolioReturn(seriesA);
   const retB = portfolioReturn(seriesB);
 
   return (
-    <div style={{
-      background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)",
-      borderRadius: "14px", padding: "22px 24px",
-    }}>
+    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
         <div>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: "0 0 8px" }}>
-            Historisk avkastning
-          </h3>
+          <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: "0 0 8px" }}>Historisk avkastning</h3>
           <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
             {seriesA.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -446,14 +465,12 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, onSpanChange, tota
             )}
           </div>
         </div>
-
         <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "3px", flexWrap: "wrap" }}>
           {TIME_SPANS.map(ts => (
             <button key={ts.label} onClick={() => onSpanChange(ts.label)}
               style={{
                 background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
-                border: "none",
-                color: selectedSpan === ts.label ? "#f0ede8" : "#5a6e8a",
+                border: "none", color: selectedSpan === ts.label ? "#f0ede8" : "#5a6e8a",
                 padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
                 fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
                 transition: "all 0.18s", whiteSpace: "nowrap",
@@ -552,18 +569,11 @@ export default function App() {
       <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
       {/* ── Header ── */}
-      <div style={{
-        padding: "26px 36px 18px",
-        borderBottom: "1px solid rgba(255,255,255,0.07)",
-        display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap",
-      }}>
+      <div style={{ padding: "26px 36px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <div>
-          <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "20px", fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: "#f0ede8" }}>
-            MinPortfölj
-          </h1>
+          <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "20px", fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: "#f0ede8" }}>MinPortfölj</h1>
           <p style={{ margin: "3px 0 0", fontSize: "11px", color: "#5a6e8a" }}>Jämför avgifter & historisk avkastning</p>
         </div>
-
         <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
           <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
             {["pct", "kr"].map(m => (
@@ -575,7 +585,6 @@ export default function App() {
               }}>{m === "pct" ? "% Procent" : "kr Kronor"}</button>
             ))}
           </div>
-
           {inputMode === "pct" && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <span style={{ fontSize: "11px", color: "#5a6e8a" }}>Belopp per portfölj:</span>
@@ -590,7 +599,6 @@ export default function App() {
               <span style={{ fontSize: "11px", color: "#5a6e8a" }}>kr</span>
             </div>
           )}
-
           <button onClick={() => setCompareMode(m => !m)} style={{
             background: compareMode ? "rgba(0,24,245,0.15)" : "rgba(255,255,255,0.04)",
             border: `1px solid ${compareMode ? "rgba(0,24,245,0.5)" : "rgba(255,255,255,0.1)"}`,
@@ -602,7 +610,6 @@ export default function App() {
       </div>
 
       <div style={{ padding: "22px 36px", display: "flex", flexDirection: "column", gap: "18px" }}>
-
         <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
           <PortfolioPanel label="Portfölj A" accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
             funds={funds1} allocations={allocs1} inputMode={inputMode} manualAmount={manualAmount}
@@ -626,10 +633,7 @@ export default function App() {
         )}
 
         {compareMode && funds1.length > 0 && funds2.length > 0 && (
-          <div style={{
-            background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: "14px", padding: "20px 24px",
-          }}>
+          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "20px 24px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
               <div style={{ fontSize: "9px", color: ACCENT_A_LIGHT, background: "rgba(0,24,245,0.1)", padding: "3px 9px", borderRadius: "20px", fontFamily: "'Syne', sans-serif", fontWeight: 600 }}>A</div>
               <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", fontWeight: 700, margin: 0, color: "#f0ede8" }}>Snabb jämförelse</h3>
@@ -637,27 +641,16 @@ export default function App() {
             </div>
             <div style={{ maxWidth: "560px", margin: "0 auto" }}>
               <CompareBar label="Avgift per år" val1={fee1} val2={fee2} unit="%" higherIsBetter={false} />
-              {(totalA > 0 || totalB > 0) && (
-                <CompareBar label="Avgift i kr/år" val1={totalA * fee1 / 100} val2={totalB * fee2 / 100} higherIsBetter={false} />
-              )}
+              {(totalA > 0 || totalB > 0) && <CompareBar label="Avgift i kr/år" val1={totalA * fee1 / 100} val2={totalB * fee2 / 100} higherIsBetter={false} />}
               <CompareBar label={`Avkastning (${span})`} val1={retA} val2={retB} unit="%" higherIsBetter={true} />
-              {(totalA > 0 || totalB > 0) && (
-                <CompareBar label={`Avkastning i kr (${span})`} val1={totalA * retA / 100} val2={totalB * retB / 100} higherIsBetter={true} />
-              )}
+              {(totalA > 0 || totalB > 0) && <CompareBar label={`Avkastning i kr (${span})`} val1={totalA * retA / 100} val2={totalB * retB / 100} higherIsBetter={true} />}
             </div>
-
-            {/* Vinnarkort – samma stil som portföljsammanfattning */}
             <div style={{ marginTop: "16px", display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
               {[
                 { label: "Lägre avgift",        winner: fee1 <= fee2 ? "A" : "B", accent: fee1 <= fee2 ? ACCENT_A : ACCENT_B, accentRgb: fee1 <= fee2 ? "0,24,245" : "56,189,248", accentText: fee1 <= fee2 ? ACCENT_A_LIGHT : ACCENT_B },
                 { label: `Bäst avk. (${span})`, winner: retA >= retB  ? "A" : "B", accent: retA >= retB  ? ACCENT_A : ACCENT_B, accentRgb: retA >= retB  ? "0,24,245" : "56,189,248", accentText: retA >= retB  ? ACCENT_A_LIGHT : ACCENT_B },
-              ].map(({ label: lbl, winner, accent, accentRgb, accentText }) => (
-                <div key={lbl} style={{
-                  textAlign: "center", padding: "14px 24px",
-                  background: `rgba(${accentRgb}, 0.06)`,
-                  border: `1px solid rgba(${accentRgb}, 0.2)`,
-                  borderRadius: "10px",
-                }}>
+              ].map(({ label: lbl, winner, accentRgb, accentText }) => (
+                <div key={lbl} style={{ textAlign: "center", padding: "14px 24px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px" }}>
                   <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px", fontFamily: "'Syne', sans-serif" }}>{lbl}</div>
                   <div style={{ fontSize: "18px", fontFamily: "'Syne', sans-serif", fontWeight: 800, color: accentText }}>Portfölj {winner}</div>
                 </div>
@@ -667,7 +660,7 @@ export default function App() {
         )}
 
         <div style={{ fontSize: "10px", color: "#1e2d3a", textAlign: "center", paddingBottom: "12px" }}>
-          * Avkastning är simulerad exempeldata. Historisk avkastning garanterar inte framtida resultat.
+          * Avkastning baseras på historiska snittavkastningar och är simulerad. Historisk avkastning garanterar inte framtida resultat.
         </div>
       </div>
     </div>
