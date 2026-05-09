@@ -27,9 +27,16 @@ export default async function handler(req, res) {
         const data = await response.json();
         const result = data?.chart?.result?.[0];
         const meta = result?.meta;
-        const prices = result?.indicators?.quote?.[0]?.close || [];
-        const timestamps = result?.timestamp || [];
-
+       const rawPrices = result?.indicators?.quote?.[0]?.close || [];
+const rawTimestamps = result?.timestamp || [];
+const validData = rawPrices.reduce((acc, price, i) => {
+  if (price !== null && price !== undefined) {
+    acc.push({ timestamp: rawTimestamps[i], value: price });
+  }
+  return acc;
+}, []);
+const prices = validData.map(d => d.value);
+const timestamps = validData.map(d => d.timestamp);
         return {
           id: fund.id,
           ticker: fund.ticker,
