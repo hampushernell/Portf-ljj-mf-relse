@@ -21,6 +21,23 @@ const TIME_SPANS = [
   { label: "10 år",  months: 120 },
 ];
 
+// ─── ISIN codes ───────────────────────────────────────────────────────────────
+const FUND_ISINS = {
+  "0P0001ECQR.ST": "SE0006993770",  // Avanza Global
+  "0P0001CKSU.ST": "SE0005309597",  // Nordea Global Enhanced Growth
+  "0P0000YVZ3.ST": "SE0005188832",  // Länsförsäkringar Global Index
+  "0P0000XAIN.ST": "SE0003985818",  // Nordea Global Index Select
+  "0P0001F3XN.ST": "SE0012853718",  // Handelsbanken Global Index
+  "0P0001Q6FC.ST": "NO0010888283",  // DNB Global Indeks S
+  "0P00000LST.ST": "NO0010140502",  // Storebrand Global All Countries
+  "0P00005U1J.ST": "SE0002756285",  // Avanza Zero
+  "0P0001JF8S.ST": "SE0012453819",  // Nordea Swedish Sustainable Enhanced
+  "0P00000K12.ST": "SE0000537719",  // AMF Aktiefond Sverige
+  "0P00001DF8.ST": "SE0006992618",  // Handelsbanken Sverige Index
+  "0P0000ULAP.ST": "SE0003542154",  // Spiltan Aktiefond Investmentbolag
+  "0P0000J1JM.ST": "SE0000523281",  // Länsförsäkringar Sverige Index
+};
+
 // ─── Manual fees (not available from Yahoo Finance) ───────────────────────────
 const FUND_FEES = {
   "0P0001ECQR.ST": 0.11,  // Avanza Global
@@ -317,8 +334,108 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
   );
 }
 
+// ─── Fund Details Modal ───────────────────────────────────────────────────────
+function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 1000,
+        background: "rgba(0,0,0,0.72)", backdropFilter: "blur(4px)",
+        display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: "#0d1120", border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "16px", padding: "28px 28px 24px",
+          maxWidth: "640px", width: "100%", maxHeight: "85vh",
+          overflow: "auto", position: "relative",
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px" }}>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: "16px", fontWeight: 700, color: "#f0ede8", margin: 0 }}>
+            {label} – Detaljer & historik
+          </h2>
+          <button
+            onClick={onClose}
+            style={{ background: "none", border: "none", color: "#5a6e8a", cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px", transition: "color 0.2s" }}
+            onMouseEnter={e => e.target.style.color = "#f0ede8"}
+            onMouseLeave={e => e.target.style.color = "#5a6e8a"}
+          >×</button>
+        </div>
+
+        {/* Info text */}
+        <div style={{
+          background: `rgba(${accentRgb}, 0.07)`, border: `1px solid rgba(${accentRgb}, 0.22)`,
+          borderRadius: "10px", padding: "12px 16px", marginBottom: "22px",
+          fontSize: "12px", color: "#8a9bb0", lineHeight: 1.65, fontFamily: "'DM Sans', sans-serif",
+        }}>
+          Prisdata hämtas från Yahoo Finance och är tillgänglig fr.o.m. mars 2022 för dessa fonder.
+          För fullständig historik, besök respektive fondsida via länkarna nedan.
+        </div>
+
+        {/* Fund rows */}
+        {funds.map(fund => {
+          const s1y = buildSeries(fund.prices, 12);
+          const ret1y = s1y.length ? s1y[s1y.length - 1].value - 100 : null;
+          const oldestDate = fund.prices?.[0]?.timestamp
+            ? new Date(fund.prices[0].timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
+            : "–";
+          const isin = FUND_ISINS[fund.ticker] || "–";
+          const avanzaUrl = `https://www.avanza.se/fonder/om-fonden.html/${fund.ticker.replace(".ST", "")}`;
+
+          return (
+            <div key={fund.id} style={{
+              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: "10px", padding: "14px 16px", marginBottom: "10px",
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
+                <div>
+                  <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", fontWeight: 700, color: "#f0ede8" }}>{fund.name}</div>
+                  <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "2px" }}>{fund.category}</div>
+                </div>
+                <a
+                  href={avanzaUrl} target="_blank" rel="noopener noreferrer"
+                  style={{
+                    fontSize: "11px", color: accent, textDecoration: "none",
+                    fontFamily: "'Syne', sans-serif", fontWeight: 600,
+                    background: `rgba(${accentRgb}, 0.1)`, padding: "5px 11px",
+                    borderRadius: "6px", border: `1px solid rgba(${accentRgb}, 0.3)`,
+                    whiteSpace: "nowrap", transition: "background 0.2s",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.2)`}
+                  onMouseLeave={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.1)`}
+                >
+                  Visa på Avanza ↗
+                </a>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px" }}>
+                {[
+                  { lbl: "ISIN", val: isin, mono: true },
+                  { lbl: "Avgift/år", val: fmtFee(fund.fee) },
+                  { lbl: "Avk. 1 år", val: ret1y !== null ? fmtPct(ret1y) : "–", color: ret1y !== null ? (ret1y >= 0 ? "#6ee7b7" : "#f87171") : "#5a6e8a" },
+                  { lbl: "Data fr.o.m.", val: oldestDate },
+                ].map(({ lbl, val, color, mono }) => (
+                  <div key={lbl} style={{ background: "rgba(255,255,255,0.04)", borderRadius: "7px", padding: "8px 10px" }}>
+                    <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px", fontFamily: "'Syne', sans-serif" }}>{lbl}</div>
+                    <div style={{ fontFamily: mono ? "monospace" : "'Syne', sans-serif", fontSize: mono ? "10px" : "12px", fontWeight: 600, color: color || "#f0ede8" }}>{val}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── Portfolio Panel ──────────────────────────────────────────────────────────
 function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund }) {
+  const [showDetails, setShowDetails] = useState(false);
   const portfolioTotal = inputMode === "kr" ? portfolioKrTotal(funds, allocations) : manualAmount;
   const fee = getWeightedFee(funds, allocations, inputMode, portfolioTotal);
   const totalPct = inputMode === "pct"
@@ -383,6 +500,30 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
             </div>
           </div>
         </div>
+      )}
+
+      {funds.length > 0 && (
+        <button
+          onClick={() => setShowDetails(true)}
+          style={{
+            width: "100%", background: `rgba(${accentRgb}, 0.07)`,
+            border: `1px solid rgba(${accentRgb}, 0.25)`, color: accent,
+            borderRadius: "8px", padding: "9px 14px", cursor: "pointer",
+            fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+            transition: "background 0.2s", textAlign: "center",
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.15)`}
+          onMouseLeave={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.07)`}
+        >
+          Visa fullständig historik &amp; detaljer
+        </button>
+      )}
+
+      {showDetails && (
+        <FundDetailsModal
+          funds={funds} accent={accent} accentRgb={accentRgb} label={label}
+          onClose={() => setShowDetails(false)}
+        />
       )}
     </div>
   );
