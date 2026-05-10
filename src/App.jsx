@@ -983,8 +983,30 @@ export default function App() {
     return tss.length ? Math.max(...tss) : null;
   }, [funds2]);
 
-  const addFund1 = f => setFunds1(p => [...p, f]);
-  const addFund2 = f => setFunds2(p => [...p, f]);
+  const addFund1 = f => {
+    const newFunds = [...funds1, f];
+    setFunds1(newFunds);
+    if (inputMode1 === "pct") {
+      const even = parseFloat((100 / newFunds.length).toFixed(2));
+      setAllocs1(prev => {
+        const n = { ...prev };
+        newFunds.forEach(fund => { n[fund.id] = { ...n[fund.id], pct: even }; });
+        return n;
+      });
+    }
+  };
+  const addFund2 = f => {
+    const newFunds = [...funds2, f];
+    setFunds2(newFunds);
+    if (inputMode2 === "pct") {
+      const even = parseFloat((100 / newFunds.length).toFixed(2));
+      setAllocs2(prev => {
+        const n = { ...prev };
+        newFunds.forEach(fund => { n[fund.id] = { ...n[fund.id], pct: even }; });
+        return n;
+      });
+    }
+  };
   const updA     = (id, v) => setAllocs1(p => ({ ...p, [id]: { ...p[id], ...v } }));
   const updB     = (id, v) => setAllocs2(p => ({ ...p, [id]: { ...p[id], ...v } }));
   const remF1    = id => { setFunds1(p => p.filter(f => f.id !== id)); setAllocs1(p => { const n={...p}; delete n[id]; return n; }); };
