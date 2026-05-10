@@ -294,7 +294,7 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
       display: "grid", gridTemplateColumns: "1fr 100px 90px 26px", gap: "8px", alignItems: "center",
       padding: "10px 12px", background: "rgba(255,255,255,0.03)",
       border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "7px",
-      animation: "slideInLeft 0.22s ease",
+      animation: "slideInLeft 0.22s ease", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
         {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
@@ -460,6 +460,7 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
       border: `1px solid ${accent}33`, borderRadius: "14px", padding: "20px",
       display: "flex", flexDirection: "column", gap: "12px",
       animation: "fadeSlideUp 0.35s ease",
+      boxShadow: `0 0 28px rgba(${accentRgb},0.13), 0 2px 8px rgba(0,0,0,0.4)`,
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <BriefcaseIcon color={accent} />
@@ -523,15 +524,15 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
       </div>
 
       {funds.length > 0 && (
-        <div style={{ padding: "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px" }}>
+        <div style={{ padding: "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
           <div style={{ fontSize: "9px", color: "#5a6e8a", marginBottom: "10px", fontFamily: "'Syne', sans-serif", textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
           <div style={{ display: "flex", gap: "10px" }}>
-            <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px" }}>
+            <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px", boxShadow: "0 3px 10px rgba(0,0,0,0.35)" }}>
               <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>Avgift/år</div>
               <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "17px", fontWeight: 700, color: accentText }}>{fmtFee(fee)}</div>
               {portfolioTotal > 0 && <div style={{ fontSize: "10px", color: "#5a6e8a", marginTop: "2px" }}>{formatKr(portfolioTotal * fee / 100)}</div>}
             </div>
-            <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px" }}>
+            <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px", boxShadow: "0 3px 10px rgba(0,0,0,0.35)" }}>
               <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>
                 {inputMode === "kr" ? "Totalt" : "Belopp"}
               </div>
