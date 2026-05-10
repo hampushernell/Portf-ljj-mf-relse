@@ -1089,7 +1089,7 @@ export default function App() {
           <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
             {[
               { value: "compare", label: "⇄ Jämför",   activeColor: ACCENT_B,       activeBg: "rgba(56,189,248,0.15)"  },
-              { value: "fund",    label: "◈ Fondläge", activeColor: ACCENT_A_LIGHT, activeBg: "rgba(0,24,245,0.22)"    },
+              { value: "fund",    label: "◈ Fondläge", activeColor: ACCENT_A,       activeBg: "rgba(0,24,245,0.18)"    },
             ].map(({ value, label, activeColor, activeBg }) => (
               <button key={value} className="mode-btn" onClick={() => setViewMode(value)} style={{
                 background: viewMode === value ? activeBg : "transparent",
