@@ -23,19 +23,19 @@ const TIME_SPANS = [
 
 // ─── ISIN codes ───────────────────────────────────────────────────────────────
 const FUND_ISINS = {
-  "0P0001ECQR.ST": "SE0006993770",  // Avanza Global
-  "0P0001CKSU.ST": "SE0005309597",  // Nordea Global Enhanced Growth
-  "0P0000YVZ3.ST": "SE0005188832",  // Länsförsäkringar Global Index
-  "0P0000XAIN.ST": "SE0003985818",  // Nordea Global Index Select
-  "0P0001F3XN.ST": "SE0012853718",  // Handelsbanken Global Index
-  "0P0001Q6FC.ST": "NO0010888283",  // DNB Global Indeks S
-  "0P00000LST.ST": "NO0010140502",  // Storebrand Global All Countries
-  "0P00005U1J.ST": "SE0002756285",  // Avanza Zero
-  "0P0001JF8S.ST": "SE0012453819",  // Nordea Swedish Sustainable Enhanced
-  "0P00000K12.ST": "SE0000537719",  // AMF Aktiefond Sverige
-  "0P00001DF8.ST": "SE0006992618",  // Handelsbanken Sverige Index
-  "0P0000ULAP.ST": "SE0003542154",  // Spiltan Aktiefond Investmentbolag
-  "0P0000J1JM.ST": "SE0000523281",  // Länsförsäkringar Sverige Index
+  "0P0001ECQR.ST": "SE0011527613",  // Avanza Global
+  "0P0001CKSU.ST": "FI4000261326",  // Nordea Global Enhanced Growth
+  "0P0000YVZ3.ST": "SE0005188836",  // Länsförsäkringar Global Index
+  "0P0000XAIN.ST": "FI4000046685",  // Nordea Global Index Select
+  "0P0001F3XN.ST": "SE0011309707",  // Handelsbanken Global Index
+  "0P0001Q6FC.ST": "NO0010827280",  // DNB Global Indeks S
+  "0P00000LST.ST": "SE0000671919",  // Storebrand Global All Countries
+  "0P00005U1J.ST": "SE0001718388",  // Avanza Zero
+  "0P0001JF8S.ST": "LU2122930915",  // Nordea Swedish Sustainable Enhanced
+  "0P00000K12.ST": "SE0000739195",  // AMF Aktiefond Sverige
+  "0P00001DF8.ST": "SE0001466368",  // Handelsbanken Sverige Index
+  "0P0000ULAP.ST": "SE0004297927",  // Spiltan Aktiefond Investmentbolag
+  "0P0000J1JM.ST": "SE0002656611",  // Länsförsäkringar Sverige Index
 };
 
 // ─── Manual fees (not available from Yahoo Finance) ───────────────────────────
