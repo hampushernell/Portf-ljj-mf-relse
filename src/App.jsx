@@ -929,8 +929,10 @@ export default function App() {
   const [funds2, setFunds2]             = useState([]);
   const [allocs1, setAllocs1]           = useState({});
   const [allocs2, setAllocs2]           = useState({});
-  const [inputMode, setInputMode]       = useState("pct");
-  const [manualAmount, setManualAmount] = useState(0);
+  const [inputMode1, setInputMode1]       = useState("pct");
+  const [manualAmount1, setManualAmount1] = useState(0);
+  const [inputMode2, setInputMode2]       = useState("pct");
+  const [manualAmount2, setManualAmount2] = useState(0);
   const [viewMode, setViewMode]         = useState("compare"); // "compare" | "single" | "fund"
   const [span, setSpan]                 = useState("Max");
 
@@ -956,19 +958,19 @@ export default function App() {
       });
   }, []);
 
-  const totalA = inputMode === "kr" ? portfolioKrTotal(funds1, allocs1) : manualAmount;
-  const totalB = inputMode === "kr" ? portfolioKrTotal(funds2, allocs2) : manualAmount;
+  const totalA = inputMode1 === "kr" ? portfolioKrTotal(funds1, allocs1) : manualAmount1;
+  const totalB = inputMode2 === "kr" ? portfolioKrTotal(funds2, allocs2) : manualAmount2;
   const spanMonths = TIME_SPANS.find(t => t.label === span)?.months ?? null;
 
-  const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode, totalA, spanMonths), [funds1, allocs1, inputMode, totalA, spanMonths]);
-  const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode, totalB, spanMonths), [funds2, allocs2, inputMode, totalB, spanMonths]);
+  const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode1, totalA, spanMonths), [funds1, allocs1, inputMode1, totalA, spanMonths]);
+  const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode2, totalB, spanMonths), [funds2, allocs2, inputMode2, totalB, spanMonths]);
   const fundSeriesA = useMemo(() => funds1.map((f, i) => ({
     name: f.name, color: FUND_COLORS[i % FUND_COLORS.length],
     series: buildSeries(f.prices, spanMonths),
   })).filter(l => l.series.length > 0), [funds1, spanMonths]);
 
-  const fee1 = getWeightedFee(funds1, allocs1, inputMode, totalA);
-  const fee2 = getWeightedFee(funds2, allocs2, inputMode, totalB);
+  const fee1 = getWeightedFee(funds1, allocs1, inputMode1, totalA);
+  const fee2 = getWeightedFee(funds2, allocs2, inputMode2, totalB);
   const retA = portfolioReturn(seriesA);
   const retB = portfolioReturn(seriesB);
 
@@ -1054,15 +1056,15 @@ export default function App() {
           <>
             <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
               <PortfolioPanel label={viewMode === "fund" ? "Portfölj" : "Portfölj A"} accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
-                funds={funds1} allocations={allocs1} inputMode={inputMode} manualAmount={manualAmount}
-                onInputModeChange={setInputMode} onManualAmountChange={setManualAmount}
+                funds={funds1} allocations={allocs1} inputMode={inputMode1} manualAmount={manualAmount1}
+                onInputModeChange={setInputMode1} onManualAmountChange={setManualAmount1}
                 allFunds={allFunds} loading={loading} viewMode={viewMode}
                 onAddFund={addFund1} onUpdateAlloc={updA} onRemoveFund={remF1}
               />
               {compareMode && (
                 <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
-                  funds={funds2} allocations={allocs2} inputMode={inputMode} manualAmount={manualAmount}
-                  onInputModeChange={setInputMode} onManualAmountChange={setManualAmount}
+                  funds={funds2} allocations={allocs2} inputMode={inputMode2} manualAmount={manualAmount2}
+                  onInputModeChange={setInputMode2} onManualAmountChange={setManualAmount2}
                   allFunds={allFunds} loading={loading} viewMode={viewMode}
                   onAddFund={addFund2} onUpdateAlloc={updB} onRemoveFund={remF2}
                 />
