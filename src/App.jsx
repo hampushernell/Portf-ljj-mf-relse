@@ -389,9 +389,19 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
 }
 
 // ─── Return Chart ─────────────────────────────────────────────────────────────
-function ReturnChart({ seriesA, seriesB, showB, selectedSpan, onSpanChange, totalA, totalB }) {
+function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldestTsA, oldestTsB, onSpanChange, totalA, totalB }) {
   const retA = portfolioReturn(seriesA);
   const retB = portfolioReturn(seriesB);
+
+  const requestedCutoffTs = Date.now() / 1000 - spanMonths * 30.44 * 24 * 3600;
+  const oldestTs = [oldestTsA, oldestTsB].filter(Boolean).reduce((a, b) => Math.max(a, b), 0);
+  const spanHasFullData = ts => !oldestTs || oldestTs <= Date.now() / 1000 - ts.months * 30.44 * 24 * 3600 + 30 * 86400;
+
+  const actualFromTs = seriesA[0]?.timestamp ?? seriesB[0]?.timestamp;
+  const isIncomplete = actualFromTs && actualFromTs > requestedCutoffTs + 30 * 86400;
+  const actualFromStr = actualFromTs
+    ? new Date(actualFromTs * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
+    : null;
 
   return (
     <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px" }}>
@@ -423,19 +433,31 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, onSpanChange, tota
             )}
           </div>
         </div>
-        <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "3px", flexWrap: "wrap" }}>
-          {TIME_SPANS.map(ts => (
-            <button key={ts.label} onClick={() => onSpanChange(ts.label)}
-              style={{
-                background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
-                border: "none", color: selectedSpan === ts.label ? "#f0ede8" : "#5a6e8a",
-                padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
-                fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
-                transition: "all 0.18s", whiteSpace: "nowrap",
-                boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
-              }}
-            >{ts.label}</button>
-          ))}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+          <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "3px", flexWrap: "wrap" }}>
+            {TIME_SPANS.map(ts => {
+              const full = spanHasFullData(ts);
+              return (
+                <button key={ts.label} onClick={() => onSpanChange(ts.label)}
+                  title={!full ? "Ofullständig data – Yahoo Finance saknar historik för vald period" : undefined}
+                  style={{
+                    background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
+                    border: "none",
+                    color: selectedSpan === ts.label ? "#f0ede8" : full ? "#5a6e8a" : "#6b4c1a",
+                    padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
+                    fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+                    transition: "all 0.18s", whiteSpace: "nowrap",
+                    boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
+                  }}
+                >{ts.label}{!full ? " ⚠" : ""}</button>
+              );
+            })}
+          </div>
+          {isIncomplete && actualFromStr && (
+            <div style={{ fontSize: "10px", color: "#b45309", fontFamily: "'Syne', sans-serif" }}>
+              Data fr.o.m. {actualFromStr} – Yahoo Finance saknar äldre historik
+            </div>
+          )}
         </div>
       </div>
 
@@ -538,6 +560,15 @@ export default function App() {
   const retA = portfolioReturn(seriesA);
   const retB = portfolioReturn(seriesB);
 
+  const oldestTsA = useMemo(() => {
+    const tss = funds1.flatMap(f => f.prices?.length ? [f.prices[0].timestamp] : []);
+    return tss.length ? Math.max(...tss) : null;
+  }, [funds1]);
+  const oldestTsB = useMemo(() => {
+    const tss = funds2.flatMap(f => f.prices?.length ? [f.prices[0].timestamp] : []);
+    return tss.length ? Math.max(...tss) : null;
+  }, [funds2]);
+
   const addFund1 = f => setFunds1(p => [...p, f]);
   const addFund2 = f => setFunds2(p => [...p, f]);
   const updA     = (id, v) => setAllocs1(p => ({ ...p, [id]: { ...p[id], ...v } }));
@@ -625,8 +656,9 @@ export default function App() {
               <ReturnChart
                 seriesA={seriesA} seriesB={seriesB}
                 showB={compareMode && funds2.length > 0}
-                selectedSpan={span} onSpanChange={setSpan}
+                selectedSpan={span} spanMonths={spanMonths} onSpanChange={setSpan}
                 totalA={totalA} totalB={totalB}
+                oldestTsA={oldestTsA} oldestTsB={oldestTsB}
               />
             )}
 
