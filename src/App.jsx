@@ -929,12 +929,14 @@ export default function App() {
   const [funds2, setFunds2]             = useState([]);
   const [allocs1, setAllocs1]           = useState({});
   const [allocs2, setAllocs2]           = useState({});
-  const [inputMode1, setInputMode1]       = useState("pct");
-  const [manualAmount1, setManualAmount1] = useState(0);
-  const [inputMode2, setInputMode2]       = useState("pct");
-  const [manualAmount2, setManualAmount2] = useState(0);
-  const [viewMode, setViewMode]         = useState("fund");
-  const [span, setSpan]                 = useState("Max");
+  const [inputMode1, setInputMode1]           = useState("pct");
+  const [manualAmount1, setManualAmount1]     = useState(0);
+  const [inputMode2, setInputMode2]           = useState("pct");
+  const [manualAmount2, setManualAmount2]     = useState(0);
+  const [hasManualEdit1, setHasManualEdit1]   = useState(false);
+  const [hasManualEdit2, setHasManualEdit2]   = useState(false);
+  const [viewMode, setViewMode]               = useState("fund");
+  const [span, setSpan]                       = useState("Max");
 
   const compareMode = viewMode === "compare";
 
@@ -983,12 +985,44 @@ export default function App() {
     return tss.length ? Math.max(...tss) : null;
   }, [funds2]);
 
-  const addFund1 = f => setFunds1(p => [...p, f]);
-  const addFund2 = f => setFunds2(p => [...p, f]);
-  const updA     = (id, v) => setAllocs1(p => ({ ...p, [id]: { ...p[id], ...v } }));
-  const updB     = (id, v) => setAllocs2(p => ({ ...p, [id]: { ...p[id], ...v } }));
-  const remF1    = id => { setFunds1(p => p.filter(f => f.id !== id)); setAllocs1(p => { const n={...p}; delete n[id]; return n; }); };
-  const remF2    = id => { setFunds2(p => p.filter(f => f.id !== id)); setAllocs2(p => { const n={...p}; delete n[id]; return n; }); };
+  const addFund1 = f => {
+    const newFunds = [...funds1, f];
+    setFunds1(newFunds);
+    if (inputMode1 === "pct" && !hasManualEdit1) {
+      const even = parseFloat((100 / newFunds.length).toFixed(2));
+      setAllocs1(prev => {
+        const n = { ...prev };
+        newFunds.forEach(fund => { n[fund.id] = { ...n[fund.id], pct: even }; });
+        return n;
+      });
+    }
+  };
+  const addFund2 = f => {
+    const newFunds = [...funds2, f];
+    setFunds2(newFunds);
+    if (inputMode2 === "pct" && !hasManualEdit2) {
+      const even = parseFloat((100 / newFunds.length).toFixed(2));
+      setAllocs2(prev => {
+        const n = { ...prev };
+        newFunds.forEach(fund => { n[fund.id] = { ...n[fund.id], pct: even }; });
+        return n;
+      });
+    }
+  };
+  const updA = (id, v) => { setAllocs1(p => ({ ...p, [id]: { ...p[id], ...v } })); setHasManualEdit1(true); };
+  const updB = (id, v) => { setAllocs2(p => ({ ...p, [id]: { ...p[id], ...v } })); setHasManualEdit2(true); };
+  const remF1 = id => {
+    const newFunds = funds1.filter(f => f.id !== id);
+    setFunds1(newFunds);
+    setAllocs1(p => { const n = { ...p }; delete n[id]; return n; });
+    if (newFunds.length === 0) setHasManualEdit1(false);
+  };
+  const remF2 = id => {
+    const newFunds = funds2.filter(f => f.id !== id);
+    setFunds2(newFunds);
+    setAllocs2(p => { const n = { ...p }; delete n[id]; return n; });
+    if (newFunds.length === 0) setHasManualEdit2(false);
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: BG, color: "#f0ede8", fontFamily: "'DM Sans', sans-serif" }}>
