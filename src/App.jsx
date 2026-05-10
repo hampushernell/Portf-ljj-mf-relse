@@ -1088,12 +1088,12 @@ export default function App() {
         <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
           <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
             {[
-              { value: "compare", label: "⇄ Jämför" },
-              { value: "fund",    label: "◈ Fondläge" },
-            ].map(({ value, label }) => (
+              { value: "compare", label: "⇄ Jämför",   activeColor: ACCENT_B,       activeBg: "rgba(56,189,248,0.15)"  },
+              { value: "fund",    label: "◈ Fondläge", activeColor: ACCENT_A_LIGHT, activeBg: "rgba(0,24,245,0.22)"    },
+            ].map(({ value, label, activeColor, activeBg }) => (
               <button key={value} className="mode-btn" onClick={() => setViewMode(value)} style={{
-                background: viewMode === value ? "rgba(255,255,255,0.1)" : "transparent",
-                border: "none", color: viewMode === value ? "#f0ede8" : "#5a6e8a",
+                background: viewMode === value ? activeBg : "transparent",
+                border: "none", color: viewMode === value ? activeColor : "#5a6e8a",
                 padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
                 fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600, transition: "all 0.2s",
               }}>{label}</button>
