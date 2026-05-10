@@ -17,8 +17,7 @@ const TIME_SPANS = [
   { label: "6 mån",  months: 6   },
   { label: "1 år",   months: 12  },
   { label: "3 år",   months: 36  },
-  { label: "5 år",   months: 60  },
-  { label: "10 år",  months: 120 },
+  { label: "Max",    months: null },
 ];
 
 // ─── ISIN codes ───────────────────────────────────────────────────────────────
@@ -58,11 +57,16 @@ const FUND_FEES = {
 // ─── Build normalized price series from API data ──────────────────────────────
 function buildSeries(prices, months) {
   if (!prices || prices.length === 0) return [];
-  const cutoffTs = Date.now() / 1000 - months * 30.44 * 24 * 3600;
-  let startIdx = prices.findIndex(p => p.timestamp >= cutoffTs);
-  if (startIdx === -1) return [];
-  if (startIdx > 0) startIdx--;
-  const sliced = prices.slice(startIdx);
+  let sliced;
+  if (months === null) {
+    sliced = prices;
+  } else {
+    const cutoffTs = Date.now() / 1000 - months * 30.44 * 24 * 3600;
+    let startIdx = prices.findIndex(p => p.timestamp >= cutoffTs);
+    if (startIdx === -1) return [];
+    if (startIdx > 0) startIdx--;
+    sliced = prices.slice(startIdx);
+  }
   const base = sliced[0]?.value;
   if (!base || base <= 0) return [];
   return sliced.map((p, i) => ({
@@ -534,12 +538,14 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldest
   const retA = portfolioReturn(seriesA);
   const retB = portfolioReturn(seriesB);
 
-  const requestedCutoffTs = Date.now() / 1000 - spanMonths * 30.44 * 24 * 3600;
+  const requestedCutoffTs = spanMonths !== null
+    ? Date.now() / 1000 - spanMonths * 30.44 * 24 * 3600
+    : -Infinity;
   const oldestTs = [oldestTsA, oldestTsB].filter(Boolean).reduce((a, b) => Math.max(a, b), 0);
-  const spanHasFullData = ts => !oldestTs || oldestTs <= Date.now() / 1000 - ts.months * 30.44 * 24 * 3600 + 30 * 86400;
+  const spanHasFullData = ts => ts.months === null || !oldestTs || oldestTs <= Date.now() / 1000 - ts.months * 30.44 * 24 * 3600 + 30 * 86400;
 
   const actualFromTs = seriesA[0]?.timestamp ?? seriesB[0]?.timestamp;
-  const isIncomplete = actualFromTs && actualFromTs > requestedCutoffTs + 30 * 86400;
+  const isIncomplete = spanMonths !== null && actualFromTs && actualFromTs > requestedCutoffTs + 30 * 86400;
   const actualFromStr = actualFromTs
     ? new Date(actualFromTs * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
     : null;
@@ -667,7 +673,7 @@ export default function App() {
   const [inputMode, setInputMode]       = useState("pct");
   const [manualAmount, setManualAmount] = useState(0);
   const [compareMode, setCompareMode]   = useState(true);
-  const [span, setSpan]                 = useState("5 år");
+  const [span, setSpan]                 = useState("Max");
 
   // Fetch real fund data on mount
   useEffect(() => {
@@ -691,7 +697,7 @@ export default function App() {
 
   const totalA = inputMode === "kr" ? portfolioKrTotal(funds1, allocs1) : manualAmount;
   const totalB = inputMode === "kr" ? portfolioKrTotal(funds2, allocs2) : manualAmount;
-  const spanMonths = TIME_SPANS.find(t => t.label === span)?.months || 60;
+  const spanMonths = TIME_SPANS.find(t => t.label === span)?.months ?? null;
 
   const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode, totalA, spanMonths), [funds1, allocs1, inputMode, totalA, spanMonths]);
   const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode, totalB, spanMonths), [funds2, allocs2, inputMode, totalB, spanMonths]);
