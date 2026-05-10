@@ -234,6 +234,7 @@ function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
 // ─── Fund Search ──────────────────────────────────────────────────────────────
 function FundSearch({ onAdd, excluded, allFunds, loading }) {
   const [q, setQ] = useState("");
+  const [activeIdx, setActiveIdx] = useState(-1);
   const results = q.length > 1
     ? allFunds.filter(f => !excluded.includes(f.id) && (
         f.name.toLowerCase().includes(q.toLowerCase()) ||
@@ -242,11 +243,32 @@ function FundSearch({ onAdd, excluded, allFunds, loading }) {
       )).slice(0, 6)
     : [];
 
+  const pick = f => { onAdd(f); setQ(""); setActiveIdx(-1); };
+
+  const handleKeyDown = e => {
+    if (!results.length) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIdx(i => Math.min(i + 1, results.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIdx(i => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const target = results[activeIdx] ?? results[0];
+      if (target) pick(target);
+    } else if (e.key === "Escape") {
+      setQ(""); setActiveIdx(-1);
+    }
+  };
+
   return (
     <div style={{ position: "relative", marginBottom: "12px" }}>
       <input type="text"
         placeholder={loading ? "Laddar fonddata…" : "Sök fond, kategori eller ticker…"}
-        value={q} onChange={e => setQ(e.target.value)}
+        value={q}
+        onChange={e => { setQ(e.target.value); setActiveIdx(-1); }}
+        onKeyDown={handleKeyDown}
         disabled={loading}
         style={{
           width: "100%", boxSizing: "border-box",
@@ -261,11 +283,16 @@ function FundSearch({ onAdd, excluded, allFunds, loading }) {
           background: "#0d1120", border: "1px solid rgba(255,255,255,0.13)",
           borderRadius: "8px", zIndex: 200, overflow: "hidden",
         }}>
-          {results.map(f => (
-            <div key={f.id} onClick={() => { onAdd(f); setQ(""); }}
-              style={{ padding: "9px 14px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.06)", transition: "background 0.15s" }}
-              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.07)"}
-              onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+          {results.map((f, i) => (
+            <div key={f.id} onClick={() => pick(f)}
+              onMouseEnter={() => setActiveIdx(i)}
+              onMouseLeave={() => setActiveIdx(-1)}
+              style={{
+                padding: "9px 14px", cursor: "pointer",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+                background: i === activeIdx ? "rgba(255,255,255,0.09)" : "transparent",
+                transition: "background 0.12s",
+              }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ fontSize: "13px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>{f.name}</div>
