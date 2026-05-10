@@ -5,8 +5,9 @@ async function fetchMorningstarFee(msId) {
     const url =
       `https://lt.morningstar.com/api/rest.svc/${MS_TOKEN}/security/screener` +
       `?page=1&pageSize=1&sortOrder=LegalName+asc&outputType=json&version=1` +
-      `&languageId=sv-SE&currencyId=SEK&universeIds=FOSE%24%24ALL` +
-      `&securityDataPoints=SecId%2COngoingCharge&filters=SecId%3AIN%3A${msId}`;
+      `&languageId=sv-SE&currencyId=SEK` +
+      `&securityDataPoints=SecId%2COngoingCharge%2CTransactionCost` +
+      `&filters=SecId%3AIN%3A${msId}`;
     const resp = await fetch(url, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
@@ -15,9 +16,13 @@ async function fetchMorningstarFee(msId) {
       },
     });
     const data = await resp.json();
-    const charge = data?.rows?.[0]?.OngoingCharge;
-    if (charge == null) return null;
-    return parseFloat(parseFloat(charge).toFixed(4));
+    const row = data?.rows?.[0];
+    if (!row) return null;
+    const ongoing = row.OngoingCharge ?? 0;
+    const transaction = row.TransactionCost ?? 0;
+    const total = ongoing + transaction;
+    if (total === 0) return null;
+    return parseFloat(total.toFixed(4));
   } catch {
     return null;
   }
