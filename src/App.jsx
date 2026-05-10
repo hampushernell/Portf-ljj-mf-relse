@@ -980,7 +980,7 @@ export default function App() {
           .filter(f => !f.error && f.prices?.length > 0)
           .map(f => ({
             ...f,
-            fee: FUND_FEES[f.ticker] ?? 0,
+            fee: f.fee ?? FUND_FEES[f.ticker] ?? 0,
           }));
         setAllFunds(funds);
         setLoading(false);
