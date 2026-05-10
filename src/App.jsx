@@ -294,6 +294,7 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
       display: "grid", gridTemplateColumns: "1fr 100px 90px 26px", gap: "8px", alignItems: "center",
       padding: "10px 12px", background: "rgba(255,255,255,0.03)",
       border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "7px",
+      animation: "slideInLeft 0.22s ease",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
         {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
@@ -351,6 +352,7 @@ function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
         position: "fixed", inset: 0, zIndex: 1000,
         background: "rgba(0,0,0,0.72)", backdropFilter: "blur(4px)",
         display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
+        animation: "fadeIn 0.2s ease",
       }}
     >
       <div
@@ -360,6 +362,7 @@ function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
           borderRadius: "16px", padding: "28px 28px 24px",
           maxWidth: "640px", width: "100%", maxHeight: "85vh",
           overflow: "auto", position: "relative",
+          animation: "scaleIn 0.25s ease",
         }}
       >
         {/* Header */}
@@ -452,10 +455,11 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
   const pctOk = Math.abs(totalPct - 100) < 0.5;
 
   return (
-    <div style={{
+    <div className="panel-card" style={{
       flex: 1, minWidth: 0, background: "rgba(255,255,255,0.02)",
       border: `1px solid ${accent}33`, borderRadius: "14px", padding: "20px",
       display: "flex", flexDirection: "column", gap: "12px",
+      animation: "fadeSlideUp 0.35s ease",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <BriefcaseIcon color={accent} />
@@ -556,7 +560,7 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldest
     : null;
 
   return (
-    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px" }}>
+    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px", animation: "scaleIn 0.3s ease" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
         <div>
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: "0 0 8px" }}>Historisk avkastning</h3>
@@ -771,7 +775,7 @@ function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths,
   const actualFromStr = actualFromTs ? new Date(actualFromTs * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" }) : null;
 
   return (
-    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px" }}>
+    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px", animation: "scaleIn 0.3s ease" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
         <div>
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: "0 0 8px" }}>Historisk avkastning</h3>
@@ -958,6 +962,27 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: BG, color: "#f0ede8", fontFamily: "'DM Sans', sans-serif" }}>
       <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+      <style>{`
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: translateY(0);    }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        @keyframes slideInLeft {
+          from { opacity: 0; transform: translateX(-8px); }
+          to   { opacity: 1; transform: translateX(0);    }
+        }
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(0.985); }
+          to   { opacity: 1; transform: scale(1);     }
+        }
+        .mode-btn:active { transform: scale(0.94); }
+        .panel-card { transition: box-shadow 0.3s ease, border-color 0.3s ease; }
+        .panel-card:hover { box-shadow: 0 0 0 1px rgba(255,255,255,0.07), 0 12px 40px rgba(0,0,0,0.3); }
+      `}</style>
 
       {/* ── Header ── */}
       <div style={{ padding: "26px 36px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
@@ -995,7 +1020,7 @@ export default function App() {
               { value: "compare", label: "⇄ Jämför" },
               { value: "fund",    label: "◈ Fondläge" },
             ].map(({ value, label }) => (
-              <button key={value} onClick={() => setViewMode(value)} style={{
+              <button key={value} className="mode-btn" onClick={() => setViewMode(value)} style={{
                 background: viewMode === value ? "rgba(255,255,255,0.1)" : "transparent",
                 border: "none", color: viewMode === value ? "#f0ede8" : "#5a6e8a",
                 padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
@@ -1038,7 +1063,7 @@ export default function App() {
             </div>
 
             {viewMode === "fund" && funds1.length > 0 && (
-              <FundReturnChart
+              <FundReturnChart key="fund-chart"
                 fundLines={fundSeriesA} portfolioSeries={seriesA}
                 selectedSpan={span} spanMonths={spanMonths} onSpanChange={setSpan}
                 totalA={totalA} fee1={fee1} oldestTsA={oldestTsA}
@@ -1046,7 +1071,7 @@ export default function App() {
             )}
 
             {viewMode !== "fund" && (funds1.length > 0 || (compareMode && funds2.length > 0)) && (
-              <ReturnChart
+              <ReturnChart key={`compare-${compareMode}`}
                 seriesA={seriesA} seriesB={seriesB}
                 showB={compareMode && funds2.length > 0}
                 selectedSpan={span} spanMonths={spanMonths} onSpanChange={setSpan}
