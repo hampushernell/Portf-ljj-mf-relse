@@ -50,6 +50,7 @@ function buildSeries(prices, months) {
   if (!base || base <= 0) return [];
   return sliced.map((p, i) => ({
     month: i,
+    timestamp: p.timestamp,
     value: parseFloat(((p.value / base) * 100).toFixed(2)),
   }));
 }
@@ -81,7 +82,7 @@ function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months) 
 
   return Array.from({ length: minLen }, (_, i) => {
     const blended = seriesList.reduce((acc, s) => acc + (s.pct / totalWeight) * s.series[i].value, 0);
-    return { month: i, value: parseFloat(blended.toFixed(2)) };
+    return { month: i, timestamp: seriesList[0].series[i].timestamp, value: parseFloat(blended.toFixed(2)) };
   });
 }
 
@@ -144,6 +145,7 @@ function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
     setTooltip({
       x: toX(clamped, seriesA.length),
       idx: clamped,
+      timestamp: seriesA[clamped]?.timestamp,
       vA: seriesA[clamped]?.value,
       vB: bIdx !== null ? seriesB[bIdx]?.value : null,
     });
@@ -182,7 +184,11 @@ function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
           fontFamily: "'Syne', sans-serif", pointerEvents: "none", zIndex: 10,
           boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
         }}>
-          <div style={{ color: "#5a6e8a", fontSize: "10px", marginBottom: "4px" }}>Månad {tooltip.idx}</div>
+          <div style={{ color: "#5a6e8a", fontSize: "10px", marginBottom: "4px" }}>
+            {tooltip.timestamp
+              ? new Date(tooltip.timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
+              : `Dag ${tooltip.idx}`}
+          </div>
           {tooltip.vA && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: tooltip.vB ? "3px" : 0 }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: ACCENT_A }} />
