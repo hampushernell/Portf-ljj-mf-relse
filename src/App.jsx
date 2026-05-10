@@ -933,7 +933,7 @@ export default function App() {
   const [manualAmount1, setManualAmount1] = useState(0);
   const [inputMode2, setInputMode2]       = useState("pct");
   const [manualAmount2, setManualAmount2] = useState(0);
-  const [viewMode, setViewMode]         = useState("compare"); // "compare" | "single" | "fund"
+  const [viewMode, setViewMode]         = useState("fund");
   const [span, setSpan]                 = useState("Max");
 
   const compareMode = viewMode === "compare";
