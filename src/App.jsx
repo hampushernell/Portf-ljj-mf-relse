@@ -9,7 +9,7 @@ const BG             = "#090d1a";
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const formatKr = v => new Intl.NumberFormat("sv-SE", { style: "currency", currency: "SEK", maximumFractionDigits: 0 }).format(v);
 const fmtFee   = v => `${v.toFixed(2)}%`;
-const fmtPct   = v => `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`;
+const fmtPct   = v => `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
 
 const TIME_SPANS = [
   { label: "1 mån",  months: 1   },
