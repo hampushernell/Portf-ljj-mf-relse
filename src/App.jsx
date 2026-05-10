@@ -445,7 +445,7 @@ function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
 }
 
 // ─── Portfolio Panel ──────────────────────────────────────────────────────────
-function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode }) {
+function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onInputModeChange, onManualAmountChange, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode }) {
   const [showDetails, setShowDetails] = useState(false);
   const portfolioTotal = inputMode === "kr" ? portfolioKrTotal(funds, allocations) : manualAmount;
   const fee = getWeightedFee(funds, allocations, inputMode, portfolioTotal);
@@ -471,6 +471,35 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
             background: pctOk ? "rgba(110,231,183,0.1)" : "rgba(248,113,113,0.12)",
             padding: "2px 8px", borderRadius: "20px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
           }}>{totalPct.toFixed(1)}% fördelat</span>
+        )}
+      </div>
+
+      {/* ── Input mode controls ── */}
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
+          {["pct", "kr"].map(m => (
+            <button key={m} onClick={() => onInputModeChange(m)} style={{
+              background: inputMode === m ? "rgba(255,255,255,0.1)" : "transparent",
+              border: "none", color: inputMode === m ? "#f0ede8" : "#5a6e8a",
+              padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
+              fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+              transition: "all 0.2s",
+            }}>{m === "pct" ? "% Procent" : "kr Kronor"}</button>
+          ))}
+        </div>
+        {inputMode === "pct" && (
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", animation: "fadeIn 0.2s ease" }}>
+            <input type="number" value={manualAmount || ""}
+              onChange={e => onManualAmountChange(parseFloat(e.target.value) || 0)}
+              placeholder="Belopp"
+              style={{
+                background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.11)",
+                borderRadius: "6px", color: "#f0ede8", fontSize: "12px",
+                padding: "5px 9px", width: "100px", outline: "none", fontFamily: "'Syne', sans-serif",
+              }}
+            />
+            <span style={{ fontSize: "11px", color: "#5a6e8a" }}>kr</span>
+          </div>
         )}
       </div>
 
@@ -992,30 +1021,6 @@ export default function App() {
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
           <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
-            {["pct", "kr"].map(m => (
-              <button key={m} onClick={() => setInputMode(m)} style={{
-                background: inputMode === m ? "rgba(255,255,255,0.1)" : "transparent",
-                border: "none", color: inputMode === m ? "#f0ede8" : "#5a6e8a",
-                padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
-                fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600, transition: "all 0.2s",
-              }}>{m === "pct" ? "% Procent" : "kr Kronor"}</button>
-            ))}
-          </div>
-          {inputMode === "pct" && (
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ fontSize: "11px", color: "#5a6e8a" }}>Belopp per portfölj:</span>
-              <input type="number" value={manualAmount || ""}
-                onChange={e => setManualAmount(parseFloat(e.target.value) || 0)}
-                style={{
-                  background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.11)",
-                  borderRadius: "6px", color: "#f0ede8", fontSize: "12px",
-                  padding: "5px 9px", width: "110px", outline: "none", fontFamily: "'Syne', sans-serif",
-                }}
-              />
-              <span style={{ fontSize: "11px", color: "#5a6e8a" }}>kr</span>
-            </div>
-          )}
-          <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
             {[
               { value: "compare", label: "⇄ Jämför" },
               { value: "fund",    label: "◈ Fondläge" },
@@ -1050,12 +1055,14 @@ export default function App() {
             <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
               <PortfolioPanel label={viewMode === "fund" ? "Portfölj" : "Portfölj A"} accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
                 funds={funds1} allocations={allocs1} inputMode={inputMode} manualAmount={manualAmount}
+                onInputModeChange={setInputMode} onManualAmountChange={setManualAmount}
                 allFunds={allFunds} loading={loading} viewMode={viewMode}
                 onAddFund={addFund1} onUpdateAlloc={updA} onRemoveFund={remF1}
               />
               {compareMode && (
                 <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
                   funds={funds2} allocations={allocs2} inputMode={inputMode} manualAmount={manualAmount}
+                  onInputModeChange={setInputMode} onManualAmountChange={setManualAmount}
                   allFunds={allFunds} loading={loading} viewMode={viewMode}
                   onAddFund={addFund2} onUpdateAlloc={updB} onRemoveFund={remF2}
                 />
