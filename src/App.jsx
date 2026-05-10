@@ -610,6 +610,35 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldest
 
       <SVGChart seriesA={seriesA} seriesB={seriesB} showB={showB} totalA={totalA} totalB={totalB} />
 
+      {(seriesA.length > 0 || seriesB.length > 0) && (() => {
+        const fmtDate = ts => new Date(ts * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
+        const endTs   = Math.max(seriesA[seriesA.length - 1]?.timestamp ?? 0, seriesB[seriesB.length - 1]?.timestamp ?? 0);
+        const startTs = spanMonths === null
+          ? Math.min(...[seriesA[0]?.timestamp, seriesB[0]?.timestamp].filter(Boolean))
+          : Date.now() / 1000 - spanMonths * 30.44 * 24 * 3600;
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", padding: "0 2px" }}>
+            <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}>
+              {fmtDate(startTs)}
+            </span>
+            <div style={{ flex: 1, position: "relative", height: "12px", display: "flex", alignItems: "center" }}>
+              <div style={{ position: "absolute", left: 0, right: 0, height: "1px", background: "rgba(90,110,138,0.35)" }} />
+              <div style={{
+                position: "absolute", left: "50%", transform: "translateX(-50%)",
+                background: "#090d1a", padding: "0 8px",
+                fontSize: "10px", color: "#5a6e8a", fontFamily: "'Syne', sans-serif",
+                fontWeight: 600, letterSpacing: "0.04em", whiteSpace: "nowrap",
+              }}>
+                {selectedSpan}
+              </div>
+            </div>
+            <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}>
+              {fmtDate(endTs)}
+            </span>
+          </div>
+        );
+      })()}
+
       {showB && seriesA.length > 0 && seriesB.length > 0 && (() => {
         const diff = retA - retB;
         const winnerCol = diff >= 0 ? ACCENT_A : ACCENT_B;
