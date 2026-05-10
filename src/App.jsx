@@ -385,7 +385,7 @@ function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
             ? new Date(fund.prices[0].timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
             : "–";
           const isin = FUND_ISINS[fund.ticker] || "–";
-          const avanzaUrl = `https://www.avanza.se/fonder/om-fonden.html/${fund.ticker.replace(".ST", "")}`;
+          const morningstarUrl = `https://www.morningstar.se/se/funds/snapshot/snapshot.aspx?id=${fund.ticker.replace(".ST", "")}`;
 
           return (
             <div key={fund.id} style={{
@@ -398,7 +398,7 @@ function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
                   <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "2px" }}>{fund.category}</div>
                 </div>
                 <a
-                  href={avanzaUrl} target="_blank" rel="noopener noreferrer"
+                  href={morningstarUrl} target="_blank" rel="noopener noreferrer"
                   style={{
                     fontSize: "11px", color: accent, textDecoration: "none",
                     fontFamily: "'Syne', sans-serif", fontWeight: 600,
@@ -409,7 +409,7 @@ function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
                   onMouseEnter={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.2)`}
                   onMouseLeave={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.1)`}
                 >
-                  Visa på Avanza ↗
+                  Visa på Morningstar ↗
                 </a>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px" }}>
