@@ -5,6 +5,7 @@ const ACCENT_A       = "#0018F5";
 const ACCENT_A_LIGHT = "#7b93ff";
 const ACCENT_B       = "#38bdf8";
 const BG             = "#090d1a";
+const FUND_COLORS    = ["#0018F5","#38bdf8","#6ee7b7","#f59e0b","#f87171","#a78bfa","#84cc16","#facc15","#f472b6","#e879f9"];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const formatKr = v => new Intl.NumberFormat("sv-SE", { style: "currency", currency: "SEK", maximumFractionDigits: 0 }).format(v);
@@ -283,7 +284,7 @@ function FundSearch({ onAdd, excluded, allFunds, loading }) {
 }
 
 // ─── Fund Row ─────────────────────────────────────────────────────────────────
-function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemove }) {
+function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemove, dotColor }) {
   const pct = getFundPct(fund, { [fund.id]: allocation }, inputMode, portfolioTotal);
   const kr  = inputMode === "kr" ? (allocation.kr || 0) : (portfolioTotal * (allocation.pct || 0) / 100);
   const inputVal = inputMode === "pct" ? (allocation.pct || "") : (allocation.kr || "");
@@ -294,11 +295,14 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
       padding: "10px 12px", background: "rgba(255,255,255,0.03)",
       border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "7px",
     }}>
-      <div>
-        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", color: "#f0ede8", fontWeight: 600 }}>{fund.name}</div>
-        <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "1px" }}>
-          {fund.category} · {fmtFee(fund.fee)} avgift
-          {fund.currentPrice && <span> · {fund.currentPrice.toFixed(2)} SEK</span>}
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+        {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", color: "#f0ede8", fontWeight: 600 }}>{fund.name}</div>
+          <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "1px" }}>
+            {fund.category} · {fmtFee(fund.fee)} avgift
+            {fund.currentPrice && <span> · {fund.currentPrice.toFixed(2)} SEK</span>}
+          </div>
         </div>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
@@ -438,7 +442,7 @@ function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
 }
 
 // ─── Portfolio Panel ──────────────────────────────────────────────────────────
-function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund }) {
+function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode }) {
   const [showDetails, setShowDetails] = useState(false);
   const portfolioTotal = inputMode === "kr" ? portfolioKrTotal(funds, allocations) : manualAmount;
   const fee = getWeightedFee(funds, allocations, inputMode, portfolioTotal);
@@ -469,12 +473,13 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
       <FundSearch onAdd={onAddFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} />
 
       <div style={{ flex: 1 }}>
-        {funds.map(f => (
+        {funds.map((f, i) => (
           <FundRow key={f.id} fund={f}
             allocation={allocations[f.id] || { pct: 0, kr: 0 }}
             inputMode={inputMode} portfolioTotal={portfolioTotal}
             onUpdate={vals => onUpdateAlloc(f.id, vals)}
             onRemove={() => onRemoveFund(f.id)}
+            dotColor={viewMode === "fund" ? FUND_COLORS[i % FUND_COLORS.length] : null}
           />
         ))}
         {funds.length === 0 && (
@@ -664,6 +669,202 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldest
   );
 }
 
+// ─── Fund SVG Chart ───────────────────────────────────────────────────────────
+function FundSVGChart({ lines, portfolioSeries }) {
+  const W = 800, H = 220, PL = 48, PR = 12, PT = 10, PB = 28;
+  const chartW = W - PL - PR;
+  const chartH = H - PT - PB;
+
+  const allVals = [...lines.flatMap(l => l.series.map(d => d.value)), ...portfolioSeries.map(d => d.value)];
+  if (!allVals.length) return null;
+
+  const minV = Math.min(...allVals, 95);
+  const maxV = Math.max(...allVals, 105);
+  const pad  = (maxV - minV) * 0.12;
+  const yMin = minV - pad;
+  const yMax = maxV + pad;
+
+  const toX = (i, len) => PL + (i / Math.max(len - 1, 1)) * chartW;
+  const toY = v => PT + chartH - ((v - yMin) / (yMax - yMin)) * chartH;
+  const makePath = s => s.map((d, i) => `${i === 0 ? "M" : "L"}${toX(i, s.length).toFixed(1)},${toY(d.value).toFixed(1)}`).join(" ");
+
+  const baselineY = toY(100);
+  const [tooltip, setTooltip] = useState(null);
+  const svgRef = useRef(null);
+
+  const handleMouseMove = useCallback(e => {
+    if (!svgRef.current || !portfolioSeries.length) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const mx   = (e.clientX - rect.left) * (W / rect.width);
+    const idx  = Math.round(((mx - PL) / chartW) * (portfolioSeries.length - 1));
+    const ci   = Math.max(0, Math.min(portfolioSeries.length - 1, idx));
+    setTooltip({
+      x: toX(ci, portfolioSeries.length),
+      timestamp: portfolioSeries[ci]?.timestamp,
+      portfolio: portfolioSeries[ci]?.value,
+      funds: lines.map(l => ({ name: l.name, color: l.color, value: l.series[Math.min(ci, l.series.length - 1)]?.value })),
+    });
+  }, [portfolioSeries, lines]);
+
+  const yTicks = Array.from({ length: 5 }, (_, i) => ({ v: yMin + (i / 4) * (yMax - yMin) })).map(t => ({ ...t, y: toY(t.v) }));
+
+  return (
+    <div style={{ position: "relative", width: "100%" }}>
+      <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block" }}
+        onMouseMove={handleMouseMove} onMouseLeave={() => setTooltip(null)}>
+        {yTicks.map(({ v, y }, i) => (
+          <g key={i}>
+            <line x1={PL} y1={y} x2={W - PR} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
+            <text x={PL - 6} y={y + 4} textAnchor="end" fill="#444" fontSize="10" fontFamily="DM Sans, sans-serif">{`${(v - 100).toFixed(0)}%`}</text>
+          </g>
+        ))}
+        <line x1={PL} y1={baselineY} x2={W - PR} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
+        {lines.map(l => l.series.length > 1 && (
+          <path key={l.color + l.name} d={makePath(l.series)} fill="none" stroke={l.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.65"/>
+        ))}
+        {portfolioSeries.length > 1 && (
+          <path d={makePath(portfolioSeries)} fill="none" stroke="rgba(255,255,255,0.88)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        )}
+        {tooltip && (
+          <>
+            <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+            {tooltip.portfolio && <circle cx={tooltip.x} cy={toY(tooltip.portfolio)} r="5" fill="white" stroke={BG} strokeWidth="2"/>}
+          </>
+        )}
+      </svg>
+      {tooltip && (
+        <div style={{
+          position: "absolute", top: "10px",
+          left: tooltip.x / W * 100 > 60 ? "auto" : `calc(${tooltip.x / W * 100}% + 10px)`,
+          right: tooltip.x / W * 100 > 60 ? `calc(${(1 - tooltip.x / W) * 100}% + 10px)` : "auto",
+          background: "#0d1120", border: "1px solid rgba(255,255,255,0.13)",
+          borderRadius: "8px", padding: "8px 12px", fontSize: "12px",
+          fontFamily: "'Syne', sans-serif", pointerEvents: "none", zIndex: 10,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "220px",
+        }}>
+          <div style={{ color: "#5a6e8a", fontSize: "10px", marginBottom: "6px" }}>
+            {tooltip.timestamp ? new Date(tooltip.timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" }) : ""}
+          </div>
+          {tooltip.portfolio != null && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "5px" }}>
+              <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "white", flexShrink: 0 }} />
+              <span style={{ color: "#f0ede8", fontSize: "11px" }}>Portfölj: <strong style={{ color: (tooltip.portfolio - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(tooltip.portfolio - 100)}</strong></span>
+            </div>
+          )}
+          {tooltip.funds.map(f => f.value != null && (
+            <div key={f.name} style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
+              <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: f.color, flexShrink: 0 }} />
+              <span style={{ color: "#8a9bb0", fontSize: "10px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {f.name.split(" ").slice(0, 2).join(" ")}: <strong style={{ color: (f.value - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(f.value - 100)}</strong>
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Fund Return Chart ────────────────────────────────────────────────────────
+function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths, oldestTsA, onSpanChange, totalA, fee1 }) {
+  const retPortfolio = portfolioReturn(portfolioSeries);
+  const requestedCutoffTs = spanMonths !== null ? Date.now() / 1000 - spanMonths * 30.44 * 24 * 3600 : -Infinity;
+  const spanHasFullData = ts => ts.months === null || !oldestTsA || oldestTsA <= Date.now() / 1000 - ts.months * 30.44 * 24 * 3600 + 30 * 86400;
+  const actualFromTs = portfolioSeries[0]?.timestamp;
+  const isIncomplete = spanMonths !== null && actualFromTs && actualFromTs > requestedCutoffTs + 30 * 86400;
+  const actualFromStr = actualFromTs ? new Date(actualFromTs * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" }) : null;
+
+  return (
+    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
+        <div>
+          <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: "0 0 8px" }}>Historisk avkastning – Fondläge</h3>
+          {portfolioSeries.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke="rgba(255,255,255,0.85)" strokeWidth="2.5" strokeLinecap="round"/></svg>
+              <span style={{ fontSize: "12px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>
+                Portfölj: <span style={{ color: retPortfolio >= 0 ? "#6ee7b7" : "#f87171", fontWeight: 700 }}>{fmtPct(retPortfolio)}</span>
+              </span>
+            </div>
+          )}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
+          <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "3px", flexWrap: "wrap" }}>
+            {TIME_SPANS.map(ts => {
+              const full = spanHasFullData(ts);
+              return (
+                <button key={ts.label} onClick={() => onSpanChange(ts.label)}
+                  title={!full ? "Ofullständig data" : undefined}
+                  style={{
+                    background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
+                    border: "none", color: selectedSpan === ts.label ? "#f0ede8" : full ? "#5a6e8a" : "#6b4c1a",
+                    padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
+                    fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+                    transition: "all 0.18s", whiteSpace: "nowrap",
+                    boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
+                  }}
+                >{ts.label}{!full ? " ⚠" : ""}</button>
+              );
+            })}
+          </div>
+          {isIncomplete && actualFromStr && (
+            <div style={{ fontSize: "10px", color: "#b45309", fontFamily: "'Syne', sans-serif" }}>
+              Data fr.o.m. {actualFromStr} – Yahoo Finance saknar äldre historik
+            </div>
+          )}
+        </div>
+      </div>
+
+      <FundSVGChart lines={fundLines} portfolioSeries={portfolioSeries} />
+
+      {portfolioSeries.length > 0 && (() => {
+        const fmtDate = ts => new Date(ts * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
+        const endTs   = portfolioSeries[portfolioSeries.length - 1]?.timestamp;
+        const startTs = spanMonths === null ? portfolioSeries[0]?.timestamp : Date.now() / 1000 - spanMonths * 30.44 * 24 * 3600;
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", padding: "0 2px" }}>
+            <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}>{fmtDate(startTs)}</span>
+            <div style={{ flex: 1, position: "relative", height: "12px", display: "flex", alignItems: "center" }}>
+              <div style={{ position: "absolute", left: 0, right: 0, height: "1px", background: "rgba(90,110,138,0.35)" }} />
+              <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", background: "#090d1a", padding: "0 8px", fontSize: "10px", color: "#5a6e8a", fontFamily: "'Syne', sans-serif", fontWeight: 600, whiteSpace: "nowrap" }}>{selectedSpan}</div>
+            </div>
+            <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}>{fmtDate(endTs)}</span>
+          </div>
+        );
+      })()}
+
+      {fundLines.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ width: "18px", height: "2.5px", background: "rgba(255,255,255,0.85)", borderRadius: "2px" }} />
+            <span style={{ fontSize: "11px", color: "#8a9bb0", fontFamily: "'DM Sans', sans-serif" }}>Portfölj</span>
+          </div>
+          {fundLines.map(l => (
+            <div key={l.name} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div style={{ width: "18px", height: "2px", background: l.color, borderRadius: "2px", opacity: 0.75 }} />
+              <span style={{ fontSize: "11px", color: "#8a9bb0", fontFamily: "'DM Sans', sans-serif" }}>{l.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginTop: "16px" }}>
+        {[
+          { lbl: "Total avgift/år", val: fmtFee(fee1), sub: totalA > 0 ? formatKr(totalA * fee1 / 100) + "/år" : null },
+          { lbl: `Avkastning (${selectedSpan})`, val: fmtPct(retPortfolio), col: retPortfolio >= 0 ? "#6ee7b7" : "#f87171", sub: totalA > 0 ? formatKr(totalA * retPortfolio / 100) : null },
+          { lbl: "Investerat belopp", val: totalA > 0 ? formatKr(totalA) : "–" },
+        ].map(({ lbl, val, col, sub }) => (
+          <div key={lbl} style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px 16px" }}>
+            <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px", fontFamily: "'Syne', sans-serif" }}>{lbl}</div>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "17px", fontWeight: 700, color: col || "#f0ede8" }}>{val}</div>
+            {sub && <div style={{ fontSize: "10px", color: "#5a6e8a", marginTop: "2px" }}>{sub}</div>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Compare bars ─────────────────────────────────────────────────────────────
 function CompareBar({ label, val1, val2, unit = "", higherIsBetter = true }) {
   const max  = Math.max(Math.abs(val1), Math.abs(val2), 0.001);
@@ -701,8 +902,10 @@ export default function App() {
   const [allocs2, setAllocs2]           = useState({});
   const [inputMode, setInputMode]       = useState("pct");
   const [manualAmount, setManualAmount] = useState(0);
-  const [compareMode, setCompareMode]   = useState(true);
+  const [viewMode, setViewMode]         = useState("compare"); // "compare" | "single" | "fund"
   const [span, setSpan]                 = useState("Max");
+
+  const compareMode = viewMode === "compare";
 
   // Fetch real fund data on mount
   useEffect(() => {
@@ -730,6 +933,10 @@ export default function App() {
 
   const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode, totalA, spanMonths), [funds1, allocs1, inputMode, totalA, spanMonths]);
   const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode, totalB, spanMonths), [funds2, allocs2, inputMode, totalB, spanMonths]);
+  const fundSeriesA = useMemo(() => funds1.map((f, i) => ({
+    name: f.name, color: FUND_COLORS[i % FUND_COLORS.length],
+    series: buildSeries(f.prices, spanMonths),
+  })).filter(l => l.series.length > 0), [funds1, spanMonths]);
 
   const fee1 = getWeightedFee(funds1, allocs1, inputMode, totalA);
   const fee2 = getWeightedFee(funds2, allocs2, inputMode, totalB);
@@ -787,13 +994,20 @@ export default function App() {
               <span style={{ fontSize: "11px", color: "#5a6e8a" }}>kr</span>
             </div>
           )}
-          <button onClick={() => setCompareMode(m => !m)} style={{
-            background: compareMode ? "rgba(0,24,245,0.15)" : "rgba(255,255,255,0.04)",
-            border: `1px solid ${compareMode ? "rgba(0,24,245,0.5)" : "rgba(255,255,255,0.1)"}`,
-            color: compareMode ? "#6b8fff" : "#5a6e8a",
-            padding: "6px 12px", borderRadius: "7px", cursor: "pointer",
-            fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600, transition: "all 0.2s",
-          }}>⇄ {compareMode ? "Jämförelse på" : "Jämförelse av"}</button>
+          <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
+            {[
+              { value: "single",  label: "Enkel"    },
+              { value: "compare", label: "⇄ Jämför" },
+              { value: "fund",    label: "◈ Fondläge" },
+            ].map(({ value, label }) => (
+              <button key={value} onClick={() => setViewMode(value)} style={{
+                background: viewMode === value ? "rgba(255,255,255,0.1)" : "transparent",
+                border: "none", color: viewMode === value ? "#f0ede8" : "#5a6e8a",
+                padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
+                fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600, transition: "all 0.2s",
+              }}>{label}</button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -814,21 +1028,29 @@ export default function App() {
         {!loading && !error && (
           <>
             <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
-              <PortfolioPanel label="Portfölj A" accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
+              <PortfolioPanel label={viewMode === "fund" ? "Portfölj" : "Portfölj A"} accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
                 funds={funds1} allocations={allocs1} inputMode={inputMode} manualAmount={manualAmount}
-                allFunds={allFunds} loading={loading}
+                allFunds={allFunds} loading={loading} viewMode={viewMode}
                 onAddFund={addFund1} onUpdateAlloc={updA} onRemoveFund={remF1}
               />
               {compareMode && (
                 <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
                   funds={funds2} allocations={allocs2} inputMode={inputMode} manualAmount={manualAmount}
-                  allFunds={allFunds} loading={loading}
+                  allFunds={allFunds} loading={loading} viewMode={viewMode}
                   onAddFund={addFund2} onUpdateAlloc={updB} onRemoveFund={remF2}
                 />
               )}
             </div>
 
-            {(funds1.length > 0 || (compareMode && funds2.length > 0)) && (
+            {viewMode === "fund" && funds1.length > 0 && (
+              <FundReturnChart
+                fundLines={fundSeriesA} portfolioSeries={seriesA}
+                selectedSpan={span} spanMonths={spanMonths} onSpanChange={setSpan}
+                totalA={totalA} fee1={fee1} oldestTsA={oldestTsA}
+              />
+            )}
+
+            {viewMode !== "fund" && (funds1.length > 0 || (compareMode && funds2.length > 0)) && (
               <ReturnChart
                 seriesA={seriesA} seriesB={seriesB}
                 showB={compareMode && funds2.length > 0}
