@@ -187,7 +187,7 @@ function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
         ))}
         <line x1={PL} y1={baselineY} x2={W - PR} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
         {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>}
-        {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round" strokeLinejoin="round"/>}
+        {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>}
         {tooltip && (
           <>
             <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
@@ -572,11 +572,7 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldest
             )}
             {showB && seriesB.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <svg width="22" height="10">
-                  <line x1="0" y1="5" x2="6" y2="5" stroke={ACCENT_B} strokeWidth="2.5" strokeLinecap="round"/>
-                  <line x1="9" y1="5" x2="15" y2="5" stroke={ACCENT_B} strokeWidth="2.5" strokeLinecap="round"/>
-                  <line x1="18" y1="5" x2="22" y2="5" stroke={ACCENT_B} strokeWidth="2.5" strokeLinecap="round"/>
-                </svg>
+                <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={ACCENT_B} strokeWidth="2.5" strokeLinecap="round"/></svg>
                 <span style={{ fontSize: "12px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>
                   B: <span style={{ color: retB >= 0 ? "#6ee7b7" : "#f87171", fontWeight: 700 }}>{fmtPct(retB)}</span>
                 </span>
@@ -720,10 +716,10 @@ function FundSVGChart({ lines, portfolioSeries }) {
         ))}
         <line x1={PL} y1={baselineY} x2={W - PR} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
         {lines.map(l => l.series.length > 1 && (
-          <path key={l.color + l.name} d={makePath(l.series)} fill="none" stroke={l.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.65"/>
+          <path key={l.color + l.name} d={makePath(l.series)} fill="none" stroke={l.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.80"/>
         ))}
         {portfolioSeries.length > 1 && (
-          <path d={makePath(portfolioSeries)} fill="none" stroke="rgba(255,255,255,0.88)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d={makePath(portfolioSeries)} fill="none" stroke="rgba(255,255,255,0.88)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         )}
         {tooltip && (
           <>
@@ -778,7 +774,7 @@ function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths,
     <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
         <div>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: "0 0 8px" }}>Historisk avkastning – Fondläge</h3>
+          <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: "0 0 8px" }}>Historisk avkastning</h3>
           {portfolioSeries.length > 0 && (
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke="rgba(255,255,255,0.85)" strokeWidth="2.5" strokeLinecap="round"/></svg>
@@ -996,7 +992,6 @@ export default function App() {
           )}
           <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
             {[
-              { value: "single",  label: "Enkel"    },
               { value: "compare", label: "⇄ Jämför" },
               { value: "fund",    label: "◈ Fondläge" },
             ].map(({ value, label }) => (
