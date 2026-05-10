@@ -455,13 +455,16 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
   const pctOk = Math.abs(totalPct - 100) < 0.5;
 
   return (
-    <div className="panel-card" style={{
-      flex: 1, minWidth: 0, background: "rgba(255,255,255,0.02)",
-      border: `1px solid ${accent}33`, borderRadius: "14px", padding: "20px",
-      display: "flex", flexDirection: "column", gap: "12px",
-      animation: "fadeSlideUp 0.35s ease",
-      boxShadow: `0 0 28px rgba(${accentRgb},0.13), 0 2px 8px rgba(0,0,0,0.4)`,
-    }}>
+    <div className="panel-card"
+      onMouseEnter={e => e.currentTarget.style.boxShadow = `0 0 0 1px rgba(255,255,255,0.07), 0 12px 40px rgba(0,0,0,0.3), 0 0 28px rgba(${accentRgb},0.2)`}
+      onMouseLeave={e => e.currentTarget.style.boxShadow = `0 0 28px rgba(${accentRgb},0.13), 0 2px 8px rgba(0,0,0,0.4)`}
+      style={{
+        flex: 1, minWidth: 0, background: "rgba(255,255,255,0.02)",
+        border: `1px solid ${accent}33`, borderRadius: "14px", padding: "20px",
+        display: "flex", flexDirection: "column", gap: "12px",
+        animation: "fadeSlideUp 0.35s ease",
+        boxShadow: `0 0 28px rgba(${accentRgb},0.13), 0 2px 8px rgba(0,0,0,0.4)`,
+      }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <BriefcaseIcon color={accent} />
         <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: 0 }}>{label}</h2>
@@ -1047,7 +1050,6 @@ export default function App() {
         }
         .mode-btn:active { transform: scale(0.94); }
         .panel-card { transition: box-shadow 0.3s ease, border-color 0.3s ease; }
-        .panel-card:hover { box-shadow: 0 0 0 1px rgba(255,255,255,0.07), 0 12px 40px rgba(0,0,0,0.3); }
       `}</style>
 
       {/* ── Header ── */}
