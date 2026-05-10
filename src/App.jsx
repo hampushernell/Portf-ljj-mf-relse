@@ -41,7 +41,11 @@ const FUND_FEES = {
 // ─── Build normalized price series from API data ──────────────────────────────
 function buildSeries(prices, months) {
   if (!prices || prices.length === 0) return [];
-  const sliced = prices.slice(-months - 1);
+  const cutoffTs = Date.now() / 1000 - months * 30.44 * 24 * 3600;
+  let startIdx = prices.findIndex(p => p.timestamp >= cutoffTs);
+  if (startIdx === -1) return [];
+  if (startIdx > 0) startIdx--;
+  const sliced = prices.slice(startIdx);
   const base = sliced[0]?.value;
   if (!base || base <= 0) return [];
   return sliced.map((p, i) => ({
