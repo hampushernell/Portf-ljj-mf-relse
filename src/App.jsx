@@ -87,9 +87,10 @@ function normalRandom(rng) {
   const u1 = Math.max(rng(), 1e-10);
   return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * rng());
 }
-function generateSimulatedSeries(totalReturnPct, months, fundId) {
+function generateSimulatedSeries(totalReturnPct, months, fundId, endTs = null, nSteps = null) {
+  const refEnd     = endTs ?? Date.now() / 1000;
+  const steps      = nSteps ?? Math.round(months * 21);
   const years      = months / 12;
-  const steps      = Math.round(months * 21);
   const annualRet  = Math.pow(1 + totalReturnPct / 100, 1 / years) - 1;
   const vol        = 0.15;
   const dt         = 1 / 252;
@@ -100,8 +101,7 @@ function generateSimulatedSeries(totalReturnPct, months, fundId) {
   for (const c of String(fundId)) hash = ((Math.imul(31, hash) + c.charCodeAt(0)) | 0) >>> 0;
   const rng = seededRng(hash);
 
-  const now     = Date.now() / 1000;
-  const startTs = now - months * 30.44 * 24 * 3600;
+  const startTs = refEnd - months * 30.44 * 24 * 3600;
   const dtSec   = (months * 30.44 * 24 * 3600) / steps;
 
   let logPrice = 0;
@@ -134,14 +134,35 @@ function getWeightedFee(funds, allocs, inputMode, portfolioTotal) {
 
 function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months, spanLabel) {
   if (!funds.length) return [];
+
+  // Build Yahoo Finance series first to establish reference end timestamp and length.
+  // Manual series will be generated to match exactly so they don't truncate the result.
+  const yahooCache = {};
+  let refEndTs = null, refLen = null;
+  for (const f of funds) {
+    if (f.isManual) continue;
+    const pct = getFundPct(f, allocs, inputMode, portfolioTotal);
+    if (pct <= 0) continue;
+    const s = buildSeries(f.prices, months);
+    if (!s.length) continue;
+    yahooCache[f.id] = s;
+    if (refLen === null || s.length > refLen) {
+      refLen = s.length;
+      refEndTs = s[s.length - 1].timestamp;
+    }
+  }
+  if (refEndTs === null) refEndTs = Date.now() / 1000;
+
   const seriesList = funds.map(f => {
     const pct = getFundPct(f, allocs, inputMode, portfolioTotal);
     if (f.isManual) {
       const ret = f.returns?.[spanLabel];
       if (!months || ret == null) return null;
-      return { pct, series: generateSimulatedSeries(ret, months, f.id) };
+      return { pct, isManual: true, series: generateSimulatedSeries(ret, months, f.id, refEndTs, refLen) };
     }
-    return { pct, series: buildSeries(f.prices, months) };
+    const s = yahooCache[f.id];
+    if (!s) return null;
+    return { pct, isManual: false, series: s };
   }).filter(s => s && s.pct > 0 && s.series.length > 0);
 
   if (!seriesList.length) return [];
@@ -149,9 +170,16 @@ function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months, 
   const minLen = Math.min(...seriesList.map(s => s.series.length));
   const totalWeight = seriesList.reduce((acc, s) => acc + s.pct, 0);
 
+  // Prefer a Yahoo Finance series for timestamps (real trading-day dates).
+  const tsSrc = seriesList.find(s => !s.isManual) ?? seriesList[0];
+  const tsOff = tsSrc.series.length - minLen;
+
   return Array.from({ length: minLen }, (_, i) => {
-    const blended = seriesList.reduce((acc, s) => acc + (s.pct / totalWeight) * s.series[i].value, 0);
-    return { month: i, timestamp: seriesList[0].series[i].timestamp, value: parseFloat(blended.toFixed(2)) };
+    const blended = seriesList.reduce((acc, s) => {
+      const si = s.series.length - minLen + i;
+      return acc + (s.pct / totalWeight) * s.series[si].value;
+    }, 0);
+    return { month: i, timestamp: tsSrc.series[tsOff + i].timestamp, value: parseFloat(blended.toFixed(2)) };
   });
 }
 
@@ -1296,16 +1324,30 @@ export default function App() {
 
   const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode1, totalA, spanMonths, span), [funds1, allocs1, inputMode1, totalA, spanMonths, span]);
   const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode2, totalB, spanMonths, span), [funds2, allocs2, inputMode2, totalB, spanMonths, span]);
-  const fundSeriesA = useMemo(() => funds1.map((f, i) => {
-    const color = FUND_COLORS[i % FUND_COLORS.length];
-    if (f.isManual) {
-      const ret     = f.returns?.[span];
-      const months  = TIME_SPANS.find(t => t.label === span)?.months;
-      if (ret == null || !months) return null;
-      return { name: f.name, color, isManual: true, series: generateSimulatedSeries(ret, months, f.id) };
+  const fundSeriesA = useMemo(() => {
+    // Compute reference end timestamp and length from Yahoo Finance funds so manual
+    // fund lines end at the same point as the real data.
+    let refEndTs = null, refLen = null;
+    for (const f of funds1) {
+      if (f.isManual) continue;
+      const s = buildSeries(f.prices, spanMonths);
+      if (s.length > 0 && (refLen === null || s.length > refLen)) {
+        refLen = s.length;
+        refEndTs = s[s.length - 1].timestamp;
+      }
     }
-    return { name: f.name, color, isManual: false, series: buildSeries(f.prices, spanMonths) };
-  }).filter(Boolean).filter(l => l.series.length > 0), [funds1, spanMonths, span]);
+    if (refEndTs === null) refEndTs = Date.now() / 1000;
+    return funds1.map((f, i) => {
+      const color = FUND_COLORS[i % FUND_COLORS.length];
+      if (f.isManual) {
+        const ret    = f.returns?.[span];
+        const months = TIME_SPANS.find(t => t.label === span)?.months;
+        if (ret == null || !months) return null;
+        return { name: f.name, color, isManual: true, series: generateSimulatedSeries(ret, months, f.id, refEndTs, refLen) };
+      }
+      return { name: f.name, color, isManual: false, series: buildSeries(f.prices, spanMonths) };
+    }).filter(Boolean).filter(l => l.series.length > 0);
+  }, [funds1, spanMonths, span]);
 
   const fee1 = getWeightedFee(funds1, allocs1, inputMode1, totalA);
   const fee2 = getWeightedFee(funds2, allocs2, inputMode2, totalB);
