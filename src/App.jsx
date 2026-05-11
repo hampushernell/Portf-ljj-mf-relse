@@ -999,16 +999,7 @@ function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true }) {
     <div style={{ position: "relative", width: "100%" }}>
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block" }}
         onMouseMove={handleMouseMove} onMouseLeave={() => { setTooltip(null); setHoveredLine(null); }}>
-        <defs>
-          <filter id="lineGlowSoft" x="-30%" y="-120%" width="160%" height="340%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <filter id="lineGlowStrong" x="-30%" y="-120%" width="160%" height="340%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
+
         {yTicks.map(({ v, y }, i) => (
           <g key={i}>
             <line x1={PL} y1={y} x2={W - PR} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
@@ -1027,8 +1018,7 @@ function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true }) {
                 strokeWidth={isHovered ? 2.5 : 1.5}
                 strokeLinecap="round" strokeLinejoin="round"
                 opacity={dimmed ? 0.2 : isHovered ? 1.0 : 0.80}
-                filter={isHovered ? "url(#lineGlowStrong)" : undefined}
-                style={{ transition: "opacity 0.15s, stroke-width 0.15s" }}
+style={{ transition: "opacity 0.15s, stroke-width 0.15s" }}
               />
               <path
                 d={makePath(l.series)} fill="none" stroke="transparent" strokeWidth="14"
