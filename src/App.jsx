@@ -132,55 +132,71 @@ function getWeightedFee(funds, allocs, inputMode, portfolioTotal) {
   }, 0);
 }
 
-function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months, spanLabel) {
-  if (!funds.length) return [];
-
-  // Build Yahoo Finance series first to establish reference end timestamp and length.
-  // Manual series will be generated to match exactly so they don't truncate the result.
-  const yahooCache = {};
+// Returns the reference end-timestamp and step-count from the LONGEST Yahoo Finance
+// series in `funds` for the given span. Manual series must be generated with these
+// values so that all series share the same length and end date, making index-based
+// blending correct without any "align from end" hacks.
+function getYahooRef(funds, months) {
   let refEndTs = null, refLen = null;
   for (const f of funds) {
-    if (f.isManual) continue;
-    const pct = getFundPct(f, allocs, inputMode, portfolioTotal);
-    if (pct <= 0) continue;
+    if (f.isManual || !f.prices?.length) continue;
     const s = buildSeries(f.prices, months);
     if (!s.length) continue;
-    yahooCache[f.id] = s;
     if (refLen === null || s.length > refLen) {
       refLen = s.length;
       refEndTs = s[s.length - 1].timestamp;
     }
   }
-  if (refEndTs === null) refEndTs = Date.now() / 1000;
+  return { refEndTs: refEndTs ?? Date.now() / 1000, refLen };
+}
+
+function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months, spanLabel) {
+  if (!funds.length) return [];
+
+  // All funds regardless of allocation contribute to the reference so we always
+  // pick up the Yahoo Finance end-date even if pct is temporarily 0.
+  const { refEndTs, refLen } = getYahooRef(funds, months);
+
+  // Cache Yahoo Finance series (avoids rebuilding them twice).
+  const yahooCache = {};
+  for (const f of funds) {
+    if (!f.isManual && f.prices?.length) {
+      const s = buildSeries(f.prices, months);
+      if (s.length) yahooCache[f.id] = s;
+    }
+  }
 
   const seriesList = funds.map(f => {
     const pct = getFundPct(f, allocs, inputMode, portfolioTotal);
+    if (pct <= 0) return null;
     if (f.isManual) {
       const ret = f.returns?.[spanLabel];
       if (!months || ret == null) return null;
+      // Generate with refLen steps ending at refEndTs so the series has the same
+      // length as the Yahoo Finance data and no truncation occurs.
       return { pct, isManual: true, series: generateSimulatedSeries(ret, months, f.id, refEndTs, refLen) };
     }
     const s = yahooCache[f.id];
-    if (!s) return null;
-    return { pct, isManual: false, series: s };
+    return s ? { pct, isManual: false, series: s } : null;
   }).filter(s => s && s.pct > 0 && s.series.length > 0);
 
   if (!seriesList.length) return [];
 
+  // Because all manual series now have exactly refLen steps and all Yahoo Finance
+  // series have at most refLen points (longest picked above), minLen ≈ refLen.
+  // Blend from index 0: every series is normalised to 100 at its own start, so
+  // index-aligned blending is correct without any end-offset arithmetic.
   const minLen = Math.min(...seriesList.map(s => s.series.length));
   const totalWeight = seriesList.reduce((acc, s) => acc + s.pct, 0);
-
-  // Prefer a Yahoo Finance series for timestamps (real trading-day dates).
   const tsSrc = seriesList.find(s => !s.isManual) ?? seriesList[0];
-  const tsOff = tsSrc.series.length - minLen;
 
-  return Array.from({ length: minLen }, (_, i) => {
-    const blended = seriesList.reduce((acc, s) => {
-      const si = s.series.length - minLen + i;
-      return acc + (s.pct / totalWeight) * s.series[si].value;
-    }, 0);
-    return { month: i, timestamp: tsSrc.series[tsOff + i].timestamp, value: parseFloat(blended.toFixed(2)) };
-  });
+  return Array.from({ length: minLen }, (_, i) => ({
+    month: i,
+    timestamp: tsSrc.series[i].timestamp,
+    value: parseFloat(
+      seriesList.reduce((acc, s) => acc + (s.pct / totalWeight) * s.series[i].value, 0).toFixed(2)
+    ),
+  }));
 }
 
 function portfolioKrTotal(funds, allocs) {
@@ -1335,18 +1351,7 @@ export default function App() {
   const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode1, totalA, spanMonths, span), [funds1, allocs1, inputMode1, totalA, spanMonths, span]);
   const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode2, totalB, spanMonths, span), [funds2, allocs2, inputMode2, totalB, spanMonths, span]);
   const fundSeriesA = useMemo(() => {
-    // Compute reference end timestamp and length from Yahoo Finance funds so manual
-    // fund lines end at the same point as the real data.
-    let refEndTs = null, refLen = null;
-    for (const f of funds1) {
-      if (f.isManual) continue;
-      const s = buildSeries(f.prices, spanMonths);
-      if (s.length > 0 && (refLen === null || s.length > refLen)) {
-        refLen = s.length;
-        refEndTs = s[s.length - 1].timestamp;
-      }
-    }
-    if (refEndTs === null) refEndTs = Date.now() / 1000;
+    const { refEndTs, refLen } = getYahooRef(funds1, spanMonths);
     return funds1.map((f, i) => {
       const color = FUND_COLORS[i % FUND_COLORS.length];
       if (f.isManual) {
