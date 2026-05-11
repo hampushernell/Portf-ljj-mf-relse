@@ -954,7 +954,7 @@ function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldest
 }
 
 // ─── Fund SVG Chart ───────────────────────────────────────────────────────────
-function FundSVGChart({ lines, portfolioSeries }) {
+function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true }) {
   const W = 800, H = 220, PL = 48, PR = 12, PT = 10, PB = 28;
   const chartW = W - PL - PR;
   const chartH = H - PT - PB;
@@ -974,28 +974,41 @@ function FundSVGChart({ lines, portfolioSeries }) {
 
   const baselineY = toY(100);
   const [tooltip, setTooltip] = useState(null);
+  const [hoveredLine, setHoveredLine] = useState(null);
   const svgRef = useRef(null);
 
+  const refSeries = portfolioSeries.length ? portfolioSeries : lines[0]?.series ?? [];
+
   const handleMouseMove = useCallback(e => {
-    if (!svgRef.current || !portfolioSeries.length) return;
+    if (!svgRef.current || !refSeries.length) return;
     const rect = svgRef.current.getBoundingClientRect();
     const mx   = (e.clientX - rect.left) * (W / rect.width);
-    const idx  = Math.round(((mx - PL) / chartW) * (portfolioSeries.length - 1));
-    const ci   = Math.max(0, Math.min(portfolioSeries.length - 1, idx));
+    const idx  = Math.round(((mx - PL) / chartW) * (refSeries.length - 1));
+    const ci   = Math.max(0, Math.min(refSeries.length - 1, idx));
     setTooltip({
-      x: toX(ci, portfolioSeries.length),
-      timestamp: portfolioSeries[ci]?.timestamp,
+      x: toX(ci, refSeries.length),
+      timestamp: refSeries[ci]?.timestamp,
       portfolio: portfolioSeries[ci]?.value,
       funds: lines.map(l => ({ name: l.name, color: l.color, value: l.series[Math.min(ci, l.series.length - 1)]?.value })),
     });
-  }, [portfolioSeries, lines]);
+  }, [refSeries, portfolioSeries, lines]);
 
   const yTicks = Array.from({ length: 5 }, (_, i) => ({ v: yMin + (i / 4) * (yMax - yMin) })).map(t => ({ ...t, y: toY(t.v) }));
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block" }}
-        onMouseMove={handleMouseMove} onMouseLeave={() => setTooltip(null)}>
+        onMouseMove={handleMouseMove} onMouseLeave={() => { setTooltip(null); setHoveredLine(null); }}>
+        <defs>
+          <filter id="lineGlowSoft" x="-30%" y="-120%" width="160%" height="340%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="lineGlowStrong" x="-30%" y="-120%" width="160%" height="340%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
         {yTicks.map(({ v, y }, i) => (
           <g key={i}>
             <line x1={PL} y1={y} x2={W - PR} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
@@ -1003,16 +1016,40 @@ function FundSVGChart({ lines, portfolioSeries }) {
           </g>
         ))}
         <line x1={PL} y1={baselineY} x2={W - PR} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
-        {lines.map(l => l.series.length > 1 && (
-          <path key={l.color + l.name} d={makePath(l.series)} fill="none" stroke={l.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.80"/>
-        ))}
-        {portfolioSeries.length > 1 && (
-          <path d={makePath(portfolioSeries)} fill="none" stroke="rgba(255,255,255,0.88)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        {lines.map(l => {
+          if (l.series.length <= 1) return null;
+          const isHovered = hoveredLine === l.name;
+          const dimmed = hoveredLine !== null && !isHovered;
+          return (
+            <g key={l.color + l.name}>
+              <path
+                d={makePath(l.series)} fill="none" stroke={l.color}
+                strokeWidth={isHovered ? 2.5 : 1.5}
+                strokeLinecap="round" strokeLinejoin="round"
+                opacity={dimmed ? 0.2 : isHovered ? 1.0 : 0.80}
+                filter={isHovered ? "url(#lineGlowStrong)" : "url(#lineGlowSoft)"}
+                style={{ transition: "opacity 0.15s, stroke-width 0.15s" }}
+              />
+              <path
+                d={makePath(l.series)} fill="none" stroke="transparent" strokeWidth="14"
+                onMouseEnter={() => setHoveredLine(l.name)}
+                onMouseLeave={() => setHoveredLine(null)}
+                style={{ cursor: "crosshair" }}
+              />
+            </g>
+          );
+        })}
+        {showPortfolioLine && portfolioSeries.length > 1 && (
+          <path d={makePath(portfolioSeries)} fill="none" stroke="rgba(255,255,255,0.88)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+            opacity={hoveredLine !== null ? 0.25 : 1}
+            filter="url(#lineGlowSoft)"
+            style={{ transition: "opacity 0.15s" }}
+          />
         )}
         {tooltip && (
           <>
             <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
-            {tooltip.portfolio && <circle cx={tooltip.x} cy={toY(tooltip.portfolio)} r="5" fill="white" stroke={BG} strokeWidth="2"/>}
+            {tooltip.portfolio != null && showPortfolioLine && <circle cx={tooltip.x} cy={toY(tooltip.portfolio)} r="5" fill="white" stroke={BG} strokeWidth="2"/>}
           </>
         )}
       </svg>
@@ -1029,7 +1066,7 @@ function FundSVGChart({ lines, portfolioSeries }) {
           <div style={{ color: "#5a6e8a", fontSize: "10px", marginBottom: "6px" }}>
             {tooltip.timestamp ? new Date(tooltip.timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" }) : ""}
           </div>
-          {tooltip.portfolio != null && (
+          {tooltip.portfolio != null && showPortfolioLine && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "5px" }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "white", flexShrink: 0 }} />
               <span style={{ color: "#f0ede8", fontSize: "11px" }}>Portfölj: <strong style={{ color: (tooltip.portfolio - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(tooltip.portfolio - 100)}</strong></span>
@@ -1063,7 +1100,7 @@ function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths,
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
         <div>
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: "0 0 8px" }}>Historisk avkastning</h3>
-          {portfolioSeries.length > 0 && (
+          {fundLines.length > 1 && portfolioSeries.length > 0 && (
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke="rgba(255,255,255,0.85)" strokeWidth="2.5" strokeLinecap="round"/></svg>
               <span style={{ fontSize: "12px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>
@@ -1099,7 +1136,7 @@ function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths,
         </div>
       </div>
 
-      <FundSVGChart lines={fundLines} portfolioSeries={portfolioSeries} />
+      <FundSVGChart lines={fundLines} portfolioSeries={portfolioSeries} showPortfolioLine={fundLines.length > 1} />
 
       {portfolioSeries.length > 0 && (() => {
         const fmtDate = ts => new Date(ts * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
@@ -1119,10 +1156,12 @@ function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths,
 
       {fundLines.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "14px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <div style={{ width: "18px", height: "2.5px", background: "rgba(255,255,255,0.85)", borderRadius: "2px" }} />
-            <span style={{ fontSize: "11px", color: "#8a9bb0", fontFamily: "'DM Sans', sans-serif" }}>Portfölj</span>
-          </div>
+          {fundLines.length > 1 && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div style={{ width: "18px", height: "2.5px", background: "rgba(255,255,255,0.85)", borderRadius: "2px" }} />
+              <span style={{ fontSize: "11px", color: "#8a9bb0", fontFamily: "'DM Sans', sans-serif" }}>Portfölj</span>
+            </div>
+          )}
           {fundLines.map(l => (
             <div key={l.name} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <div style={{ width: "18px", height: "2px", background: l.color, borderRadius: "2px", opacity: 0.75 }} />
