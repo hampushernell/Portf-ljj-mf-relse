@@ -132,12 +132,17 @@ function getWeightedFee(funds, allocs, inputMode, portfolioTotal) {
   }, 0);
 }
 
-function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months) {
+function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months, spanLabel) {
   if (!funds.length) return [];
-  const seriesList = funds.map(f => ({
-    pct: getFundPct(f, allocs, inputMode, portfolioTotal),
-    series: buildSeries(f.prices, months),
-  })).filter(s => s.pct > 0 && s.series.length > 0);
+  const seriesList = funds.map(f => {
+    const pct = getFundPct(f, allocs, inputMode, portfolioTotal);
+    if (f.isManual) {
+      const ret = f.returns?.[spanLabel];
+      if (!months || ret == null) return null;
+      return { pct, series: generateSimulatedSeries(ret, months, f.id) };
+    }
+    return { pct, series: buildSeries(f.prices, months) };
+  }).filter(s => s && s.pct > 0 && s.series.length > 0);
 
   if (!seriesList.length) return [];
 
@@ -1217,8 +1222,8 @@ export default function App() {
   const totalB = inputMode2 === "kr" ? portfolioKrTotal(funds2, allocs2) : manualAmount2;
   const spanMonths = TIME_SPANS.find(t => t.label === span)?.months ?? null;
 
-  const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode1, totalA, spanMonths), [funds1, allocs1, inputMode1, totalA, spanMonths]);
-  const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode2, totalB, spanMonths), [funds2, allocs2, inputMode2, totalB, spanMonths]);
+  const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode1, totalA, spanMonths, span), [funds1, allocs1, inputMode1, totalA, spanMonths, span]);
+  const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode2, totalB, spanMonths, span), [funds2, allocs2, inputMode2, totalB, spanMonths, span]);
   const fundSeriesA = useMemo(() => funds1.map((f, i) => {
     const color = FUND_COLORS[i % FUND_COLORS.length];
     if (f.isManual) {
