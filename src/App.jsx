@@ -78,6 +78,47 @@ function buildSeries(prices, months) {
   }));
 }
 
+// ─── Simulated price series for manual funds ──────────────────────────────────
+function seededRng(seed) {
+  let s = (seed ^ 0xdeadbeef) >>> 0;
+  return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 0x100000000; };
+}
+function normalRandom(rng) {
+  const u1 = Math.max(rng(), 1e-10);
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * rng());
+}
+function generateSimulatedSeries(totalReturnPct, months, fundId) {
+  const years      = months / 12;
+  const steps      = Math.round(months * 21);
+  const annualRet  = Math.pow(1 + totalReturnPct / 100, 1 / years) - 1;
+  const vol        = 0.15;
+  const dt         = 1 / 252;
+  const mu         = annualRet - 0.5 * vol * vol;
+  const sigma      = vol * Math.sqrt(dt);
+
+  let hash = 0;
+  for (const c of String(fundId)) hash = ((Math.imul(31, hash) + c.charCodeAt(0)) | 0) >>> 0;
+  const rng = seededRng(hash);
+
+  const now     = Date.now() / 1000;
+  const startTs = now - months * 30.44 * 24 * 3600;
+  const dtSec   = (months * 30.44 * 24 * 3600) / steps;
+
+  let logPrice = 0;
+  const pts = [{ ts: startTs, v: 100 }];
+  for (let i = 1; i < steps; i++) {
+    logPrice += mu * dt + sigma * normalRandom(rng);
+    pts.push({ ts: startTs + i * dtSec, v: Math.exp(logPrice) * 100 });
+  }
+
+  const scale = (100 + totalReturnPct) / pts[pts.length - 1].v;
+  return pts.map((p, i) => ({
+    month: i,
+    timestamp: p.ts,
+    value: i === 0 ? 100 : parseFloat((p.v * scale).toFixed(2)),
+  }));
+}
+
 function getFundPct(fund, allocs, inputMode, portfolioTotal) {
   if (inputMode === "pct") return allocs[fund.id]?.pct || 0;
   if (portfolioTotal <= 0) return 0;
@@ -300,7 +341,7 @@ function ManualFundModal({ onSave, onClose }) {
           borderRadius: "10px", padding: "11px 14px", marginBottom: "20px",
           fontSize: "12px", color: "#fbbf24", lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif",
         }}>
-          ℹ Fonden visas i grafen enbart för de tidsspann du fyller i historisk avkastning. Tidsspann utan data visas med en varning i listan.
+          ℹ Grafen visar en <strong style={{ color: "#fbbf24" }}>simulerad kursutveckling</strong> baserad på angiven avkastning och antagen volatilitet ~15% — den speglar inte faktisk historisk kursutveckling. Avkastningsprocenten i grafen stämmer med angiven data. Tidsspann utan data visas med varning i listan.
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -1181,16 +1222,12 @@ export default function App() {
   const fundSeriesA = useMemo(() => funds1.map((f, i) => {
     const color = FUND_COLORS[i % FUND_COLORS.length];
     if (f.isManual) {
-      const ret = f.returns?.[span];
-      if (ret == null) return null;
-      const now = Date.now() / 1000;
-      const startTs = spanMonths !== null ? now - spanMonths * 30.44 * 24 * 3600 : now - 3 * 365 * 24 * 3600;
-      return { name: f.name, color, series: [
-        { month: 0, timestamp: startTs, value: 100 },
-        { month: 1, timestamp: now, value: parseFloat((100 + ret).toFixed(2)) },
-      ]};
+      const ret     = f.returns?.[span];
+      const months  = TIME_SPANS.find(t => t.label === span)?.months;
+      if (ret == null || !months) return null;
+      return { name: f.name, color, isManual: true, series: generateSimulatedSeries(ret, months, f.id) };
     }
-    return { name: f.name, color, series: buildSeries(f.prices, spanMonths) };
+    return { name: f.name, color, isManual: false, series: buildSeries(f.prices, spanMonths) };
   }).filter(Boolean).filter(l => l.series.length > 0), [funds1, spanMonths, span]);
 
   const fee1 = getWeightedFee(funds1, allocs1, inputMode1, totalA);
