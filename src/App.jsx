@@ -340,7 +340,7 @@ function ManualFundModal({ onSave, onClose, initialData = null, onDelete = null 
     onSave({
       id, name: name.trim(), category: category.trim() || "Manuell",
       isin: isin.trim() || null, ticker: initialData?.ticker ?? id, fee: parseFloat(fee),
-      isManual: true, prices: [], currentPrice: null,
+      isManual: true, prices: [], currentPrice: null, updatedAt: Date.now(),
       returns: Object.fromEntries(MANUAL_SPANS.map(s => [s, returns[s] !== "" ? parseFloat(returns[s]) : null])),
     });
     onClose();
@@ -608,6 +608,16 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
             {fund.category} · {fmtFee(fund.fee)} avgift
             {fund.currentPrice && <span> · {fund.currentPrice.toFixed(2)} SEK</span>}
           </div>
+          {fund.isManual && fund.updatedAt && (() => {
+            const days = (Date.now() - fund.updatedAt) / 86400000;
+            const color = days > 90 ? "#f87171" : days > 30 ? "#fbbf24" : "#5a6e8a";
+            const dateStr = new Date(fund.updatedAt).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
+            return (
+              <div style={{ fontSize: "10px", color, marginTop: "2px" }}>
+                {days > 30 ? "⚠️ " : ""}Uppdaterad: {dateStr}
+              </div>
+            );
+          })()}
         </div>
       </div>
       <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
