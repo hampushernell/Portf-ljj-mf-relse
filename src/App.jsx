@@ -553,33 +553,36 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
   const kr  = inputMode === "kr" ? (allocation.kr || 0) : (portfolioTotal * (allocation.pct || 0) / 100);
   const inputVal = inputMode === "pct" ? (allocation.pct || "") : (allocation.kr || "");
   const [hovered, setHovered] = useState(false);
+  const clickable = fund.isManual && !!onEdit;
 
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={clickable ? () => onEdit(fund) : undefined}
       style={{
-        display: "grid", gridTemplateColumns: "1fr 100px 90px auto", gap: "8px", alignItems: "center",
+        display: "grid", gridTemplateColumns: "1fr 100px 90px 26px", gap: "8px", alignItems: "center",
         padding: "10px 12px",
         background: hovered ? "rgba(255,255,255,0.055)" : "rgba(255,255,255,0.03)",
         border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "7px",
         animation: "slideInLeft 0.22s ease", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
         transition: "background 0.15s",
+        cursor: clickable ? "pointer" : "default",
       }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
         {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
         <div style={{ minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <span style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", color: "#f0ede8", fontWeight: 600 }}>{fund.name}</span>
-              {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: "#f59e0b", fontSize: "11px", lineHeight: 1 }}>⚠</span>}
-            </div>
+            <span style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", color: "#f0ede8", fontWeight: 600 }}>{fund.name}</span>
+            {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: "#f59e0b", fontSize: "11px", lineHeight: 1 }}>⚠</span>}
+          </div>
           <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "1px" }}>
             {fund.category} · {fmtFee(fund.fee)} avgift
             {fund.currentPrice && <span> · {fund.currentPrice.toFixed(2)} SEK</span>}
           </div>
         </div>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+      <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
         <label style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
           {inputMode === "pct" ? "Andel %" : "Belopp kr"}
         </label>
@@ -596,7 +599,7 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
           }}
         />
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+      <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
         <label style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
           {inputMode === "pct" ? "≈ kr" : "≈ %"}
         </label>
@@ -607,27 +610,11 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
           {inputMode === "pct" ? formatKr(kr) : `${pct.toFixed(1)}%`}
         </div>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "1px" }}>
-        <button onClick={onRemove}
-          style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "18px", padding: "2px", transition: "color 0.2s" }}
-          onMouseEnter={e => e.currentTarget.style.color = "#f87171"}
-          onMouseLeave={e => e.currentTarget.style.color = "#555"}
-        >×</button>
-        {fund.isManual && onEdit && (
-          <button
-            onClick={() => onEdit(fund)}
-            title="Redigera fond"
-            style={{
-              background: "none", border: "none", cursor: "pointer",
-              fontSize: "12px", padding: "2px 3px", lineHeight: 1,
-              color: hovered ? "#8a9bb0" : "transparent",
-              transition: "color 0.15s",
-            }}
-            onMouseEnter={e => e.currentTarget.style.color = "#f0ede8"}
-            onMouseLeave={e => e.currentTarget.style.color = hovered ? "#8a9bb0" : "transparent"}
-          >✏</button>
-        )}
-      </div>
+      <button onClick={e => { e.stopPropagation(); onRemove(); }}
+        style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "18px", padding: "2px", transition: "color 0.2s" }}
+        onMouseEnter={e => e.currentTarget.style.color = "#f87171"}
+        onMouseLeave={e => e.currentTarget.style.color = "#555"}
+      >×</button>
     </div>
   );
 }
