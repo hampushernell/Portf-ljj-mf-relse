@@ -281,12 +281,14 @@ function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
 // ─── Manual Fund Modal ────────────────────────────────────────────────────────
 const MANUAL_SPANS = ["1 mån", "3 mån", "1 år", "3 år"];
 
-function ManualFundModal({ onSave, onClose }) {
-  const [name, setName]         = useState("");
-  const [category, setCategory] = useState("");
-  const [isin, setIsin]         = useState("");
-  const [fee, setFee]           = useState("");
-  const [returns, setReturns]   = useState({ "1 mån": "", "3 mån": "", "1 år": "", "3 år": "" });
+function ManualFundModal({ onSave, onClose, initialData = null, onDelete = null }) {
+  const [name, setName]         = useState(initialData?.name ?? "");
+  const [category, setCategory] = useState(initialData?.category ?? "");
+  const [isin, setIsin]         = useState(initialData?.isin ?? "");
+  const [fee, setFee]           = useState(initialData?.fee != null ? String(initialData.fee) : "");
+  const [returns, setReturns]   = useState(
+    MANUAL_SPANS.reduce((acc, s) => ({ ...acc, [s]: initialData?.returns?.[s] != null ? String(initialData.returns[s]) : "" }), {})
+  );
   const [errors, setErrors]     = useState({});
 
   const fieldStyle = (err) => ({
@@ -306,10 +308,10 @@ function ManualFundModal({ onSave, onClose }) {
     if (fee === "" || isNaN(parseFloat(fee))) errs.fee = true;
     if (Object.keys(errs).length) { setErrors(errs); return; }
 
-    const id = `manual-${Date.now()}`;
+    const id = initialData?.id ?? `manual-${Date.now()}`;
     onSave({
       id, name: name.trim(), category: category.trim() || "Manuell",
-      isin: isin.trim() || null, ticker: id, fee: parseFloat(fee),
+      isin: isin.trim() || null, ticker: initialData?.ticker ?? id, fee: parseFloat(fee),
       isManual: true, prices: [], currentPrice: null,
       returns: Object.fromEntries(MANUAL_SPANS.map(s => [s, returns[s] !== "" ? parseFloat(returns[s]) : null])),
     });
@@ -331,7 +333,7 @@ function ManualFundModal({ onSave, onClose }) {
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
           <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: "16px", fontWeight: 700, color: "#f0ede8", margin: 0 }}>
-            Lägg till fond manuellt
+            {initialData ? "Redigera fond" : "Lägg till fond manuellt"}
           </h2>
           <button onClick={onClose} style={{ background: "none", border: "none", color: "#5a6e8a", cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px" }}>×</button>
         </div>
@@ -399,21 +401,36 @@ function ManualFundModal({ onSave, onClose }) {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "10px", marginTop: "24px", justifyContent: "flex-end" }}>
-          <button onClick={onClose} style={{
-            background: "transparent", border: "1px solid rgba(255,255,255,0.13)",
-            color: "#5a6e8a", borderRadius: "8px", padding: "9px 20px",
-            cursor: "pointer", fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
-          }}>Avbryt</button>
-          <button onClick={handleSubmit}
-            onMouseEnter={e => e.currentTarget.style.background = "rgba(0,24,245,0.28)"}
-            onMouseLeave={e => e.currentTarget.style.background = "rgba(0,24,245,0.15)"}
-            style={{
-              background: "rgba(0,24,245,0.15)", border: "1px solid rgba(0,24,245,0.4)",
-              color: ACCENT_A_LIGHT, borderRadius: "8px", padding: "9px 20px",
+        <div style={{ display: "flex", gap: "10px", marginTop: "24px", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            {onDelete && (
+              <button onClick={onDelete}
+                onMouseEnter={e => e.currentTarget.style.background = "rgba(248,113,113,0.2)"}
+                onMouseLeave={e => e.currentTarget.style.background = "rgba(248,113,113,0.1)"}
+                style={{
+                  background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.35)",
+                  color: "#f87171", borderRadius: "8px", padding: "9px 16px",
+                  cursor: "pointer", fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+                  transition: "background 0.2s",
+                }}>Ta bort fond</button>
+            )}
+          </div>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button onClick={onClose} style={{
+              background: "transparent", border: "1px solid rgba(255,255,255,0.13)",
+              color: "#5a6e8a", borderRadius: "8px", padding: "9px 20px",
               cursor: "pointer", fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
-              transition: "background 0.2s",
-            }}>Lägg till fond</button>
+            }}>Avbryt</button>
+            <button onClick={handleSubmit}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(0,24,245,0.28)"}
+              onMouseLeave={e => e.currentTarget.style.background = "rgba(0,24,245,0.15)"}
+              style={{
+                background: "rgba(0,24,245,0.15)", border: "1px solid rgba(0,24,245,0.4)",
+                color: ACCENT_A_LIGHT, borderRadius: "8px", padding: "9px 20px",
+                cursor: "pointer", fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+                transition: "background 0.2s",
+              }}>{initialData ? "Spara ändringar" : "Lägg till fond"}</button>
+          </div>
         </div>
       </div>
     </div>
@@ -531,18 +548,24 @@ function FundSearch({ onAdd, excluded, allFunds, loading, onSaveManualFund }) {
 }
 
 // ─── Fund Row ─────────────────────────────────────────────────────────────────
-function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemove, dotColor, spanHasData = true }) {
+function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemove, onEdit, dotColor, spanHasData = true }) {
   const pct = getFundPct(fund, { [fund.id]: allocation }, inputMode, portfolioTotal);
   const kr  = inputMode === "kr" ? (allocation.kr || 0) : (portfolioTotal * (allocation.pct || 0) / 100);
   const inputVal = inputMode === "pct" ? (allocation.pct || "") : (allocation.kr || "");
+  const [hovered, setHovered] = useState(false);
 
   return (
-    <div style={{
-      display: "grid", gridTemplateColumns: "1fr 100px 90px 26px", gap: "8px", alignItems: "center",
-      padding: "10px 12px", background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "7px",
-      animation: "slideInLeft 0.22s ease", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-    }}>
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "grid", gridTemplateColumns: "1fr 100px 90px auto", gap: "8px", alignItems: "center",
+        padding: "10px 12px",
+        background: hovered ? "rgba(255,255,255,0.055)" : "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "7px",
+        animation: "slideInLeft 0.22s ease", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+        transition: "background 0.15s",
+      }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
         {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
         <div style={{ minWidth: 0 }}>
@@ -584,11 +607,27 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
           {inputMode === "pct" ? formatKr(kr) : `${pct.toFixed(1)}%`}
         </div>
       </div>
-      <button onClick={onRemove}
-        style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "18px", padding: "2px", transition: "color 0.2s" }}
-        onMouseEnter={e => e.target.style.color = "#f87171"}
-        onMouseLeave={e => e.target.style.color = "#555"}
-      >×</button>
+      <div style={{ display: "flex", alignItems: "center", gap: "1px" }}>
+        <button onClick={onRemove}
+          style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "18px", padding: "2px", transition: "color 0.2s" }}
+          onMouseEnter={e => e.currentTarget.style.color = "#f87171"}
+          onMouseLeave={e => e.currentTarget.style.color = "#555"}
+        >×</button>
+        {fund.isManual && onEdit && (
+          <button
+            onClick={() => onEdit(fund)}
+            title="Redigera fond"
+            style={{
+              background: "none", border: "none", cursor: "pointer",
+              fontSize: "12px", padding: "2px 3px", lineHeight: 1,
+              color: hovered ? "#8a9bb0" : "transparent",
+              transition: "color 0.15s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = "#f0ede8"}
+            onMouseLeave={e => e.currentTarget.style.color = hovered ? "#8a9bb0" : "transparent"}
+          >✏</button>
+        )}
+      </div>
     </div>
   );
 }
@@ -695,8 +734,9 @@ function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
 }
 
 // ─── Portfolio Panel ──────────────────────────────────────────────────────────
-function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onInputModeChange, onManualAmountChange, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode, span, onSaveManualFund }) {
+function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onInputModeChange, onManualAmountChange, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode, span, onSaveManualFund, onDeleteManualFund, onUpdateFundData }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [editingFund, setEditingFund] = useState(null);
   const portfolioTotal = inputMode === "kr" ? portfolioKrTotal(funds, allocations) : manualAmount;
   const fee = getWeightedFee(funds, allocations, inputMode, portfolioTotal);
   const totalPct = inputMode === "pct"
@@ -766,6 +806,7 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
             inputMode={inputMode} portfolioTotal={portfolioTotal}
             onUpdate={vals => onUpdateAlloc(f.id, vals)}
             onRemove={() => onRemoveFund(f.id)}
+            onEdit={f.isManual ? setEditingFund : undefined}
             dotColor={viewMode === "fund" ? FUND_COLORS[i % FUND_COLORS.length] : null}
             spanHasData={!f.isManual || f.returns?.[span] != null}
           />
@@ -820,6 +861,22 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
         <FundDetailsModal
           funds={funds} accent={accent} accentRgb={accentRgb} label={label}
           onClose={() => setShowDetails(false)}
+        />
+      )}
+
+      {editingFund && (
+        <ManualFundModal
+          initialData={editingFund}
+          onSave={fund => {
+            onSaveManualFund(fund);
+            onUpdateFundData(fund);
+            setEditingFund(null);
+          }}
+          onDelete={() => {
+            onDeleteManualFund(editingFund.id);
+            setEditingFund(null);
+          }}
+          onClose={() => setEditingFund(null)}
         />
       )}
     </div>
@@ -1283,6 +1340,17 @@ export default function App() {
     localStorage.setItem("manualFunds", JSON.stringify(updated));
   };
 
+  const deleteManualFund = id => {
+    const updated = manualFundsDb.filter(f => f.id !== id);
+    setManualFundsDb(updated);
+    localStorage.setItem("manualFunds", JSON.stringify(updated));
+    remF1(id);
+    remF2(id);
+  };
+
+  const updateFund1 = fund => setFunds1(fs => fs.map(f => f.id === fund.id ? fund : f));
+  const updateFund2 = fund => setFunds2(fs => fs.map(f => f.id === fund.id ? fund : f));
+
   const searchableFunds = useMemo(() => [...allFunds, ...manualFundsDb], [allFunds, manualFundsDb]);
 
   const addFund1 = f => {
@@ -1394,6 +1462,7 @@ export default function App() {
                 allFunds={searchableFunds} loading={loading} viewMode={viewMode}
                 onAddFund={addFund1} onUpdateAlloc={updA} onRemoveFund={remF1}
                 span={span} onSaveManualFund={saveManualFund}
+                onDeleteManualFund={deleteManualFund} onUpdateFundData={updateFund1}
               />
               {compareMode && (
                 <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
@@ -1402,6 +1471,7 @@ export default function App() {
                   allFunds={searchableFunds} loading={loading} viewMode={viewMode}
                   onAddFund={addFund2} onUpdateAlloc={updB} onRemoveFund={remF2}
                   span={span} onSaveManualFund={saveManualFund}
+                  onDeleteManualFund={deleteManualFund} onUpdateFundData={updateFund2}
                 />
               )}
             </div>
