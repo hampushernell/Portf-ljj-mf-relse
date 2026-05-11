@@ -1027,7 +1027,7 @@ function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true }) {
                 strokeWidth={isHovered ? 2.5 : 1.5}
                 strokeLinecap="round" strokeLinejoin="round"
                 opacity={dimmed ? 0.2 : isHovered ? 1.0 : 0.80}
-                filter={isHovered ? "url(#lineGlowStrong)" : "url(#lineGlowSoft)"}
+                filter={isHovered ? "url(#lineGlowStrong)" : undefined}
                 style={{ transition: "opacity 0.15s, stroke-width 0.15s" }}
               />
               <path
@@ -1042,7 +1042,6 @@ function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true }) {
         {showPortfolioLine && portfolioSeries.length > 1 && (
           <path d={makePath(portfolioSeries)} fill="none" stroke="rgba(255,255,255,0.88)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
             opacity={hoveredLine !== null ? 0.25 : 1}
-            filter="url(#lineGlowSoft)"
             style={{ transition: "opacity 0.15s" }}
           />
         )}
