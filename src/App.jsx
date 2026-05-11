@@ -232,18 +232,163 @@ function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
   );
 }
 
+// ─── Manual Fund Modal ────────────────────────────────────────────────────────
+const MANUAL_SPANS = ["1 mån", "3 mån", "1 år", "3 år"];
+
+function ManualFundModal({ onSave, onClose }) {
+  const [name, setName]         = useState("");
+  const [category, setCategory] = useState("");
+  const [isin, setIsin]         = useState("");
+  const [fee, setFee]           = useState("");
+  const [returns, setReturns]   = useState({ "1 mån": "", "3 mån": "", "1 år": "", "3 år": "" });
+  const [errors, setErrors]     = useState({});
+
+  const fieldStyle = (err) => ({
+    width: "100%", boxSizing: "border-box",
+    background: "rgba(255,255,255,0.06)",
+    border: `1px solid ${err ? "rgba(248,113,113,0.55)" : "rgba(255,255,255,0.11)"}`,
+    borderRadius: "7px", color: "#f0ede8", fontSize: "13px",
+    padding: "8px 12px", outline: "none", fontFamily: "'Syne', sans-serif",
+  });
+  const label = (txt) => (
+    <div style={{ fontSize: "10px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "'Syne', sans-serif", marginBottom: "5px" }}>{txt}</div>
+  );
+
+  const handleSubmit = () => {
+    const errs = {};
+    if (!name.trim()) errs.name = true;
+    if (fee === "" || isNaN(parseFloat(fee))) errs.fee = true;
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+
+    const id = `manual-${Date.now()}`;
+    onSave({
+      id, name: name.trim(), category: category.trim() || "Manuell",
+      isin: isin.trim() || null, ticker: id, fee: parseFloat(fee),
+      isManual: true, prices: [], currentPrice: null,
+      returns: Object.fromEntries(MANUAL_SPANS.map(s => [s, returns[s] !== "" ? parseFloat(returns[s]) : null])),
+    });
+    onClose();
+  };
+
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, zIndex: 1000,
+      background: "rgba(0,0,0,0.72)", backdropFilter: "blur(4px)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
+      animation: "fadeIn 0.2s ease",
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: "#0d1120", border: "1px solid rgba(255,255,255,0.12)",
+        borderRadius: "16px", padding: "28px 28px 24px",
+        maxWidth: "520px", width: "100%", maxHeight: "92vh",
+        overflow: "auto", animation: "scaleIn 0.25s ease",
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: "16px", fontWeight: 700, color: "#f0ede8", margin: 0 }}>
+            Lägg till fond manuellt
+          </h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#5a6e8a", cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px" }}>×</button>
+        </div>
+
+        <a href="https://www.morningstar.se" target="_blank" rel="noopener noreferrer" style={{
+          display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px",
+          color: ACCENT_B, fontFamily: "'Syne', sans-serif", textDecoration: "none", marginBottom: "14px",
+        }}>Sök upp fonden på Morningstar ↗</a>
+
+        <div style={{
+          background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.28)",
+          borderRadius: "10px", padding: "11px 14px", marginBottom: "20px",
+          fontSize: "12px", color: "#fbbf24", lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif",
+        }}>
+          ℹ Fonden visas i grafen enbart för de tidsspann du fyller i historisk avkastning. Tidsspann utan data visas med en varning i listan.
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <div>
+            {label("Fondnamn *")}
+            <input value={name} onChange={e => { setName(e.target.value); setErrors(p => ({ ...p, name: false })); }}
+              placeholder="t.ex. Länsförsäkringar Global Index" style={fieldStyle(errors.name)} />
+            {errors.name && <div style={{ fontSize: "11px", color: "#f87171", marginTop: "3px" }}>Obligatoriskt fält</div>}
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+            <div>
+              {label("Kategori")}
+              <input value={category} onChange={e => setCategory(e.target.value)}
+                placeholder="t.ex. Globalfond" style={fieldStyle(false)} />
+            </div>
+            <div>
+              {label("ISIN")}
+              <input value={isin} onChange={e => setIsin(e.target.value)}
+                placeholder="t.ex. SE0011527613" style={fieldStyle(false)} />
+            </div>
+          </div>
+
+          <div>
+            {label("Förvaltningsavgift (%) *")}
+            <input type="number" step="0.01" value={fee}
+              onChange={e => { setFee(e.target.value); setErrors(p => ({ ...p, fee: false })); }}
+              placeholder="t.ex. 0.20" style={{ ...fieldStyle(errors.fee), width: "48%" }} />
+            {errors.fee && <div style={{ fontSize: "11px", color: "#f87171", marginTop: "3px" }}>Obligatoriskt fält</div>}
+          </div>
+
+          <div>
+            {label("Historisk avkastning (%)")}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px" }}>
+              {MANUAL_SPANS.map(s => {
+                const filled = returns[s] !== "";
+                return (
+                  <div key={s}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "5px" }}>
+                      <span style={{ fontSize: "10px", fontFamily: "'Syne', sans-serif", fontWeight: 600, color: filled ? "#6ee7b7" : "#5a6e8a" }}>{s}</span>
+                      {filled && <span style={{ color: "#6ee7b7", fontSize: "12px", lineHeight: 1 }}>✓</span>}
+                    </div>
+                    <input type="number" step="0.01" value={returns[s]}
+                      onChange={e => setReturns(p => ({ ...p, [s]: e.target.value }))}
+                      placeholder="±%" style={{ ...fieldStyle(false), padding: "7px 8px" }} />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "10px", marginTop: "24px", justifyContent: "flex-end" }}>
+          <button onClick={onClose} style={{
+            background: "transparent", border: "1px solid rgba(255,255,255,0.13)",
+            color: "#5a6e8a", borderRadius: "8px", padding: "9px 20px",
+            cursor: "pointer", fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+          }}>Avbryt</button>
+          <button onClick={handleSubmit}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(0,24,245,0.28)"}
+            onMouseLeave={e => e.currentTarget.style.background = "rgba(0,24,245,0.15)"}
+            style={{
+              background: "rgba(0,24,245,0.15)", border: "1px solid rgba(0,24,245,0.4)",
+              color: ACCENT_A_LIGHT, borderRadius: "8px", padding: "9px 20px",
+              cursor: "pointer", fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+              transition: "background 0.2s",
+            }}>Lägg till fond</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Fund Search ──────────────────────────────────────────────────────────────
-function FundSearch({ onAdd, excluded, allFunds, loading }) {
+function FundSearch({ onAdd, excluded, allFunds, loading, onSaveManualFund }) {
   const [q, setQ] = useState("");
   const [activeIdx, setActiveIdx] = useState(-1);
+  const [showManualModal, setShowManualModal] = useState(false);
+
   const results = q.length > 1
     ? allFunds.filter(f => !excluded.includes(f.id) && (
         f.name.toLowerCase().includes(q.toLowerCase()) ||
-        f.ticker.toLowerCase().includes(q.toLowerCase()) ||
-        f.category.toLowerCase().includes(q.toLowerCase())
+        (f.ticker || "").toLowerCase().includes(q.toLowerCase()) ||
+        (f.category || "").toLowerCase().includes(q.toLowerCase())
       )).slice(0, 6)
     : [];
 
+  const showDropdown = q.length > 0;
   const pick = f => { onAdd(f); setQ(""); setActiveIdx(-1); };
 
   const handleKeyDown = e => {
@@ -278,7 +423,7 @@ function FundSearch({ onAdd, excluded, allFunds, loading }) {
           padding: "9px 14px", outline: "none", fontFamily: "'Syne', sans-serif",
         }}
       />
-      {results.length > 0 && (
+      {showDropdown && (
         <div style={{
           position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0,
           background: "#0d1120", border: "1px solid rgba(255,255,255,0.13)",
@@ -296,8 +441,10 @@ function FundSearch({ onAdd, excluded, allFunds, loading }) {
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ fontSize: "13px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>{f.name}</div>
-                <div style={{ fontSize: "10px", color: "#5a6e8a", fontFamily: "monospace" }}>{f.ticker}</div>
+                <div style={{ fontSize: "13px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>
+                  {f.name}{f.isManual && <span style={{ fontSize: "10px", color: "#5a6e8a", marginLeft: "6px" }}>manuell</span>}
+                </div>
+                <div style={{ fontSize: "10px", color: "#5a6e8a", fontFamily: "monospace" }}>{f.isManual ? "" : f.ticker}</div>
               </div>
               <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "2px" }}>
                 {f.category} · {fmtFee(f.fee)} avgift/år
@@ -305,14 +452,40 @@ function FundSearch({ onAdd, excluded, allFunds, loading }) {
               </div>
             </div>
           ))}
+          {/* Always-visible manual add row */}
+          <div
+            onClick={() => { setShowManualModal(true); setQ(""); setActiveIdx(-1); }}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+            onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+            style={{
+              padding: "9px 14px", cursor: "pointer",
+              borderTop: results.length > 0 ? "1px solid rgba(255,255,255,0.08)" : "none",
+              display: "flex", alignItems: "center", gap: "8px",
+              transition: "background 0.12s",
+            }}
+          >
+            <div style={{
+              width: "17px", height: "17px", borderRadius: "50%", flexShrink: 0,
+              background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.18)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "14px", color: "#8a9bb0", lineHeight: 1,
+            }}>+</div>
+            <span style={{ fontSize: "12px", color: "#8a9bb0", fontFamily: "'Syne', sans-serif" }}>Lägg till fond manuellt</span>
+          </div>
         </div>
+      )}
+      {showManualModal && (
+        <ManualFundModal
+          onSave={fund => { onSaveManualFund(fund); onAdd(fund); }}
+          onClose={() => setShowManualModal(false)}
+        />
       )}
     </div>
   );
 }
 
 // ─── Fund Row ─────────────────────────────────────────────────────────────────
-function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemove, dotColor }) {
+function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemove, dotColor, spanHasData = true }) {
   const pct = getFundPct(fund, { [fund.id]: allocation }, inputMode, portfolioTotal);
   const kr  = inputMode === "kr" ? (allocation.kr || 0) : (portfolioTotal * (allocation.pct || 0) / 100);
   const inputVal = inputMode === "pct" ? (allocation.pct || "") : (allocation.kr || "");
@@ -327,7 +500,10 @@ function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemo
       <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
         {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", color: "#f0ede8", fontWeight: 600 }}>{fund.name}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <span style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", color: "#f0ede8", fontWeight: 600 }}>{fund.name}</span>
+              {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: "#f59e0b", fontSize: "11px", lineHeight: 1 }}>⚠</span>}
+            </div>
           <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "1px" }}>
             {fund.category} · {fmtFee(fund.fee)} avgift
             {fund.currentPrice && <span> · {fund.currentPrice.toFixed(2)} SEK</span>}
@@ -473,7 +649,7 @@ function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
 }
 
 // ─── Portfolio Panel ──────────────────────────────────────────────────────────
-function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onInputModeChange, onManualAmountChange, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode }) {
+function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onInputModeChange, onManualAmountChange, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode, span, onSaveManualFund }) {
   const [showDetails, setShowDetails] = useState(false);
   const portfolioTotal = inputMode === "kr" ? portfolioKrTotal(funds, allocations) : manualAmount;
   const fee = getWeightedFee(funds, allocations, inputMode, portfolioTotal);
@@ -535,7 +711,7 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
         )}
       </div>
 
-      <FundSearch onAdd={onAddFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} />
+      <FundSearch onAdd={onAddFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} />
 
       <div style={{ flex: 1 }}>
         {funds.map((f, i) => (
@@ -545,6 +721,7 @@ function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocatio
             onUpdate={vals => onUpdateAlloc(f.id, vals)}
             onRemove={() => onRemoveFund(f.id)}
             dotColor={viewMode === "fund" ? FUND_COLORS[i % FUND_COLORS.length] : null}
+            spanHasData={!f.isManual || f.returns?.[span] != null}
           />
         ))}
         {funds.length === 0 && (
@@ -967,6 +1144,9 @@ export default function App() {
   const [manualAmount2, setManualAmount2]     = useState(0);
   const [hasManualEdit1, setHasManualEdit1]   = useState(false);
   const [hasManualEdit2, setHasManualEdit2]   = useState(false);
+  const [manualFundsDb, setManualFundsDb]     = useState(() => {
+    try { return JSON.parse(localStorage.getItem("manualFunds") || "[]"); } catch { return []; }
+  });
   const [viewMode, setViewMode]               = useState("fund");
   const [span, setSpan]                       = useState("Max");
 
@@ -998,10 +1178,20 @@ export default function App() {
 
   const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode1, totalA, spanMonths), [funds1, allocs1, inputMode1, totalA, spanMonths]);
   const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode2, totalB, spanMonths), [funds2, allocs2, inputMode2, totalB, spanMonths]);
-  const fundSeriesA = useMemo(() => funds1.map((f, i) => ({
-    name: f.name, color: FUND_COLORS[i % FUND_COLORS.length],
-    series: buildSeries(f.prices, spanMonths),
-  })).filter(l => l.series.length > 0), [funds1, spanMonths]);
+  const fundSeriesA = useMemo(() => funds1.map((f, i) => {
+    const color = FUND_COLORS[i % FUND_COLORS.length];
+    if (f.isManual) {
+      const ret = f.returns?.[span];
+      if (ret == null) return null;
+      const now = Date.now() / 1000;
+      const startTs = spanMonths !== null ? now - spanMonths * 30.44 * 24 * 3600 : now - 3 * 365 * 24 * 3600;
+      return { name: f.name, color, series: [
+        { month: 0, timestamp: startTs, value: 100 },
+        { month: 1, timestamp: now, value: parseFloat((100 + ret).toFixed(2)) },
+      ]};
+    }
+    return { name: f.name, color, series: buildSeries(f.prices, spanMonths) };
+  }).filter(Boolean).filter(l => l.series.length > 0), [funds1, spanMonths, span]);
 
   const fee1 = getWeightedFee(funds1, allocs1, inputMode1, totalA);
   const fee2 = getWeightedFee(funds2, allocs2, inputMode2, totalB);
@@ -1016,6 +1206,14 @@ export default function App() {
     const tss = funds2.flatMap(f => f.prices?.length ? [f.prices[0].timestamp] : []);
     return tss.length ? Math.max(...tss) : null;
   }, [funds2]);
+
+  const saveManualFund = fund => {
+    const updated = [...manualFundsDb.filter(f => f.id !== fund.id), fund];
+    setManualFundsDb(updated);
+    localStorage.setItem("manualFunds", JSON.stringify(updated));
+  };
+
+  const searchableFunds = useMemo(() => [...allFunds, ...manualFundsDb], [allFunds, manualFundsDb]);
 
   const addFund1 = f => {
     const newFunds = [...funds1, f];
@@ -1123,15 +1321,17 @@ export default function App() {
               <PortfolioPanel label={viewMode === "fund" ? "Portfölj" : "Portfölj A"} accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
                 funds={funds1} allocations={allocs1} inputMode={inputMode1} manualAmount={manualAmount1}
                 onInputModeChange={setInputMode1} onManualAmountChange={setManualAmount1}
-                allFunds={allFunds} loading={loading} viewMode={viewMode}
+                allFunds={searchableFunds} loading={loading} viewMode={viewMode}
                 onAddFund={addFund1} onUpdateAlloc={updA} onRemoveFund={remF1}
+                span={span} onSaveManualFund={saveManualFund}
               />
               {compareMode && (
                 <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
                   funds={funds2} allocations={allocs2} inputMode={inputMode2} manualAmount={manualAmount2}
                   onInputModeChange={setInputMode2} onManualAmountChange={setManualAmount2}
-                  allFunds={allFunds} loading={loading} viewMode={viewMode}
+                  allFunds={searchableFunds} loading={loading} viewMode={viewMode}
                   onAddFund={addFund2} onUpdateAlloc={updB} onRemoveFund={remF2}
+                  span={span} onSaveManualFund={saveManualFund}
                 />
               )}
             </div>
