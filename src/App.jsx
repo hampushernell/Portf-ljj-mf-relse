@@ -132,17 +132,18 @@ function getWeightedFee(funds, allocs, inputMode, portfolioTotal) {
   }, 0);
 }
 
-// Returns the reference end-timestamp and step-count from the LONGEST Yahoo Finance
-// series in `funds` for the given span. Manual series must be generated with these
-// values so that all series share the same length and end date, making index-based
-// blending correct without any "align from end" hacks.
+// Returns the reference end-timestamp and step-count derived from the SHORTEST
+// Yahoo Finance series in `funds` for the given span.
+// Using the minimum guarantees that every Yahoo Finance series in the blend has
+// at least refLen points, so plain index-from-start blending stays correct and
+// every caller that uses the same ref produces series of identical length.
 function getYahooRef(funds, months) {
   let refEndTs = null, refLen = null;
   for (const f of funds) {
     if (f.isManual || !f.prices?.length) continue;
     const s = buildSeries(f.prices, months);
     if (!s.length) continue;
-    if (refLen === null || s.length > refLen) {
+    if (refLen === null || s.length < refLen) {
       refLen = s.length;
       refEndTs = s[s.length - 1].timestamp;
     }
@@ -150,12 +151,10 @@ function getYahooRef(funds, months) {
   return { refEndTs: refEndTs ?? Date.now() / 1000, refLen };
 }
 
-function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months, spanLabel) {
+function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months, spanLabel, externalRef = null) {
   if (!funds.length) return [];
 
-  // All funds regardless of allocation contribute to the reference so we always
-  // pick up the Yahoo Finance end-date even if pct is temporarily 0.
-  const { refEndTs, refLen } = getYahooRef(funds, months);
+  const { refEndTs, refLen } = externalRef ?? getYahooRef(funds, months);
 
   // Cache Yahoo Finance series (avoids rebuilding them twice).
   const yahooCache = {};
@@ -1348,8 +1347,9 @@ export default function App() {
   const totalB = inputMode2 === "kr" ? portfolioKrTotal(funds2, allocs2) : manualAmount2;
   const spanMonths = TIME_SPANS.find(t => t.label === span)?.months ?? null;
 
-  const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode1, totalA, spanMonths, span), [funds1, allocs1, inputMode1, totalA, spanMonths, span]);
-  const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode2, totalB, spanMonths, span), [funds2, allocs2, inputMode2, totalB, spanMonths, span]);
+  const sharedRef = useMemo(() => getYahooRef([...funds1, ...funds2], spanMonths), [funds1, funds2, spanMonths]);
+  const seriesA = useMemo(() => blendPortfolioSeries(funds1, allocs1, inputMode1, totalA, spanMonths, span, sharedRef), [funds1, allocs1, inputMode1, totalA, spanMonths, span, sharedRef]);
+  const seriesB = useMemo(() => blendPortfolioSeries(funds2, allocs2, inputMode2, totalB, spanMonths, span, sharedRef), [funds2, allocs2, inputMode2, totalB, spanMonths, span, sharedRef]);
   const fundSeriesA = useMemo(() => {
     const { refEndTs, refLen } = getYahooRef(funds1, spanMonths);
     return funds1.map((f, i) => {
