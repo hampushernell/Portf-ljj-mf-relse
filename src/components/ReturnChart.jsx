@@ -2,15 +2,16 @@ import { portfolioReturn } from "../lib/calculations";
 import { ACCENT_A, ACCENT_B, TIME_SPANS, formatKr, fmtPct } from "../lib/utils";
 import SVGChart from "./SVGChart";
 
-export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldestTsA, oldestTsB, onSpanChange, totalA, totalB }) {
+export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldestTsA, oldestTsB, onSpanChange, totalA, totalB, latestNavTs }) {
   const retA = portfolioReturn(seriesA);
   const retB = portfolioReturn(seriesB);
 
+  const refNow = latestNavTs ?? Date.now() / 1000;
   const requestedCutoffTs = spanMonths !== null
-    ? Date.now() / 1000 - spanMonths * 30.44 * 24 * 3600
+    ? refNow - spanMonths * 30.44 * 24 * 3600
     : -Infinity;
   const oldestTs = [oldestTsA, oldestTsB].filter(Boolean).reduce((a, b) => Math.max(a, b), 0);
-  const spanHasFullData = ts => ts.months === null || !oldestTs || oldestTs <= Date.now() / 1000 - ts.months * 30.44 * 24 * 3600 + 30 * 86400;
+  const spanHasFullData = ts => ts.months === null || !oldestTs || oldestTs <= refNow - ts.months * 30.44 * 24 * 3600 + 30 * 86400;
 
   const actualFromTs = seriesA[0]?.timestamp ?? seriesB[0]?.timestamp;
   const isIncomplete = spanMonths !== null && actualFromTs && actualFromTs > requestedCutoffTs + 30 * 86400;
@@ -79,7 +80,7 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
         const endTs   = Math.max(seriesA[seriesA.length - 1]?.timestamp ?? 0, seriesB[seriesB.length - 1]?.timestamp ?? 0);
         const startTs = spanMonths === null
           ? Math.min(...[seriesA[0]?.timestamp, seriesB[0]?.timestamp].filter(Boolean))
-          : Date.now() / 1000 - spanMonths * 30.44 * 24 * 3600;
+          : refNow - spanMonths * 30.44 * 24 * 3600;
         return (
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", padding: "0 2px" }}>
             <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}>

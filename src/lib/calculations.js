@@ -8,13 +8,24 @@ function normalRandom(rng) {
   return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * rng());
 }
 
-export function buildSeries(prices, months) {
+export function getLatestNavTs(funds) {
+  let latest = null;
+  for (const f of funds) {
+    if (f.isManual || !f.prices?.length) continue;
+    const ts = f.prices[f.prices.length - 1].timestamp;
+    if (latest === null || ts > latest) latest = ts;
+  }
+  return latest ?? Date.now() / 1000;
+}
+
+export function buildSeries(prices, months, refNow = null) {
   if (!prices || prices.length === 0) return [];
   let sliced;
   if (months === null) {
     sliced = prices;
   } else {
-    const cutoffTs = Date.now() / 1000 - months * 30.44 * 24 * 3600;
+    const now = refNow ?? prices[prices.length - 1]?.timestamp ?? Date.now() / 1000;
+    const cutoffTs = now - months * 30.44 * 24 * 3600;
     let startIdx = prices.findIndex(p => p.timestamp >= cutoffTs);
     if (startIdx === -1) return [];
     if (startIdx > 0) startIdx--;
@@ -80,29 +91,30 @@ export function getWeightedFee(funds, allocs, inputMode, portfolioTotal) {
 // at least refLen points, so plain index-from-start blending stays correct and
 // every caller that uses the same ref produces series of identical length.
 export function getYahooRef(funds, months) {
+  const latestNavTs = getLatestNavTs(funds);
   let refEndTs = null, refLen = null;
   for (const f of funds) {
     if (f.isManual || !f.prices?.length) continue;
-    const s = buildSeries(f.prices, months);
+    const s = buildSeries(f.prices, months, latestNavTs);
     if (!s.length) continue;
     if (refLen === null || s.length < refLen) {
       refLen = s.length;
       refEndTs = s[s.length - 1].timestamp;
     }
   }
-  return { refEndTs: refEndTs ?? Date.now() / 1000, refLen };
+  return { refEndTs: refEndTs ?? latestNavTs, refLen, latestNavTs };
 }
 
 export function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months, spanLabel, externalRef = null) {
   if (!funds.length) return [];
 
-  const { refEndTs, refLen } = externalRef ?? getYahooRef(funds, months);
+  const { refEndTs, refLen, latestNavTs } = externalRef ?? getYahooRef(funds, months);
 
   // Cache Yahoo Finance series (avoids rebuilding them twice).
   const yahooCache = {};
   for (const f of funds) {
     if (!f.isManual && f.prices?.length) {
-      const s = buildSeries(f.prices, months);
+      const s = buildSeries(f.prices, months, latestNavTs);
       if (s.length) yahooCache[f.id] = s;
     }
   }

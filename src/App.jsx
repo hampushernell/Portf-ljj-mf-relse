@@ -40,7 +40,7 @@ export default function App() {
   const seriesA = useMemo(() => blendPortfolioSeries(portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span, sharedRef), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span, sharedRef]);
   const seriesB = useMemo(() => blendPortfolioSeries(portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span, sharedRef), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span, sharedRef]);
   const fundSeriesA = useMemo(() => {
-    const { refEndTs, refLen } = getYahooRef(portfolioA.funds, spanMonths);
+    const { refEndTs, refLen, latestNavTs } = getYahooRef(portfolioA.funds, spanMonths);
     return portfolioA.funds.map((f, i) => {
       const color = FUND_COLORS[i % FUND_COLORS.length];
       if (f.isManual) {
@@ -49,7 +49,7 @@ export default function App() {
         if (ret == null || !months) return null;
         return { name: f.name, color, isManual: true, series: generateSimulatedSeries(ret, months, f.id, refEndTs, refLen) };
       }
-      return { name: f.name, color, isManual: false, series: buildSeries(f.prices, spanMonths) };
+      return { name: f.name, color, isManual: false, series: buildSeries(f.prices, spanMonths, latestNavTs) };
     }).filter(Boolean).filter(l => l.series.length > 0);
   }, [portfolioA.funds, spanMonths, span]);
 
@@ -173,6 +173,7 @@ export default function App() {
                 fundLines={fundSeriesA} portfolioSeries={seriesA}
                 selectedSpan={span} spanMonths={spanMonths} onSpanChange={setSpan}
                 totalA={totalA} fee1={fee1} oldestTsA={oldestTsA}
+                latestNavTs={sharedRef.latestNavTs}
               />
             )}
 
@@ -183,6 +184,7 @@ export default function App() {
                 selectedSpan={span} spanMonths={spanMonths} onSpanChange={setSpan}
                 totalA={totalA} totalB={totalB}
                 oldestTsA={oldestTsA} oldestTsB={oldestTsB}
+                latestNavTs={sharedRef.latestNavTs}
               />
             )}
 
