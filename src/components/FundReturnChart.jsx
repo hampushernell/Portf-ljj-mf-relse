@@ -1,15 +1,13 @@
-import { portfolioReturn } from "../lib/calculations";
+import { portfolioReturn, computeSpanMeta } from "../lib/calculations";
 import { MONTH_SECS, TIME_SPANS, formatKr, fmtFee, fmtPct } from "../lib/utils";
 import FundSVGChart from "./FundSVGChart";
 
 export default function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths, oldestTsA, onSpanChange, totalA, fee1, latestNavTs }) {
   const retPortfolio = portfolioReturn(portfolioSeries);
   const refNow = latestNavTs ?? portfolioSeries[portfolioSeries.length - 1]?.timestamp ?? Date.now() / 1000;
-  const requestedCutoffTs = spanMonths !== null ? refNow - spanMonths * MONTH_SECS : -Infinity;
-  const spanHasFullData = ts => ts.months === null || !oldestTsA || oldestTsA <= refNow - ts.months * MONTH_SECS + 30 * 86400;
   const actualFromTs = portfolioSeries[0]?.timestamp;
-  const isIncomplete = spanMonths !== null && actualFromTs && actualFromTs > requestedCutoffTs + 30 * 86400;
-  const actualFromStr = actualFromTs ? new Date(actualFromTs * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" }) : null;
+  const { requestedCutoffTs, spanHasFullData, isIncomplete, actualFromStr } =
+    computeSpanMeta({ spanMonths, refNow, oldestTs: oldestTsA, actualFromTs });
 
   return (
     <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px", animation: "scaleIn 0.3s ease" }}>

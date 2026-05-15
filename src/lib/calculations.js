@@ -161,3 +161,13 @@ export function portfolioKrTotal(funds, allocs) {
 }
 
 export const portfolioReturn = series => series.length ? series[series.length - 1].value - 100 : 0;
+
+export function computeSpanMeta({ spanMonths, refNow, oldestTs, actualFromTs }) {
+  const requestedCutoffTs = spanMonths !== null ? refNow - spanMonths * MONTH_SECS : -Infinity;
+  const spanHasFullData = ts => ts.months === null || !oldestTs || oldestTs <= refNow - ts.months * MONTH_SECS + 30 * 86400;
+  const isIncomplete = spanMonths !== null && !!actualFromTs && actualFromTs > requestedCutoffTs + 30 * 86400;
+  const actualFromStr = actualFromTs
+    ? new Date(actualFromTs * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
+    : null;
+  return { requestedCutoffTs, spanHasFullData, isIncomplete, actualFromStr };
+}
