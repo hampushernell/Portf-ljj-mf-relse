@@ -1,12 +1,12 @@
 import { portfolioReturn } from "../lib/calculations";
-import { TIME_SPANS, formatKr, fmtFee, fmtPct } from "../lib/utils";
+import { MONTH_SECS, TIME_SPANS, formatKr, fmtFee, fmtPct } from "../lib/utils";
 import FundSVGChart from "./FundSVGChart";
 
 export default function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths, oldestTsA, onSpanChange, totalA, fee1, latestNavTs }) {
   const retPortfolio = portfolioReturn(portfolioSeries);
   const refNow = latestNavTs ?? portfolioSeries[portfolioSeries.length - 1]?.timestamp ?? Date.now() / 1000;
-  const requestedCutoffTs = spanMonths !== null ? refNow - spanMonths * 30.44 * 24 * 3600 : -Infinity;
-  const spanHasFullData = ts => ts.months === null || !oldestTsA || oldestTsA <= refNow - ts.months * 30.44 * 24 * 3600 + 30 * 86400;
+  const requestedCutoffTs = spanMonths !== null ? refNow - spanMonths * MONTH_SECS : -Infinity;
+  const spanHasFullData = ts => ts.months === null || !oldestTsA || oldestTsA <= refNow - ts.months * MONTH_SECS + 30 * 86400;
   const actualFromTs = portfolioSeries[0]?.timestamp;
   const isIncomplete = spanMonths !== null && actualFromTs && actualFromTs > requestedCutoffTs + 30 * 86400;
   const actualFromStr = actualFromTs ? new Date(actualFromTs * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" }) : null;
@@ -57,7 +57,7 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
       {portfolioSeries.length > 0 && (() => {
         const fmtDate = ts => new Date(ts * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
         const endTs   = portfolioSeries[portfolioSeries.length - 1]?.timestamp;
-        const startTs = spanMonths === null ? portfolioSeries[0]?.timestamp : refNow - spanMonths * 30.44 * 24 * 3600;
+        const startTs = spanMonths === null ? portfolioSeries[0]?.timestamp : refNow - spanMonths * MONTH_SECS;
         return (
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", padding: "0 2px" }}>
             <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}>{fmtDate(startTs)}</span>

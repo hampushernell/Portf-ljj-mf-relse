@@ -1,3 +1,5 @@
+import { MONTH_SECS } from "./utils";
+
 function seededRng(seed) {
   let s = (seed ^ 0xdeadbeef) >>> 0;
   return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 0x100000000; };
@@ -25,7 +27,7 @@ export function buildSeries(prices, months, refNow = null) {
     sliced = prices;
   } else {
     const now = refNow ?? prices[prices.length - 1]?.timestamp ?? Date.now() / 1000;
-    const cutoffTs = now - months * 30.44 * 24 * 3600;
+    const cutoffTs = now - months * MONTH_SECS;
     let startIdx = prices.findIndex(p => p.timestamp >= cutoffTs);
     if (startIdx === -1) return [];
     if (startIdx > 0) startIdx--;
@@ -54,8 +56,8 @@ export function generateSimulatedSeries(totalReturnPct, months, fundId, endTs = 
   for (const c of String(fundId)) hash = ((Math.imul(31, hash) + c.charCodeAt(0)) | 0) >>> 0;
   const rng = seededRng(hash);
 
-  const startTs = refEnd - months * 30.44 * 24 * 3600;
-  const dtSec   = (months * 30.44 * 24 * 3600) / steps;
+  const startTs = refEnd - months * MONTH_SECS;
+  const dtSec   = (months * MONTH_SECS) / steps;
 
   let logPrice = 0;
   const pts = [{ ts: startTs, v: 100 }];

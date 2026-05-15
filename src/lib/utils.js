@@ -21,6 +21,8 @@ export const FUND_ISINS = {
   "0P0000J1JM.ST": "SE0002656611",
 };
 
+export const MONTH_SECS = 30.44 * 24 * 3600;
+
 export const TIME_SPANS = [
   { label: "1 mån",  months: 1   },
   { label: "3 mån",  months: 3   },
