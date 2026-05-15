@@ -36,22 +36,26 @@ export default function App() {
   const totalB = portfolioB.inputMode === "kr" ? portfolioKrTotal(portfolioB.funds, portfolioB.allocs) : portfolioB.manualAmount;
   const spanMonths = TIME_SPANS.find(t => t.label === span)?.months ?? null;
 
-  const sharedRef = useMemo(() => getYahooRef([...portfolioA.funds, ...portfolioB.funds], spanMonths), [portfolioA.funds, portfolioB.funds, spanMonths]);
+  const sharedRef = useMemo(() => {
+    const funds = compareMode
+      ? [...portfolioA.funds, ...portfolioB.funds]
+      : portfolioA.funds;
+    return getYahooRef(funds, spanMonths);
+  }, [compareMode, portfolioA.funds, portfolioB.funds, spanMonths]);
   const seriesA = useMemo(() => blendPortfolioSeries(portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span, sharedRef), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span, sharedRef]);
   const seriesB = useMemo(() => blendPortfolioSeries(portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span, sharedRef), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span, sharedRef]);
   const fundSeriesA = useMemo(() => {
-    const { refEndTs, refLen, latestNavTs } = getYahooRef(portfolioA.funds, spanMonths);
     return portfolioA.funds.map((f, i) => {
       const color = FUND_COLORS[i % FUND_COLORS.length];
       if (f.isManual) {
         const ret    = f.returns?.[span];
         const months = TIME_SPANS.find(t => t.label === span)?.months;
         if (ret == null || !months) return null;
-        return { name: f.name, color, isManual: true, series: generateSimulatedSeries(ret, months, f.id, refEndTs, refLen) };
+        return { name: f.name, color, isManual: true, series: generateSimulatedSeries(ret, months, f.id, sharedRef.refEndTs, sharedRef.refLen) };
       }
-      return { name: f.name, color, isManual: false, series: buildSeries(f.prices, spanMonths, latestNavTs) };
+      return { name: f.name, color, isManual: false, series: buildSeries(f.prices, spanMonths, sharedRef.latestNavTs) };
     }).filter(Boolean).filter(l => l.series.length > 0);
-  }, [portfolioA.funds, spanMonths, span]);
+  }, [portfolioA.funds, spanMonths, span, sharedRef]);
 
   const fee1 = getWeightedFee(portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA);
   const fee2 = getWeightedFee(portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB);
