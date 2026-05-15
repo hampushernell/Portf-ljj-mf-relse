@@ -123,19 +123,21 @@ export function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, m
 
   if (!seriesList.length) return [];
 
-  // Because all manual series now have exactly refLen steps and all Yahoo Finance
-  // series have at most refLen points (longest picked above), minLen ≈ refLen.
-  // Blend from index 0: every series is normalised to 100 at its own start, so
-  // index-aligned blending is correct without any end-offset arithmetic.
   const minLen = Math.min(...seriesList.map(s => s.series.length));
   const totalWeight = seriesList.reduce((acc, s) => acc + s.pct, 0);
-  const tsSrc = seriesList.find(s => !s.isManual) ?? seriesList[0];
+
+  // Align every series from the back so all share the same end date,
+  // then pick the one whose last point is latest as the timestamp reference.
+  const aligned = seriesList.map(s => ({ ...s, series: s.series.slice(-minLen) }));
+  const tsSrc = aligned.reduce((best, s) =>
+    s.series[s.series.length - 1].timestamp > best.series[best.series.length - 1].timestamp ? s : best
+  );
 
   return Array.from({ length: minLen }, (_, i) => ({
     month: i,
     timestamp: tsSrc.series[i].timestamp,
     value: parseFloat(
-      seriesList.reduce((acc, s) => acc + (s.pct / totalWeight) * s.series[i].value, 0).toFixed(2)
+      aligned.reduce((acc, s) => acc + (s.pct / totalWeight) * s.series[i].value, 0).toFixed(2)
     ),
   }));
 }
