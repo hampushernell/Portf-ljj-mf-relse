@@ -2,11 +2,8 @@ import { useState, useMemo } from "react";
 import {
   getWeightedFee,
   portfolioKrTotal,
-  portfolioReturn,
-  blendPortfolioSeries,
-  buildSeries,
-  generateSimulatedSeries,
   getYahooRef,
+  computeReturnBundle,
 } from "./lib/calculations";
 import { formatCompareStats } from "./lib/comparisons";
 import useFundData from "./hooks/useFundData";
@@ -42,35 +39,14 @@ export default function App() {
       : portfolioA.funds;
     return getYahooRef(funds, spanMonths);
   }, [compareMode, portfolioA.funds, portfolioB.funds, spanMonths]);
-  const seriesA = useMemo(() => blendPortfolioSeries(portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span, sharedRef), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span, sharedRef]);
-  const seriesB = useMemo(() => blendPortfolioSeries(portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span, sharedRef), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span, sharedRef]);
-  const fundSeriesA = useMemo(() => {
-    return portfolioA.funds.map((f, i) => {
-      const color = FUND_COLORS[i % FUND_COLORS.length];
-      if (f.isManual) {
-        const ret    = f.returns?.[span];
-        const months = TIME_SPANS.find(t => t.label === span)?.months;
-        if (ret == null || !months) return null;
-        return { name: f.name, color, isManual: true, series: generateSimulatedSeries(ret, months, f.id, sharedRef.refEndTs, sharedRef.refLen) };
-      }
-      return { name: f.name, color, isManual: false, series: buildSeries(f.prices, spanMonths, sharedRef.latestNavTs) };
-    }).filter(Boolean).filter(l => l.series.length > 0);
-  }, [portfolioA.funds, spanMonths, span, sharedRef]);
+  const bundleA = useMemo(() => computeReturnBundle({ funds: portfolioA.funds, allocs: portfolioA.allocs, inputMode: portfolioA.inputMode, portfolioTotal: totalA, spanMonths, spanLabel: span, colors: FUND_COLORS, sharedRef }), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span, sharedRef]);
+  const bundleB = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths, spanLabel: span, colors: FUND_COLORS, sharedRef }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span, sharedRef]);
+  const { portfolioSeries: seriesA, fundLines: fundSeriesA, portfolioReturn: retA, oldestTs: oldestTsA } = bundleA;
+  const { portfolioSeries: seriesB, portfolioReturn: retB, oldestTs: oldestTsB } = bundleB;
 
   const fee1 = getWeightedFee(portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA);
   const fee2 = getWeightedFee(portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB);
-  const retA = portfolioReturn(seriesA);
-  const retB = portfolioReturn(seriesB);
   const compareStats = compareMode ? formatCompareStats(retA, retB, fee1, fee2, totalA, totalB) : null;
-
-  const oldestTsA = useMemo(() => {
-    const tss = portfolioA.funds.flatMap(f => f.prices?.length ? [f.prices[0].timestamp] : []);
-    return tss.length ? Math.max(...tss) : null;
-  }, [portfolioA.funds]);
-  const oldestTsB = useMemo(() => {
-    const tss = portfolioB.funds.flatMap(f => f.prices?.length ? [f.prices[0].timestamp] : []);
-    return tss.length ? Math.max(...tss) : null;
-  }, [portfolioB.funds]);
 
   const saveManualFund = fund => {
     const updated = [...manualFundsDb.filter(f => f.id !== fund.id), fund];

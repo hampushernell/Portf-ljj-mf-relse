@@ -179,6 +179,40 @@ export function computeSpanMeta({ spanMonths, refNow, oldestTs, actualFromTs }) 
   return { requestedCutoffTs, spanHasFullData, isIncomplete, actualFromStr };
 }
 
+export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, spanMonths, spanLabel, colors, sharedRef }) {
+  const ps = blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, spanMonths, spanLabel, sharedRef);
+  const minLen = ps.length;
+
+  const tss = funds.flatMap(f => f.prices?.length ? [f.prices[0].timestamp] : []);
+  const oldestTs = tss.length ? Math.max(...tss) : null;
+
+  const fundLines = minLen === 0 ? [] : funds.map((f, i) => {
+    const color = colors[i % colors.length];
+    let raw;
+    if (f.isManual) {
+      const ret = f.returns?.[spanLabel];
+      if (!spanMonths || ret == null) return null;
+      raw = generateSimulatedSeries(ret, spanMonths, f.id, sharedRef.refEndTs, sharedRef.refLen);
+    } else {
+      raw = buildSeries(f.prices, spanMonths, sharedRef.latestNavTs);
+    }
+    if (!raw?.length) return null;
+    const sliced = raw.slice(-minLen);
+    const base = sliced[0]?.value;
+    if (!base || base <= 0) return null;
+    return {
+      name: f.name,
+      color,
+      series: sliced.map((p, idx) => ({
+        ...p,
+        value: idx === 0 ? 100 : parseFloat((p.value / base * 100).toFixed(2)),
+      })),
+    };
+  }).filter(Boolean);
+
+  return { portfolioSeries: ps, fundLines, portfolioReturn: portfolioReturn(ps), oldestTs };
+}
+
 export function computePortfolioContext({ latestNavTs, spanMonths, oldestTs, allSeries }) {
   const valid = allSeries.filter(s => s?.length > 0);
   const latestSeriesTs = valid.length ? Math.max(...valid.map(s => s[s.length - 1].timestamp)) : null;
