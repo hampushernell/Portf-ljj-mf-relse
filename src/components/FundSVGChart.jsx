@@ -38,7 +38,7 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
       portfolio: portfolioSeries[ci]?.value,
       funds: lines.map(l => {
         const s = l.series;
-        return { name: l.name, color: l.color, value: s[Math.min(ci, s.length - 1)]?.value, endValue: s[s.length - 1]?.value, returnValue: l.returnValue };
+        return { name: l.name, color: l.color, value: s[Math.min(ci, s.length - 1)]?.value };
       }),
     });
   }, [refSeries, portfolioSeries, lines]);
@@ -115,7 +115,7 @@ style={{ transition: "opacity 0.15s, stroke-width 0.15s" }}
             <div key={f.name} style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: f.color, flexShrink: 0 }} />
               <span style={{ color: "#8a9bb0", fontSize: "10px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {f.name.split(" ").slice(0, 2).join(" ")}: <strong style={{ color: (f.returnValue ?? (f.value - 100)) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(f.endValue != null && (f.endValue - 100) !== 0 ? ((f.value - 100) / (f.endValue - 100)) * f.returnValue : f.value - 100)}</strong>
+                {f.name.split(" ").slice(0, 2).join(" ")}: <strong style={{ color: (f.value - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(f.value - 100)}</strong>
               </span>
             </div>
           ))}
