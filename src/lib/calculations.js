@@ -142,7 +142,14 @@ export function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, m
 
   // Align every series from the back so all share the same end date,
   // then pick the one whose last point is latest as the timestamp reference.
-  const aligned = seriesList.map(s => ({ ...s, series: s.series.slice(-minLen) }));
+  const aligned = seriesList.map(s => {
+    const sliced = s.series.slice(-minLen);
+    const base = sliced[0].value;
+    return { ...s, series: sliced.map((p, i) => ({
+      ...p,
+      value: i === 0 ? 100 : parseFloat((p.value / base * 100).toFixed(2)),
+    })) };
+  });
   const tsSrc = aligned.reduce((best, s) =>
     s.series[s.series.length - 1].timestamp > best.series[best.series.length - 1].timestamp ? s : best
   );
