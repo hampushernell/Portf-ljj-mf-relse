@@ -218,7 +218,7 @@ export function computePortfolioContext({ latestNavTs, spanMonths, oldestTs, all
   const refNow = latestNavTs ?? latestSeriesTs ?? Date.now() / 1000;
   const actualFromTs = valid.length ? Math.min(...valid.map(s => s[0].timestamp)) : null;
   const endTs = latestSeriesTs ?? refNow;
-  const startTs = spanMonths === null ? (actualFromTs ?? refNow) : refNow - spanMonths * MONTH_SECS;
+  const startTs = actualFromTs ?? (spanMonths === null ? refNow : refNow - spanMonths * MONTH_SECS);
   const { spanHasFullData, isIncomplete, actualFromStr } = computeSpanMeta({ spanMonths, refNow, oldestTs, actualFromTs });
   return { refNow, startTs, endTs, spanHasFullData, isIncomplete, actualFromStr };
 }
