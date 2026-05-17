@@ -137,15 +137,11 @@ export function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, m
 
   if (!seriesList.length) return [];
 
-  const minLen = Math.min(...seriesList.map(s => s.series.length));
   const totalWeight = seriesList.reduce((acc, s) => acc + s.pct, 0);
 
-  // Align every series from the back so all share the same end date,
-  // then pick the one whose last point is latest as the timestamp reference.
   const aligned = seriesList.map(s => {
-    const sliced = s.series.slice(-minLen);
-    const base = sliced[0].value;
-    return { ...s, series: sliced.map((p, i) => ({
+    const base = s.series[0].value;
+    return { ...s, series: s.series.map((p, i) => ({
       ...p,
       value: i === 0 ? 100 : parseFloat((p.value / base * 100).toFixed(2)),
     })) };
@@ -154,7 +150,8 @@ export function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, m
     s.series[s.series.length - 1].timestamp > best.series[best.series.length - 1].timestamp ? s : best
   );
 
-  return Array.from({ length: minLen }, (_, i) => ({
+  const blendLen = Math.min(...aligned.map(s => s.series.length));
+  return Array.from({ length: blendLen }, (_, i) => ({
     month: i,
     timestamp: tsSrc.series[i].timestamp,
     value: parseFloat(
