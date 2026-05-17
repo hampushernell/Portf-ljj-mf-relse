@@ -206,15 +206,9 @@ export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, 
       value: idx === 0 ? 100 : parseFloat((p.value / base * 100).toFixed(2)),
     }));
 
-    let returnValue;
-    if (f.isManual) {
-      returnValue = f.returns?.[spanLabel] ?? 0;
-    } else {
-      const ownSeries = buildSeries(f.prices, spanMonths, sharedRef.latestNavTs);
-      returnValue = ownSeries.length >= 2
-        ? parseFloat((ownSeries[ownSeries.length - 1].value / ownSeries[0].value * 100 - 100).toFixed(2))
-        : 0;
-    }
+    const returnValue = graphSeries.length
+      ? parseFloat((graphSeries[graphSeries.length - 1].value - 100).toFixed(2))
+      : 0;
 
     return { name: f.name, color, series: graphSeries, returnValue };
   }).filter(Boolean);
