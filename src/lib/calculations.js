@@ -197,17 +197,25 @@ export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, 
       raw = buildSeries(f.prices, spanMonths, sharedRef.latestNavTs);
     }
     if (!raw?.length) return null;
+
     const sliced = raw.slice(-minLen);
     const base = sliced[0]?.value;
     if (!base || base <= 0) return null;
-    return {
-      name: f.name,
-      color,
-      series: sliced.map((p, idx) => ({
-        ...p,
-        value: idx === 0 ? 100 : parseFloat((p.value / base * 100).toFixed(2)),
-      })),
-    };
+    const graphSeries = sliced.map((p, idx) => ({
+      ...p,
+      value: idx === 0 ? 100 : parseFloat((p.value / base * 100).toFixed(2)),
+    }));
+
+    let returnValue;
+    if (f.isManual) {
+      returnValue = f.returns?.[spanLabel] ?? 0;
+    } else {
+      const rawReturn = buildSeries(f.prices, spanMonths, sharedRef.latestNavTs);
+      const rb = rawReturn[0]?.value;
+      returnValue = rb && rawReturn.length ? parseFloat(((rawReturn[rawReturn.length - 1].value / rb * 100) - 100).toFixed(2)) : 0;
+    }
+
+    return { name: f.name, color, series: graphSeries, returnValue };
   }).filter(Boolean);
 
   return { portfolioSeries: ps, fundLines, portfolioReturn: portfolioReturn(ps), oldestTs };

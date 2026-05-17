@@ -76,6 +76,7 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
             <div key={l.name} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <div style={{ width: "18px", height: "2px", background: l.color, borderRadius: "2px", opacity: 0.75 }} />
               <span style={{ fontSize: "11px", color: "#8a9bb0", fontFamily: "'DM Sans', sans-serif" }}>{l.name}</span>
+              <span style={{ fontSize: "11px", color: l.returnValue >= 0 ? "#6ee7b7" : "#f87171", fontWeight: 700, fontFamily: "'Syne', sans-serif" }}>{fmtPct(l.returnValue)}</span>
             </div>
           ))}
         </div>
