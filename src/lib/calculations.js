@@ -178,3 +178,14 @@ export function computeSpanMeta({ spanMonths, refNow, oldestTs, actualFromTs }) 
     : null;
   return { requestedCutoffTs, spanHasFullData, isIncomplete, actualFromStr };
 }
+
+export function computePortfolioContext({ latestNavTs, spanMonths, oldestTs, allSeries }) {
+  const valid = allSeries.filter(s => s?.length > 0);
+  const latestSeriesTs = valid.length ? Math.max(...valid.map(s => s[s.length - 1].timestamp)) : null;
+  const refNow = latestNavTs ?? latestSeriesTs ?? Date.now() / 1000;
+  const actualFromTs = valid.length ? Math.min(...valid.map(s => s[0].timestamp)) : null;
+  const endTs = latestSeriesTs ?? refNow;
+  const startTs = spanMonths === null ? (actualFromTs ?? refNow) : refNow - spanMonths * MONTH_SECS;
+  const { spanHasFullData, isIncomplete, actualFromStr } = computeSpanMeta({ spanMonths, refNow, oldestTs, actualFromTs });
+  return { refNow, startTs, endTs, spanHasFullData, isIncomplete, actualFromStr };
+}

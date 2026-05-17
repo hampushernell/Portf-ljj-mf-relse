@@ -1,16 +1,14 @@
-import { portfolioReturn, computeSpanMeta } from "../lib/calculations";
-import { ACCENT_A, ACCENT_B, MONTH_SECS, TIME_SPANS, formatKr, fmtPct } from "../lib/utils";
+import { portfolioReturn, computePortfolioContext } from "../lib/calculations";
+import { ACCENT_A, ACCENT_B, TIME_SPANS, formatKr, fmtPct } from "../lib/utils";
 import SVGChart from "./SVGChart";
 
 export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldestTsA, oldestTsB, onSpanChange, totalA, totalB, latestNavTs }) {
   const retA = portfolioReturn(seriesA);
   const retB = portfolioReturn(seriesB);
 
-  const refNow = latestNavTs ?? Date.now() / 1000;
   const oldestTs = [oldestTsA, oldestTsB].filter(Boolean).reduce((a, b) => Math.max(a, b), 0);
-  const actualFromTs = seriesA[0]?.timestamp ?? seriesB[0]?.timestamp;
-  const { requestedCutoffTs, spanHasFullData, isIncomplete, actualFromStr } =
-    computeSpanMeta({ spanMonths, refNow, oldestTs, actualFromTs });
+  const { refNow, startTs, endTs, spanHasFullData, isIncomplete, actualFromStr } =
+    computePortfolioContext({ latestNavTs, spanMonths, oldestTs, allSeries: [seriesA, seriesB] });
 
   return (
     <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px", animation: "scaleIn 0.3s ease" }}>
@@ -70,10 +68,6 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
 
       {(seriesA.length > 0 || seriesB.length > 0) && (() => {
         const fmtDate = ts => new Date(ts * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
-        const endTs   = Math.max(seriesA[seriesA.length - 1]?.timestamp ?? 0, seriesB[seriesB.length - 1]?.timestamp ?? 0);
-        const startTs = spanMonths === null
-          ? Math.min(...[seriesA[0]?.timestamp, seriesB[0]?.timestamp].filter(Boolean))
-          : refNow - spanMonths * MONTH_SECS;
         return (
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", padding: "0 2px" }}>
             <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}>

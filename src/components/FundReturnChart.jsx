@@ -1,13 +1,11 @@
-import { portfolioReturn, computeSpanMeta } from "../lib/calculations";
-import { MONTH_SECS, TIME_SPANS, formatKr, fmtFee, fmtPct } from "../lib/utils";
+import { portfolioReturn, computePortfolioContext } from "../lib/calculations";
+import { TIME_SPANS, formatKr, fmtFee, fmtPct } from "../lib/utils";
 import FundSVGChart from "./FundSVGChart";
 
 export default function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths, oldestTsA, onSpanChange, totalA, fee1, latestNavTs }) {
   const retPortfolio = portfolioReturn(portfolioSeries);
-  const refNow = latestNavTs ?? portfolioSeries[portfolioSeries.length - 1]?.timestamp ?? Date.now() / 1000;
-  const actualFromTs = portfolioSeries[0]?.timestamp;
-  const { requestedCutoffTs, spanHasFullData, isIncomplete, actualFromStr } =
-    computeSpanMeta({ spanMonths, refNow, oldestTs: oldestTsA, actualFromTs });
+  const { refNow, startTs, endTs, spanHasFullData, isIncomplete, actualFromStr } =
+    computePortfolioContext({ latestNavTs, spanMonths, oldestTs: oldestTsA, allSeries: [portfolioSeries] });
 
   return (
     <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px", animation: "scaleIn 0.3s ease" }}>
@@ -54,8 +52,6 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
 
       {portfolioSeries.length > 0 && (() => {
         const fmtDate = ts => new Date(ts * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
-        const endTs   = portfolioSeries[portfolioSeries.length - 1]?.timestamp;
-        const startTs = spanMonths === null ? portfolioSeries[0]?.timestamp : refNow - spanMonths * MONTH_SECS;
         return (
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", padding: "0 2px" }}>
             <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}>{fmtDate(startTs)}</span>
