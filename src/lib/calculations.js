@@ -198,10 +198,9 @@ export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, 
     }
     if (!raw?.length) return null;
 
-    const sliced = raw.slice(-minLen);
-    const base = sliced[0]?.value;
+    const base = raw[0]?.value;
     if (!base || base <= 0) return null;
-    const graphSeries = sliced.map((p, idx) => ({
+    const graphSeries = raw.map((p, idx) => ({
       ...p,
       value: idx === 0 ? 100 : parseFloat((p.value / base * 100).toFixed(2)),
     }));
