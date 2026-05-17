@@ -32,13 +32,19 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
     const mx   = (e.clientX - rect.left) * (W / rect.width);
     const idx  = Math.round(((mx - PL) / chartW) * (refSeries.length - 1));
     const ci   = Math.max(0, Math.min(refSeries.length - 1, idx));
+    const isLast = ci === refSeries.length - 1;
     setTooltip({
       x: toX(ci, refSeries.length),
       timestamp: refSeries[ci]?.timestamp,
       portfolio: portfolioSeries[ci]?.value,
       funds: lines.map(l => {
         const s = l.series;
-        return { name: l.name, color: l.color, value: s[Math.min(ci, s.length - 1)]?.value };
+        const ts = refSeries[ci]?.timestamp;
+        const idx = ts != null
+          ? s.reduce((best, p, i) => Math.abs(p.timestamp - ts) < Math.abs(s[best].timestamp - ts) ? i : best, 0)
+          : Math.min(ci, s.length - 1);
+        const value = isLast ? (100 + l.returnValue) : s[idx]?.value;
+        return { name: l.name, color: l.color, value };
       }),
     });
   }, [refSeries, portfolioSeries, lines]);
