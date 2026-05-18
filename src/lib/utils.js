@@ -26,7 +26,6 @@ export const MONTH_SECS = 30.44 * 24 * 3600;
 export const TIME_SPANS = [
   { label: "1 mån",  months: 1   },
   { label: "3 mån",  months: 3   },
-  { label: "6 mån",  months: 6   },
   { label: "1 år",   months: 12  },
   { label: "3 år",   months: 36  },
   { label: "Max",    months: null },
