@@ -94,17 +94,16 @@ export function getWeightedFee(funds, allocs, inputMode, portfolioTotal) {
 // every caller that uses the same ref produces series of identical length.
 export function getYahooRef(funds, months) {
   const latestNavTs = getLatestNavTs(funds);
-  let refEndTs = null, refLen = null;
+  let refLen = null;
   for (const f of funds) {
     if (f.isManual || !f.prices?.length) continue;
     const s = buildSeries(f.prices, months, latestNavTs);
     if (!s.length) continue;
     if (refLen === null || s.length < refLen) {
       refLen = s.length;
-      refEndTs = s[s.length - 1].timestamp;
     }
   }
-  return { refEndTs: refEndTs ?? latestNavTs, refLen, latestNavTs };
+  return { refEndTs: latestNavTs, refLen, latestNavTs };
 }
 
 export function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months, spanLabel, externalRef = null) {
