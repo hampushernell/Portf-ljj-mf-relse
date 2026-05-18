@@ -1,4 +1,9 @@
 import { MONTH_SECS } from "./utils";
+import { getLatestNavTs, normalizeToCalendar } from "./normalize";
+import { blendPortfolio, rebaseSeries } from "./blend";
+import { getDisplayRange } from "./dateRange";
+
+export { getLatestNavTs };
 
 function seededRng(seed) {
   let s = (seed ^ 0xdeadbeef) >>> 0;
@@ -8,16 +13,6 @@ function seededRng(seed) {
 function normalRandom(rng) {
   const u1 = Math.max(rng(), 1e-10);
   return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * rng());
-}
-
-export function getLatestNavTs(funds) {
-  let latest = null;
-  for (const f of funds) {
-    if (f.isManual || !f.prices?.length) continue;
-    const ts = f.prices[f.prices.length - 1].timestamp;
-    if (latest === null || ts > latest) latest = ts;
-  }
-  return latest ?? Date.now() / 1000;
 }
 
 export function buildSeries(prices, months, refNow = null) {
@@ -87,76 +82,56 @@ export function getWeightedFee(funds, allocs, inputMode, portfolioTotal) {
   }, 0);
 }
 
-// Returns the reference end-timestamp and step-count derived from the SHORTEST
-// Yahoo Finance series in `funds` for the given span.
-// Using the minimum guarantees that every Yahoo Finance series in the blend has
-// at least refLen points, so plain index-from-start blending stays correct and
-// every caller that uses the same ref produces series of identical length.
-export function getYahooRef(funds, months) {
-  const latestNavTs = getLatestNavTs(funds);
-  let refLen = null;
-  for (const f of funds) {
-    if (f.isManual || !f.prices?.length) continue;
-    const s = buildSeries(f.prices, months, latestNavTs);
-    if (!s.length) continue;
-    if (refLen === null || s.length < refLen) {
-      refLen = s.length;
-    }
-  }
-  return { refEndTs: latestNavTs, refLen, latestNavTs };
+// Thin stub kept for App.jsx compatibility — sharedRef.latestNavTs is passed to components.
+export function getYahooRef(funds) {
+  const n = getLatestNavTs(funds);
+  return { refEndTs: n, refLen: null, latestNavTs: n };
 }
 
-export function blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, months, spanLabel, externalRef = null) {
-  if (!funds.length) return [];
+export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, spanMonths, spanLabel, colors }) {
+  const latestNavTs = getLatestNavTs(funds);
+  const { startTs: rangeStart, endTs } = getDisplayRange(spanLabel, latestNavTs);
 
-  const { refEndTs, refLen, latestNavTs } = externalRef ?? getYahooRef(funds, months);
+  const tss = funds.flatMap(f => f.prices?.length ? [f.prices[0].timestamp] : []);
+  const oldestTs = tss.length ? Math.max(...tss) : null;
 
-  // Cache Yahoo Finance series (avoids rebuilding them twice).
-  const yahooCache = {};
-  for (const f of funds) {
-    if (!f.isManual && f.prices?.length) {
-      const s = buildSeries(f.prices, months, latestNavTs);
-      if (s.length) yahooCache[f.id] = s;
-    }
-  }
-
-  const seriesList = funds.map(f => {
+  const fundData = funds.map((f, i) => {
     const pct = getFundPct(f, allocs, inputMode, portfolioTotal);
     if (pct <= 0) return null;
+    const color = colors[i % colors.length];
+
     if (f.isManual) {
       const ret = f.returns?.[spanLabel];
-      if (!months || ret == null) return null;
-      // Generate with refLen steps ending at refEndTs so the series has the same
-      // length as the Yahoo Finance data and no truncation occurs.
-      return { pct, isManual: true, series: generateSimulatedSeries(ret, months, f.id, refEndTs, refLen) };
+      if (!spanMonths || ret == null) return null;
+      const raw = generateSimulatedSeries(ret, spanMonths, f.id, latestNavTs, null);
+      if (!raw.length) return null;
+      const normalized = normalizeToCalendar(raw, raw[0].timestamp, endTs);
+      const series = rebaseSeries(normalized);
+      if (!series.length) return null;
+      return { fund: f, pct, series, color };
     }
-    const s = yahooCache[f.id];
-    return s ? { pct, isManual: false, series: s } : null;
-  }).filter(s => s && s.pct > 0 && s.series.length > 0);
 
-  if (!seriesList.length) return [];
+    if (!f.prices?.length) return null;
+    const fundStart = rangeStart ?? f.prices[0].timestamp;
+    const normalized = normalizeToCalendar(f.prices, fundStart, endTs);
+    if (!normalized.length) return null;
+    const series = rebaseSeries(normalized);
+    if (!series.length) return null;
+    return { fund: f, pct, series, color };
+  }).filter(Boolean);
 
-  const totalWeight = seriesList.reduce((acc, s) => acc + s.pct, 0);
-
-  const aligned = seriesList.map(s => {
-    const base = s.series[0].value;
-    return { ...s, series: s.series.map((p, i) => ({
-      ...p,
-      value: i === 0 ? 100 : parseFloat((p.value / base * 100).toFixed(2)),
-    })) };
-  });
-  const tsSrc = aligned.reduce((best, s) =>
-    s.series[s.series.length - 1].timestamp > best.series[best.series.length - 1].timestamp ? s : best
+  const portfolioSeries = blendPortfolio(
+    fundData.map(d => ({ series: d.series, weight: d.pct }))
   );
 
-  const blendLen = Math.min(...aligned.map(s => s.series.length));
-  return Array.from({ length: blendLen }, (_, i) => ({
-    month: i,
-    timestamp: tsSrc.series[i].timestamp,
-    value: parseFloat(
-      aligned.reduce((acc, s) => acc + (s.pct / totalWeight) * s.series[i].value, 0).toFixed(2)
-    ),
-  }));
+  const fundLines = fundData.map(d => {
+    const returnValue = d.series.length
+      ? parseFloat((d.series[d.series.length - 1].value - 100).toFixed(2))
+      : 0;
+    return { name: d.fund.name, color: d.color, series: d.series, returnValue };
+  });
+
+  return { portfolioSeries, fundLines, portfolioReturn: portfolioReturn(portfolioSeries), oldestTs };
 }
 
 export function portfolioKrTotal(funds, allocs) {
@@ -173,42 +148,6 @@ export function computeSpanMeta({ spanMonths, refNow, oldestTs, actualFromTs }) 
     ? new Date(actualFromTs * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
     : null;
   return { requestedCutoffTs, spanHasFullData, isIncomplete, actualFromStr };
-}
-
-export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, spanMonths, spanLabel, colors, sharedRef }) {
-  const ps = blendPortfolioSeries(funds, allocs, inputMode, portfolioTotal, spanMonths, spanLabel, sharedRef);
-  const minLen = ps.length;
-
-  const tss = funds.flatMap(f => f.prices?.length ? [f.prices[0].timestamp] : []);
-  const oldestTs = tss.length ? Math.max(...tss) : null;
-
-  const fundLines = minLen === 0 ? [] : funds.map((f, i) => {
-    const color = colors[i % colors.length];
-    let raw;
-    if (f.isManual) {
-      const ret = f.returns?.[spanLabel];
-      if (!spanMonths || ret == null) return null;
-      raw = generateSimulatedSeries(ret, spanMonths, f.id, sharedRef.refEndTs, sharedRef.refLen);
-    } else {
-      raw = buildSeries(f.prices, spanMonths, sharedRef.latestNavTs);
-    }
-    if (!raw?.length) return null;
-
-    const base = raw[0]?.value;
-    if (!base || base <= 0) return null;
-    const graphSeries = raw.map((p, idx) => ({
-      ...p,
-      value: idx === 0 ? 100 : parseFloat((p.value / base * 100).toFixed(2)),
-    }));
-
-    const returnValue = graphSeries.length
-      ? parseFloat((graphSeries[graphSeries.length - 1].value - 100).toFixed(2))
-      : 0;
-
-    return { name: f.name, color, series: graphSeries, returnValue };
-  }).filter(Boolean);
-
-  return { portfolioSeries: ps, fundLines, portfolioReturn: portfolioReturn(ps), oldestTs };
 }
 
 export function computePortfolioContext({ latestNavTs, spanMonths, oldestTs, allSeries }) {

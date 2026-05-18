@@ -1,3 +1,13 @@
+export function getLatestNavTs(funds) {
+  let latest = null;
+  for (const f of funds) {
+    if (f.isManual || !f.prices?.length) continue;
+    const ts = f.prices[f.prices.length - 1].timestamp;
+    if (latest === null || ts > latest) latest = ts;
+  }
+  return latest ?? Date.now() / 1000;
+}
+
 export function normalizeToCalendar(prices, startTs, endTs) {
   if (!prices || prices.length === 0) return [];
 
