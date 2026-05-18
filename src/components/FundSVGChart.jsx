@@ -21,7 +21,6 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
 
   const baselineY = toY(100);
   const [tooltip, setTooltip] = useState(null);
-  const [hoveredLine, setHoveredLine] = useState(null);
   const svgRef = useRef(null);
 
   const refSeries = portfolioSeries.length ? portfolioSeries : lines[0]?.series ?? [];
@@ -54,7 +53,7 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block" }}
-        onMouseMove={handleMouseMove} onMouseLeave={() => { setTooltip(null); setHoveredLine(null); }}>
+        onMouseMove={handleMouseMove} onMouseLeave={() => setTooltip(null)}>
 
         {yTicks.map(({ v, y }, i) => (
           <g key={i}>
@@ -65,30 +64,17 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
         <line x1={PL} y1={baselineY} x2={W - PR} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
         {lines.map(l => {
           if (l.series.length <= 1) return null;
-          const isHovered = hoveredLine === l.name;
-          const dimmed = hoveredLine !== null && !isHovered;
           return (
-            <g key={l.color + l.name}>
-              <path
-                d={makePath(l.series)} fill="none" stroke={l.color}
-                strokeWidth={isHovered ? 2.5 : 1.5}
-                strokeLinecap="round" strokeLinejoin="round"
-                opacity={dimmed ? 0.2 : isHovered ? 1.0 : 0.80}
-style={{ transition: "opacity 0.15s, stroke-width 0.15s" }}
-              />
-              <path
-                d={makePath(l.series)} fill="none" stroke="transparent" strokeWidth="14"
-                onMouseEnter={() => setHoveredLine(l.name)}
-                onMouseLeave={() => setHoveredLine(null)}
-                style={{ cursor: "crosshair" }}
-              />
-            </g>
+            <path key={l.color + l.name}
+              d={makePath(l.series)} fill="none" stroke={l.color}
+              strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+              opacity="0.80"
+            />
           );
         })}
         {showPortfolioLine && portfolioSeries.length > 1 && (
           <path d={makePath(portfolioSeries)} fill="none" stroke="rgba(255,255,255,0.88)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-            opacity={hoveredLine !== null ? 0.25 : 1}
-            style={{ transition: "opacity 0.15s" }}
+            opacity="1"
           />
         )}
         {tooltip && (

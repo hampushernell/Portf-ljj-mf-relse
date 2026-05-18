@@ -1,51 +1,57 @@
-# Return System Rules
+Tidsspan
+Hanteras uteslutande av getDisplayRange(spanLabel, endTs) i dateRange.js.
+Tillgängliga span: "1 mån", "3 mån", "1 år", "3 år", "Max"
+Beräkning: exakt UTC-kalenderaritmetik bakåt från endTs. Aldrig approximation med dagar eller sekunder. Månadsslutskantfall hanteras — om måldagen inte existerar används sista dagen i målmånaden.
+endTs är alltid latestNavTs — senaste tillgängliga NAV bland alla fonder i portföljen. Aldrig Date.now().
+Max returnerar { startTs: null, endTs } — null signalerar "använd all tillgänglig data".
 
-## 1Y Return
+Normalisering
+Hanteras av normalizeToCalendar(prices, startTs, endTs) i normalize.js.
 
-- Ska baseras på senaste tillgängliga NAV
-- Inte dagens datum
-- Närmaste historiska NAV används
-- Om exakt datum saknas används närmaste tidigare handelsdag
+En datapunkt per kalenderdag
+Forward fill från senaste handelsdag för helger och helgdagar
+Dagar innan fondens första datapunkt utelämnas — aldrig null eller noll
+Alla fonder delar samma kalenderaxel efter normalisering
 
-## Charts
 
-- Alla grafer använder samma referenslogik
-- Alla procenttal använder samma return calculation
+Rebasering och blandning
+Hanteras av rebaseSeries och blendPortfolio i blend.js.
+Rebasering:
 
-## Time periods
+Varje fond rebaseras individuellt från sin egen första tillgängliga datapunkt = 100
+Mutation av input sker aldrig
 
-- 1M
-- 3M
-- 6M
-- 1Y
-- 3Y
-- MAX
+Portföljblandning:
 
-ska alla använda samma datumstrategi
+Startpunkt = senaste av alla fonders första datum (inner join)
+Fonder med kortare historik påverkar inte andra fonders startpunkt
+Vikter normaliseras alltid till 100% i blandningen
+Dagar som saknas i någon fond inkluderas inte i portföljserien
 
----
+Individuella fondlinjer:
 
-## Kritiska regler — rör ej utan förståelse
+Varje fond börjar från sin egen första datapunkt oberoende av portföljens startpunkt
+Slutpunkt är alltid latestNavTs för alla linjer
 
-### slice(-minLen) får inte användas för individuella fondlinjer
 
-`computeReturnBundle` i `calculations.js` bygger `graphSeries` per fond.
-Använd INTE `slice(-minLen)` här. `minLen` baseras på portföljseriens längd
-och trimmar varje fonds startpunkt beroende på vilka andra fonder som finns
-i portföljen — vilket ger fel avkastning per fond.
+Avkastningsberäkning
 
-Varje fond ska rebaseras från sin egen `raw[0].value` utan trimning.
+Avkastning = sista värdet i serien − 100
+Legend och tooltip använder alltid samma beräkning och samma serie
+Ingen separat avkastningsberäkning utanför blend.js och calculations.js
 
-### blendPortfolioSeries får inte trimma från slutet
 
-`aligned`-steget i `blendPortfolioSeries` ska INTE använda `slice(-minLen)`.
-Portföljserien ska starta från den tidigaste gemensamma startpunkten.
-Trimning bakifrån förskjuter startdatumet när fonder har marginellt olika
-antal datapunkter.
+Visning
 
-### Tooltip vid slutpunkten använder returnValue direkt
+Slutdatum i tidslinje = latestNavTs, alltid
+Startdatum i tidslinje = portföljens faktiska startpunkt (inner join)
+Fond med kortare historik: linjen börjar senare i grafen med visuell startmarkör
+Varning i legend för fonder som inte täcker hela det valda spannet
 
-I `FundSVGChart.jsx` används timestamp-matchning för att hitta rätt index
-i varje fonds serie vid hover. Vid slutpunkten (`ci === refSeries.length - 1`)
-används `l.returnValue` direkt istället för att indexera in i serien.
-Detta garanterar att tooltip och legend alltid visar samma värde vid slutpunkten.
+
+Kritiska regler
+Rör aldrig dessa utan att förstå konsekvensen:
+MONTH_SECS används inte längre för spanberäkning — all tidslogik går via getDisplayRange. Om konstanten finns kvar i utils.js är den legacy och ska inte användas i ny kod.
+buildSeries är legacy — används endast av FundDetailsModal. Ny kod ska aldrig anropa den.
+getYahooRef är en stub som endast exponerar latestNavTs för bakåtkompatibilitet med App.jsx. Ska fasas ut när App.jsx refaktoreras.
+Inner join i blendPortfolio får aldrig ersättas med index-baserad blandning — det är grundorsaken till det ursprungliga datumproblemet.
