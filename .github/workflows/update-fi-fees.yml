@@ -1,0 +1,41 @@
+name: Update FI Fund Fees
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+
+jobs:
+  update-fees:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installera beroenden
+        run: npm ci
+
+      - name: Hämta FI-avgifter
+        run: node --max-old-space-size=512 scripts/fetch-fi-fees.mjs
+
+      - name: Committa om fi-fees.json ändrades
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet src/data/fi-fees.json; then
+            echo "Ingen ändring i fi-fees.json – hoppar över commit"
+          else
+            PERIOD=$(jq -r '._meta.period // ""' src/data/fi-fees.json)
+            git add src/data/fi-fees.json
+            git commit -m "chore: update FI fund fees ${PERIOD}"
+            git push
+          fi

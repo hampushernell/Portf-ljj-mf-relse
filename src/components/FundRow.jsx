@@ -2,6 +2,32 @@ import { useState } from "react";
 import { getFundPct } from "../lib/calculations";
 import { formatKr, fmtFee } from "../lib/utils";
 
+const FEE_BADGE = {
+  fi:          { color: "#4ade80", bg: "rgba(74,222,128,0.12)" },
+  morningstar: { color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
+  fallback:    { color: "#6b7280", bg: "rgba(107,114,128,0.12)" },
+};
+
+function FeeBadge({ source, period }) {
+  if (!source) return null;
+  const style = FEE_BADGE[source];
+  if (!style) return null;
+  const label   = source === "fi" ? (period ?? "FI") : source === "morningstar" ? "Morningstar" : "Uppskattad";
+  const tooltip = source === "fi"
+    ? `Löpande kostnader rapporterade till Finansinspektionen${period ? `, ${period}` : ""}`
+    : source === "morningstar"
+    ? "Avgift hämtad från Morningstar via Yahoo Finance"
+    : "Uppskattad avgift – ingen extern källa tillgänglig";
+  return (
+    <span title={tooltip} style={{
+      fontSize: "9px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+      color: style.color, background: style.bg,
+      padding: "1px 5px", borderRadius: "4px", lineHeight: "14px",
+      whiteSpace: "nowrap", cursor: "default",
+    }}>{label}</span>
+  );
+}
+
 export default function FundRow({ fund, allocation, inputMode, portfolioTotal, onUpdate, onRemove, onEdit, dotColor, spanHasData = true }) {
   const pct = getFundPct(fund, { [fund.id]: allocation }, inputMode, portfolioTotal);
   const kr  = inputMode === "kr" ? (allocation.kr || 0) : (portfolioTotal * (allocation.pct || 0) / 100);
@@ -30,8 +56,9 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
             <span style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", color: "#f0ede8", fontWeight: 600 }}>{fund.name}</span>
             {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: "#f59e0b", fontSize: "11px", lineHeight: 1 }}>⚠</span>}
           </div>
-          <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "1px" }}>
-            {fund.category} · {fmtFee(fund.fee)} avgift
+          <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "1px", display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+            <span>{fund.category} · {fmtFee(fund.fee)} avgift</span>
+            <FeeBadge source={fund.feeSource} period={fund.feePeriod} />
             {fund.currentPrice && <span> · {fund.currentPrice.toFixed(2)} SEK</span>}
           </div>
           {fund.isManual && fund.updatedAt && (() => {

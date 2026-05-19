@@ -1,4 +1,15 @@
 import { useState, useEffect } from "react";
+import fiFees from "../data/fi-fees.json";
+import { FUND_ISINS } from "../lib/utils";
+
+// Bygg upp ISIN→avgift och ISIN→ticker från FI-data
+const FI_FEE_MAP = Object.fromEntries(
+  Object.entries(fiFees).filter(([k]) => k !== "_meta")
+);
+const FI_PERIOD = fiFees._meta?.period ?? null;
+
+// Bygg ticker→ISIN-lookup (inverterad FUND_ISINS)
+const TICKER_TO_ISIN = FUND_ISINS;
 
 const FUND_FEES = {
   "0P0001ECQR.ST": 0.08,  // Avanza Global
@@ -28,10 +39,19 @@ export default function useFundData() {
       .then(data => {
         const funds = data.funds
           .filter(f => !f.error && f.prices?.length > 0)
-          .map(f => ({
-            ...f,
-            fee: f.fee ?? FUND_FEES[f.ticker] ?? 0,
-          }));
+          .map(f => {
+            const isin   = TICKER_TO_ISIN[f.ticker];
+            const fiFee  = isin !== undefined ? FI_FEE_MAP[isin] : undefined;
+            const msFee  = f.fee;
+            const fbFee  = FUND_FEES[f.ticker];
+            const fee        = fiFee  !== undefined ? fiFee
+                             : msFee  !== undefined && msFee !== null ? msFee
+                             : fbFee  ?? 0;
+            const feeSource  = fiFee  !== undefined ? "fi"
+                             : msFee  !== undefined && msFee !== null ? "morningstar"
+                             : "fallback";
+            return { ...f, fee, feeSource, feePeriod: feeSource === "fi" ? FI_PERIOD : null };
+          });
         const failed = data.funds
           .filter(f => f.error || !f.prices?.length)
           .map(f => f.name ?? f.ticker ?? "Okänd fond");
