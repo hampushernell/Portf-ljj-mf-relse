@@ -17,9 +17,10 @@ const FUND_FEES = {
 };
 
 export default function useFundData() {
-  const [allFunds, setAllFunds] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+  const [allFunds, setAllFunds]       = useState([]);
+  const [failedFunds, setFailedFunds] = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState(null);
 
   useEffect(() => {
     fetch("/api/funds")
@@ -31,7 +32,11 @@ export default function useFundData() {
             ...f,
             fee: f.fee ?? FUND_FEES[f.ticker] ?? 0,
           }));
+        const failed = data.funds
+          .filter(f => f.error || !f.prices?.length)
+          .map(f => f.name ?? f.ticker ?? "Okänd fond");
         setAllFunds(funds);
+        setFailedFunds(failed);
         setLoading(false);
       })
       .catch(() => {
@@ -40,5 +45,5 @@ export default function useFundData() {
       });
   }, []);
 
-  return { allFunds, loading, error };
+  return { allFunds, failedFunds, loading, error };
 }

@@ -19,7 +19,7 @@ import ReturnChart from "./components/ReturnChart";
 import FundReturnChart from "./components/FundReturnChart";
 
 export default function App() {
-  const { allFunds, loading, error } = useFundData();
+  const { allFunds, failedFunds, loading, error } = useFundData();
   const [manualFundsDb, setManualFundsDb] = useState(loadManualFunds);
   const portfolioA = usePortfolio(manualFundsDb);
   const portfolioB = usePortfolio(manualFundsDb);
@@ -115,6 +115,12 @@ export default function App() {
         {error && (
           <div style={{ padding: "16px", background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "10px", color: "#f87171", fontSize: "13px", fontFamily: "'Syne', sans-serif" }}>
             {error}
+          </div>
+        )}
+
+        {!loading && failedFunds.length > 0 && (
+          <div style={{ padding: "16px", background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.3)", borderRadius: "10px", color: "#fbbf24", fontSize: "13px", fontFamily: "'Syne', sans-serif" }}>
+            {failedFunds.join(", ")} kunde inte laddas just nu – försök igen senare
           </div>
         )}
 
