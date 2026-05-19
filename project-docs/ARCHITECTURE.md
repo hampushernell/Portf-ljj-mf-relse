@@ -118,3 +118,4 @@ Varje komponent:
 - App.jsx ska hållas så ren som möjligt
 - Reuse före ny implementation
 - Legacy-funktioner (buildSeries, getYahooRef) får inte användas i ny kod
+- Avgiftslogik och datakällor dokumenteras i FEE_ENGINE.md
