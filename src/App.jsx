@@ -8,6 +8,7 @@ import {
 import { formatCompareStats } from "./lib/comparisons";
 import useFundData from "./hooks/useFundData";
 import usePortfolio from "./hooks/usePortfolio";
+import { loadManualFunds, saveManualFunds } from "./lib/storage";
 import {
   ACCENT_A, ACCENT_A_LIGHT, ACCENT_B, BG,
   FUND_COLORS, TIME_SPANS,
@@ -19,9 +20,7 @@ import FundReturnChart from "./components/FundReturnChart";
 
 export default function App() {
   const { allFunds, loading, error } = useFundData();
-  const [manualFundsDb, setManualFundsDb] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("manualFunds") || "[]"); } catch { return []; }
-  });
+  const [manualFundsDb, setManualFundsDb] = useState(loadManualFunds);
   const portfolioA = usePortfolio(manualFundsDb);
   const portfolioB = usePortfolio(manualFundsDb);
   const [viewMode, setViewMode] = useState("fund");
@@ -51,13 +50,13 @@ export default function App() {
   const saveManualFund = fund => {
     const updated = [...manualFundsDb.filter(f => f.id !== fund.id), fund];
     setManualFundsDb(updated);
-    localStorage.setItem("manualFunds", JSON.stringify(updated));
+    saveManualFunds(updated);
   };
 
   const deleteManualFund = id => {
     const updated = manualFundsDb.filter(f => f.id !== id);
     setManualFundsDb(updated);
-    localStorage.setItem("manualFunds", JSON.stringify(updated));
+    saveManualFunds(updated);
     portfolioA.removeFund(id);
     portfolioB.removeFund(id);
   };
