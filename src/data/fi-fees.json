@@ -1,9 +1,17 @@
 {
   "_meta": {
     "source": "Finansinspektionen fondinnehav",
-    "period": null,
-    "published": null,
-    "retrievedAt": null,
-    "field": null
-  }
+    "period": "2025Q4",
+    "published": "2026-04-15",
+    "retrievedAt": "2026-05-19T19:33:30.117Z",
+    "field": "Förvaltningsavgift"
+  },
+  "SE0000739195": 0.4,
+  "SE0001466368": 0.65,
+  "SE0011309707": 0.4,
+  "SE0001718388": 0,
+  "SE0011527613": 0.08,
+  "SE0002656611": 0.2,
+  "SE0005188836": 0.2,
+  "SE0000671919": 0.3
 }
