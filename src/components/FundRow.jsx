@@ -14,7 +14,7 @@ function FeeBadge({ source, period }) {
   if (!style) return null;
   const label   = source === "fi" ? (period ?? "FI") : source === "morningstar" ? "Morningstar" : "Uppskattad";
   const tooltip = source === "fi"
-    ? `Löpande kostnader rapporterade till Finansinspektionen${period ? `, ${period}` : ""}`
+    ? `Förvaltningsavgift rapporterad till Finansinspektionen${period ? `, ${period}` : ""}`
     : source === "morningstar"
     ? "Avgift hämtad från Morningstar via Yahoo Finance"
     : "Uppskattad avgift – ingen extern källa tillgänglig";

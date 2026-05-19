@@ -145,6 +145,7 @@ async function main() {
 
   for (const isin of TARGET_ISINS) {
     if (!(isin in fees)) {
+      // SE0004297927 (Spiltan) rapporterar sporadiskt till FI — faller tillbaka på Morningstar
       console.warn(`VARNING: ISIN ${isin} (${ISIN_TO_TICKER[isin] ?? "okänd"}) saknas i FI-data`);
     }
   }
