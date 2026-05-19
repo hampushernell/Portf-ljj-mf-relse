@@ -1,4 +1,4 @@
-const MS_TOKEN = "9vehuxllxs";
+const MS_TOKEN = process.env.MORNINGSTAR_TOKEN;
 
 async function fetchMorningstarFee(msId) {
   try {
