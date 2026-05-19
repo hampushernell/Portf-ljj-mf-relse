@@ -1,3 +1,5 @@
+import { FUNDS_REGISTRY } from "../src/lib/funds-registry.js";
+
 const MS_TOKEN = process.env.MORNINGSTAR_TOKEN;
 
 async function fetchMorningstarFee(msId) {
@@ -29,23 +31,7 @@ async function fetchMorningstarFee(msId) {
 }
 
 export default async function handler(req, res) {
-  const tickers = [
-    // Globalfonder
-    { id: 1,  ticker: "0P0001ECQR.ST", name: "Avanza Global",                      category: "Globalfond" },
-    { id: 2,  ticker: "0P0001CKSU.ST", name: "Nordea Global Enhanced Growth",       category: "Globalfond" },
-    { id: 3,  ticker: "0P0000YVZ3.ST", name: "Länsförsäkringar Global Index",       category: "Globalfond" },
-    { id: 4,  ticker: "0P0000XAIN.ST", name: "Nordea Global Index Select",          category: "Globalfond" },
-    { id: 5,  ticker: "0P0001F3XN.ST", name: "Handelsbanken Global Index",          category: "Globalfond" },
-    { id: 6,  ticker: "0P0001Q6FC.ST", name: "DNB Global Indeks S",                 category: "Globalfond" },
-    { id: 7,  ticker: "0P00000LST.ST", name: "Storebrand Global All Countries",     category: "Globalfond" },
-    // Sverigefonder
-    { id: 8,  ticker: "0P00005U1J.ST", name: "Avanza Zero",                         category: "Sverigefond" },
-    { id: 9,  ticker: "0P0001JF8S.ST", name: "Nordea Swedish Sustainable Enhanced", category: "Sverigefond" },
-    { id: 10, ticker: "0P00000K12.ST", name: "AMF Aktiefond Sverige",               category: "Sverigefond" },
-    { id: 11, ticker: "0P00001DF8.ST", name: "Handelsbanken Sverige Index",         category: "Sverigefond" },
-    { id: 12, ticker: "0P0000ULAP.ST", name: "Spiltan Aktiefond Investmentbolag",  category: "Sverigefond" },
-    { id: 13, ticker: "0P0000J1JM.ST", name: "Länsförsäkringar Sverige Index",     category: "Sverigefond" },
-  ];
+  const tickers = FUNDS_REGISTRY;
 
   try {
     const results = await Promise.all(tickers.map(async (fund) => {

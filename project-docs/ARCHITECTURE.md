@@ -62,9 +62,13 @@ Ansvarar för ren business logic och shared utilities.
 - comparisons.js
   - formatCompareStats() — jämförelselogik mellan portföljer
 
+- funds-registry.js
+  - central fonddefinition — källa för ticker, ISIN, namn, kategori och fallback-avgift. Enda stället att redigera vid tillägg av ny fond.
+
 - utils.js
   - formatteringsfunktioner
   - shared constants (TIME_SPANS, FUND_COLORS, accent-färger)
+  - FUND_ISINS — deriveras från funds-registry.js
 
 ---
 

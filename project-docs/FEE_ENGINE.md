@@ -21,7 +21,7 @@ tillgänglig och aldrig visa en avgift utan att ange varifrån den kommer.
    Inofficiellt API — kan sluta fungera utan varsel.
 
 3. **Fallback-tabell** (`feeSource: "fallback"`)
-   Hårdkodade avgifter i `useFundData.js` (FUND_FEES).
+   Hårdkodade avgifter i `src/lib/funds-registry.js` (fältet `fallbackFee`).
    Används om både FI och Morningstar saknar data.
    Manuellt underhållen — uppdatera vid fondernas årliga avgiftsrevision.
 
@@ -37,7 +37,7 @@ Flöde:
 1. Skrapar fi.se dynamiskt för senaste ZIP-filnamn
 2. Laddar ner och packar upp ZIP i minnet
 3. Parsar XML och extraherar Förvaltningsavgift_fast per ISIN
-4. Matchar mot FUND_ISINS i utils.js
+4. Matchar mot FUND_ISINS (deriverat från funds-registry.js via utils.js)
 5. Skriver till src/data/fi-fees.json om data ändrats
 6. Committar med meddelandet `chore: update FI fund fees [PERIOD]`
 
@@ -86,6 +86,6 @@ Vid nätverksfel: befintlig fi-fees.json bevaras, varning loggas, exit 0.
 ## Kritiska regler
 
 - Rör aldrig prioritetsordningen i useFundData.js utan att uppdatera denna fil
-- Fallback-tabellen FUND_FEES ska uppdateras manuellt vid fondernas årliga avgiftsrevision (typiskt januari–mars)
+- Fallback-fältet `fallbackFee` i `src/lib/funds-registry.js` ska uppdateras manuellt vid fondernas årliga avgiftsrevision (typiskt januari–mars)
 - Skriptet scripts/fetch-fi-fees.mjs ska aldrig hårdkoda ZIP-URL:en — den scrapar alltid fi.se dynamiskt
 - feeSource och feePeriod ska alltid följa med fondobjektet genom hela datapipelinen
