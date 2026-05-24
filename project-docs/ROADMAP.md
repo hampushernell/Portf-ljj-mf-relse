@@ -15,19 +15,19 @@ Appen saknar mobilstöd, automatiska tester och har ett antal kända tekniska sk
 
 Mål: trygg grund innan ny funktionalitet byggs.
 
-- [ ] Fyll i STACK.md med teknikstack och projektstruktur
+- [x] Fyll i STACK.md med teknikstack och projektstruktur
 - [ ] Flytta ms_token från funds.js till miljövariabel
-- [ ] Lägg till schemaVersion i localStorage för manualFunds med migrationsfunktion
-- [ ] Visa tydligt i UI vilka fonder som misslyckades att ladda från Yahoo Finance
+- [x] Lägg till schemaVersion i localStorage för manualFunds med migrationsfunktion — hanterar tre äldre format: rå array, { version/funds }, samt saknad schemaVersion
+- [x] Visa tydligt i UI vilka fonder som misslyckades att ladda från Yahoo Finance — visas som notis i FundSearch när sökfältet är tomt
 - [ ] Unit tests för dateRange.js och blend.js
 
 ## Fas 2 – Avgifter och datakvalitet
 
 Mål: avgiften är en kärnfunktion och måste vara korrekt och transparent.
 
-- [ ] Audit av alla 13 fonders avgifter mot Morningstar
-- [ ] Varning i UI när fondens avgift kommer från hårdkodad fallback (FUND_FEES) istället för Morningstar
-- [ ] Visa avgiftskälla i FundDetailsModal
+- [x] Audit av alla 13 fonders avgifter — 8 fonder täcks av FI, 5 av fallback-tabell, dokumenterat i FEE_ENGINE.md
+- [x] Källbadge i UI för alla fonder — "FI" (turkos) eller "Manuell" (grå) med tooltip, visas i FundRow och FundDetailsModal
+- [x] Avgiftsmodal i PortfolioPanel med förklaring av viktad avgift, källbeskrivning och Morningstar-verifieringslänkar
 
 ## Fas 3 – Mobildesign
 
@@ -59,7 +59,6 @@ Mål: bredare fondutbud med bibehållen datakvalitet.
 ## Teknisk skuld
 
 - ms_token ligger i klartext i funds.js – ska till miljövariabel (Fas 1)
-- Avgifter hanteras på två ställen: Morningstar-fetch i funds.js och FUND_FEES i useFundData.js – ska konsolideras (Fas 2)
 - buildSeries i calculations.js är legacy – används endast av FundDetailsModal, ska fasas ut
 - getYahooRef i calculations.js är en stub för bakåtkompatibilitet – ska fasas ut när App.jsx refaktoreras
 - Ingen mobilanpassning trots "mobil först" i AI_RULES.md (Fas 3)
