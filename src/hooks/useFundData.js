@@ -35,6 +35,7 @@ export default function useFundData() {
             const feeSource  = fiFee  !== undefined ? "fi"
                              : msFee  !== undefined && msFee !== null ? "morningstar"
                              : "fallback";
+            console.log(`[fee] ${f.name} | fee=${fee} | feeSource=${feeSource}`);
             return { ...f, fee, feeSource, feePeriod: feeSource === "fi" ? FI_PERIOD : null };
           });
         const failed = data.funds

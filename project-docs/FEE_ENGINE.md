@@ -2,7 +2,7 @@
 
 ## Översikt
 
-Avgiftsmotorn hämtar fondavgifter från tre källor i prioritetsordning och exponerar
+Avgiftsmotorn hämtar fondavgifter från två källor i prioritetsordning och exponerar
 källan transparent i UI:t. Målet är att alltid visa reglerad data när den finns
 tillgänglig och aldrig visa en avgift utan att ange varifrån den kommer.
 
@@ -15,14 +15,9 @@ tillgänglig och aldrig visa en avgift utan att ange varifrån den kommer.
    Juridiskt bindande rapportering under Lag (2004:46) om värdepappersfonder.
    Lagras i `src/data/fi-fees.json` och uppdateras automatiskt månadsvis.
 
-2. **Morningstar** (`feeSource: "morningstar"`)
-   OngoingCharge hämtat live via Morningstar-API i `api/funds.js`.
-   Används för utländska fonder (FI, NO, LU) som inte rapporterar till FI.
-   Inofficiellt API — kan sluta fungera utan varsel.
-
-3. **Fallback-tabell** (`feeSource: "fallback"`)
+2. **Fallback-tabell** (`feeSource: "fallback"`)
    Hårdkodade avgifter i `src/lib/funds-registry.js` (fältet `fallbackFee`).
-   Används om både FI och Morningstar saknar data.
+   Används om FI saknar data för fonden.
    Manuellt underhållen — uppdatera vid fondernas årliga avgiftsrevision.
 
 ---
@@ -75,11 +70,11 @@ Vid nätverksfel: befintlig fi-fees.json bevaras, varning loggas, exit 0.
 | Handelsbanken Global Index | SE0011309707 | fi | |
 | Handelsbanken Sverige Index | SE0001466368 | fi | |
 | Avanza Zero | SE0001718388 | fi | |
-| Spiltan Aktiefond Investmentbolag | SE0004297927 | morningstar | Rapporterar sporadiskt till FI |
-| Nordea Global Enhanced Growth | FI4000261326 | morningstar | Finländsk fond |
-| Nordea Global Index Select | FI4000046685 | morningstar | Finländsk fond |
-| DNB Global Indeks S | NO0010827280 | morningstar | Norsk fond |
-| Nordea Swedish Sustainable Enhanced | LU2122930915 | morningstar | Luxemburgfond |
+| Spiltan Aktiefond Investmentbolag | SE0004297927 | fallback | Rapporterar sporadiskt till FI |
+| Nordea Global Enhanced Growth | FI4000261326 | fallback | Finländsk fond |
+| Nordea Global Index Select | FI4000046685 | fallback | Finländsk fond |
+| DNB Global Indeks S | NO0010827280 | fallback | Norsk fond |
+| Nordea Swedish Sustainable Enhanced | LU2122930915 | fallback | Luxemburgfond |
 
 ---
 
