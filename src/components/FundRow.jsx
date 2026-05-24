@@ -1,23 +1,33 @@
 import { useState } from "react";
 import { getFundPct } from "../lib/calculations";
 import { formatKr, fmtFee } from "../lib/utils";
+import fiFees from "../data/fi-fees.json";
+
+const FI_PUBLISHED = fiFees._meta?.published
+  ? new Date(fiFees._meta.published).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
+  : null;
 
 const FEE_BADGE = {
-  fi:          { color: "#4ade80", bg: "rgba(74,222,128,0.12)" },
-  morningstar: { color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
-  fallback:    { color: "#6b7280", bg: "rgba(107,114,128,0.12)" },
+  fi:       { color: "#3a9aa8", bg: "rgba(58,154,168,0.12)" },
+  fallback: { color: "#94a3b8", bg: "rgba(148,163,184,0.12)" },
 };
 
-function FeeBadge({ source, period }) {
+function FeeBadge({ source, period, isManual, updatedAt }) {
   if (!source) return null;
   const style = FEE_BADGE[source];
   if (!style) return null;
-  const label   = source === "fi" ? (period ?? "FI") : source === "morningstar" ? "Morningstar" : "Uppskattad";
-  const tooltip = source === "fi"
-    ? `Förvaltningsavgift rapporterad till Finansinspektionen${period ? `, ${period}` : ""}`
-    : source === "morningstar"
-    ? "Avgift hämtad från Morningstar via Yahoo Finance"
-    : "Uppskattad avgift – ingen extern källa tillgänglig";
+  const label = source === "fi" ? "FI" : "Manuell";
+  let tooltip;
+  if (source === "fi") {
+    tooltip = `Förvaltningsavgift från Finansinspektionen · Period: ${period ?? ""}${FI_PUBLISHED ? ` · Publicerad: ${FI_PUBLISHED}` : ""}`;
+  } else if (isManual) {
+    const dateStr = updatedAt
+      ? new Date(updatedAt).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" })
+      : null;
+    tooltip = `Manuellt tillagd fond · Avgiften är angiven av dig${dateStr ? ` · Senast ändrad: ${dateStr}` : ""}`;
+  } else {
+    tooltip = "Avgiften saknar FI-data och är manuellt angiven i fondregistret";
+  }
   return (
     <span title={tooltip} style={{
       fontSize: "9px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
@@ -58,7 +68,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
           </div>
           <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "1px", display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
             <span>{fund.category} · {fmtFee(fund.fee)} avgift</span>
-            <FeeBadge source={fund.feeSource} period={fund.feePeriod} />
+            <FeeBadge source={fund.feeSource} period={fund.feePeriod} isManual={fund.isManual ?? false} updatedAt={fund.updatedAt} />
             {fund.currentPrice && <span> · {fund.currentPrice.toFixed(2)} SEK</span>}
           </div>
           {fund.isManual && fund.updatedAt && (() => {

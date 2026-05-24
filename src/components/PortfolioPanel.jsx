@@ -19,6 +19,7 @@ function BriefcaseIcon({ color }) {
 export default function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onInputModeChange, onManualAmountChange, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode, span, onSaveManualFund, onDeleteManualFund, onUpdateFundData }) {
   const [showDetails, setShowDetails] = useState(false);
   const [editingFund, setEditingFund] = useState(null);
+  const [showFeeInfo, setShowFeeInfo] = useState(false);
   const portfolioTotal = inputMode === "kr" ? portfolioKrTotal(funds, allocations) : manualAmount;
   const fee = getWeightedFee(funds, allocations, inputMode, portfolioTotal);
   const totalPct = inputMode === "pct"
@@ -104,7 +105,17 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           <div style={{ fontSize: "9px", color: "#5a6e8a", marginBottom: "10px", fontFamily: "'Syne', sans-serif", textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
           <div style={{ display: "flex", gap: "10px" }}>
             <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px", boxShadow: "0 3px 10px rgba(0,0,0,0.35)" }}>
-              <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>Avgift/år</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
+                <span style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em" }}>Avgift/år</span>
+                <button
+                  onClick={() => setShowFeeInfo(true)}
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center",
+                    width: "15px", height: "15px", borderRadius: "50%",
+                    border: "1px solid rgba(255,255,255,0.2)", background: "none",
+                    color: "#5a6e8a", fontSize: "9px", cursor: "pointer", lineHeight: 1,
+                    fontFamily: "'Syne', sans-serif", flexShrink: 0, padding: 0 }}
+                >?</button>
+              </div>
               <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "17px", fontWeight: 700, color: accentText }}>{fmtFee(fee)}</div>
               {portfolioTotal > 0 && <div style={{ fontSize: "10px", color: "#5a6e8a", marginTop: "2px" }}>{formatKr(portfolioTotal * fee / 100)}</div>}
             </div>
@@ -143,6 +154,76 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           funds={funds} accent={accent} accentRgb={accentRgb} label={label}
           onClose={() => setShowDetails(false)}
         />
+      )}
+
+      {showFeeInfo && (
+        <div
+          onClick={() => setShowFeeInfo(false)}
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)",
+            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000,
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: "#0d1120", border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: "16px", padding: "24px", maxWidth: "420px", width: "100%",
+              fontFamily: "'Syne', sans-serif",
+            }}
+          >
+            <div style={{ fontSize: "15px", fontWeight: 700, color: "#f0ede8", marginBottom: "12px" }}>Om avgifterna i portföljen</div>
+            <p style={{ fontSize: "12px", color: "#94a3b8", lineHeight: 1.6, margin: "0 0 16px 0" }}>
+              Den visade avgiften är den viktade förvaltningsavgiften — varje fonds avgift vägs mot dess andel av portföljvärdet och justeras automatiskt när du ändrar fördelningen.
+            </p>
+            <div style={{ display: "flex", gap: "10px", marginBottom: "10px", alignItems: "flex-start" }}>
+              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#3a9aa8", flexShrink: 0, marginTop: "3px" }} />
+              <div>
+                <div style={{ fontSize: "12px", fontWeight: 600, color: "#f0ede8" }}>FI — Finansinspektionen</div>
+                <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "2px", lineHeight: 1.5 }}>Juridiskt bindande förvaltningsavgift som fondbolagen rapporterar kvartalsvis till FI. Uppdateras automatiskt månadsvis.</div>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: "10px", marginBottom: "16px", alignItems: "flex-start" }}>
+              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#94a3b8", flexShrink: 0, marginTop: "3px" }} />
+              <div>
+                <div style={{ fontSize: "12px", fontWeight: 600, color: "#f0ede8" }}>Manuell — uppskattad avgift</div>
+                <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "2px", lineHeight: 1.5 }}>Avgiften saknar verifierad FI-data och är manuellt angiven — antingen i fondregistret eller av dig. Kontrollera aktuell avgift via fondens faktablad.</div>
+              </div>
+            </div>
+            <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "0 0 14px 0" }} />
+            <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "10px" }}>Verifiera på Morningstar</div>
+            {funds.map(fund => {
+              const ticker = fund.ticker?.replace(".ST", "");
+              const isFallbackNonManual = fund.feeSource === "fallback" && !fund.isManual;
+              return (
+                <div key={fund.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <span style={{ fontSize: "12px", color: "#f0ede8" }}>{fund.name}</span>
+                    {isFallbackNonManual && (
+                      <span style={{ fontSize: "9px", color: "#94a3b8", background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell avgift</span>
+                    )}
+                  </div>
+                  {!fund.isManual ? (
+                    <a
+                      href={`https://www.morningstar.se/se/funds/snapshot/snapshot.aspx?id=${ticker}`}
+                      target="_blank" rel="noopener noreferrer"
+                      style={{ fontSize: "11px", color: "#3a9aa8", textDecoration: "none" }}
+                    >Morningstar ↗</a>
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                      <a
+                        href="https://www.morningstar.se/se/funds/default.aspx"
+                        target="_blank" rel="noopener noreferrer"
+                        style={{ fontSize: "11px", color: "#3a9aa8", textDecoration: "none" }}
+                      >Sök på Morningstar ↗</a>
+                      <span style={{ fontSize: "9px", color: "#94a3b8", background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell fond</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
 
       {editingFund && (
