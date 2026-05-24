@@ -1,5 +1,41 @@
 import { buildSeries } from "../lib/calculations";
 import { FUND_ISINS, fmtFee, fmtPct } from "../lib/utils";
+import fiFees from "../data/fi-fees.json";
+
+const FI_PUBLISHED = fiFees._meta?.published
+  ? new Date(fiFees._meta.published).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
+  : null;
+
+const FEE_BADGE = {
+  fi:       { color: "#3a9aa8", bg: "rgba(58,154,168,0.12)" },
+  fallback: { color: "#94a3b8", bg: "rgba(148,163,184,0.12)" },
+};
+
+function FeeBadge({ source, period, isManual, updatedAt }) {
+  if (!source) return null;
+  const style = FEE_BADGE[source];
+  if (!style) return null;
+  const label = source === "fi" ? "FI" : "Manuell";
+  let tooltip;
+  if (source === "fi") {
+    tooltip = `Förvaltningsavgift från Finansinspektionen · Period: ${period ?? ""}${FI_PUBLISHED ? ` · Publicerad: ${FI_PUBLISHED}` : ""}`;
+  } else if (isManual) {
+    const dateStr = updatedAt
+      ? new Date(updatedAt).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" })
+      : null;
+    tooltip = `Manuellt tillagd fond · Avgiften är angiven av dig${dateStr ? ` · Senast ändrad: ${dateStr}` : ""}`;
+  } else {
+    tooltip = "Avgiften saknar FI-data och är manuellt angiven i fondregistret";
+  }
+  return (
+    <span title={tooltip} style={{
+      fontSize: "9px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+      color: style.color, background: style.bg,
+      padding: "1px 5px", borderRadius: "4px", lineHeight: "14px",
+      whiteSpace: "nowrap", cursor: "default",
+    }}>{label}</span>
+  );
+}
 
 export default function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
   return (
@@ -78,9 +114,15 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
                 </a>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px" }}>
+                <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: "7px", padding: "8px 10px" }}>
+                  <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px", fontFamily: "'Syne', sans-serif" }}>Avgift/år</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <span style={{ fontFamily: "'Syne', sans-serif", fontSize: "12px", fontWeight: 600, color: "#f0ede8" }}>{fmtFee(fund.fee)}</span>
+                    <FeeBadge source={fund.feeSource} period={fund.feePeriod} isManual={fund.isManual ?? false} updatedAt={fund.updatedAt} />
+                  </div>
+                </div>
                 {[
                   { lbl: "ISIN", val: isin, mono: true },
-                  { lbl: "Avgift/år", val: fmtFee(fund.fee) },
                   { lbl: "Avk. 1 år", val: ret1y !== null ? fmtPct(ret1y) : "–", color: ret1y !== null ? (ret1y >= 0 ? "#6ee7b7" : "#f87171") : "#5a6e8a" },
                   { lbl: "Data fr.o.m.", val: oldestDate },
                 ].map(({ lbl, val, color, mono }) => (
