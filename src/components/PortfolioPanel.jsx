@@ -197,24 +197,22 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               const isFallbackNonManual = fund.feeSource === "fallback" && !fund.isManual;
               return (
                 <div key={fund.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <span style={{ fontSize: "12px", color: "#f0ede8" }}>{fund.name}</span>
                     {isFallbackNonManual && (
                       <span style={{ fontSize: "9px", color: "#94a3b8", background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell avgift</span>
                     )}
-                  </div>
-                  <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <a
-                      href={fund.isManual
-                        ? "https://www.morningstar.se/se/funds/default.aspx"
-                        : `https://www.morningstar.se/se/funds/snapshot/snapshot.aspx?id=${ticker}`}
-                      target="_blank" rel="noopener noreferrer"
-                      style={{ fontSize: "11px", color: "#3a9aa8", textDecoration: "none" }}
-                    >{fund.isManual ? "Sök på Morningstar ↗" : "Morningstar ↗"}</a>
                     {fund.isManual && (
                       <span style={{ fontSize: "9px", color: "#94a3b8", background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell fond</span>
                     )}
                   </span>
+                  <a
+                    href={fund.isManual
+                      ? "https://www.morningstar.se/se/funds/default.aspx"
+                      : `https://www.morningstar.se/se/funds/snapshot/snapshot.aspx?id=${ticker}`}
+                    target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: "11px", color: "#3a9aa8", textDecoration: "none" }}
+                  >{fund.isManual ? "Sök på Morningstar ↗" : "Morningstar ↗"}</a>
                 </div>
               );
             })}
