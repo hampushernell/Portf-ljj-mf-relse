@@ -203,22 +203,18 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
                       <span style={{ fontSize: "9px", color: "#94a3b8", background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell avgift</span>
                     )}
                   </div>
-                  {!fund.isManual ? (
+                  <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <a
-                      href={`https://www.morningstar.se/se/funds/snapshot/snapshot.aspx?id=${ticker}`}
+                      href={fund.isManual
+                        ? "https://www.morningstar.se/se/funds/default.aspx"
+                        : `https://www.morningstar.se/se/funds/snapshot/snapshot.aspx?id=${ticker}`}
                       target="_blank" rel="noopener noreferrer"
                       style={{ fontSize: "11px", color: "#3a9aa8", textDecoration: "none" }}
-                    >Morningstar ↗</a>
-                  ) : (
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                      <a
-                        href="https://www.morningstar.se/se/funds/default.aspx"
-                        target="_blank" rel="noopener noreferrer"
-                        style={{ fontSize: "11px", color: "#3a9aa8", textDecoration: "none" }}
-                      >Sök på Morningstar ↗</a>
+                    >{fund.isManual ? "Sök på Morningstar ↗" : "Morningstar ↗"}</a>
+                    {fund.isManual && (
                       <span style={{ fontSize: "9px", color: "#94a3b8", background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell fond</span>
-                    </div>
-                  )}
+                    )}
+                  </span>
                 </div>
               );
             })}
