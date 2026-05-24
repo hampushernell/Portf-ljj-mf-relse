@@ -140,6 +140,7 @@ export default function App() {
                 onAddFund={portfolioA.addFund} onUpdateAlloc={portfolioA.updateAlloc} onRemoveFund={portfolioA.removeFund}
                 span={span} onSaveManualFund={saveManualFund}
                 onDeleteManualFund={deleteManualFund} onUpdateFundData={portfolioA.updateFundData}
+                failedFunds={failedFunds}
               />
               {compareMode && (
                 <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
@@ -149,6 +150,7 @@ export default function App() {
                   onAddFund={portfolioB.addFund} onUpdateAlloc={portfolioB.updateAlloc} onRemoveFund={portfolioB.removeFund}
                   span={span} onSaveManualFund={saveManualFund}
                   onDeleteManualFund={deleteManualFund} onUpdateFundData={portfolioB.updateFundData}
+                  failedFunds={failedFunds}
                 />
               )}
             </div>

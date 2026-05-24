@@ -16,7 +16,7 @@ function BriefcaseIcon({ color }) {
   );
 }
 
-export default function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onInputModeChange, onManualAmountChange, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode, span, onSaveManualFund, onDeleteManualFund, onUpdateFundData }) {
+export default function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onInputModeChange, onManualAmountChange, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode, span, onSaveManualFund, onDeleteManualFund, onUpdateFundData, failedFunds = [] }) {
   const [showDetails, setShowDetails] = useState(false);
   const [editingFund, setEditingFund] = useState(null);
   const [showFeeInfo, setShowFeeInfo] = useState(false);
@@ -79,7 +79,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
         )}
       </div>
 
-      <FundSearch onAdd={onAddFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} />
+      <FundSearch onAdd={onAddFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} failedFunds={failedFunds} />
 
       <div style={{ flex: 1 }}>
         {funds.map((f, i) => (

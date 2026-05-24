@@ -2,7 +2,7 @@ import { useState } from "react";
 import { fmtFee } from "../lib/utils";
 import ManualFundModal from "./ManualFundModal";
 
-export default function FundSearch({ onAdd, excluded, allFunds, loading, onSaveManualFund }) {
+export default function FundSearch({ onAdd, excluded, allFunds, loading, onSaveManualFund, failedFunds = [] }) {
   const [q, setQ] = useState("");
   const [activeIdx, setActiveIdx] = useState(-1);
   const [showManualModal, setShowManualModal] = useState(false);
@@ -50,6 +50,12 @@ export default function FundSearch({ onAdd, excluded, allFunds, loading, onSaveM
           padding: "9px 14px", outline: "none", fontFamily: "'Syne', sans-serif",
         }}
       />
+      {!showDropdown && failedFunds.length > 0 && (
+        <div style={{ display: "flex", alignItems: "center", gap: "5px", marginTop: "6px", fontSize: "11px", color: "#f59e0b", fontFamily: "'Syne', sans-serif" }}>
+          <span>⚠</span>
+          <span>Kunde inte ladda: {failedFunds.join(", ")}</span>
+        </div>
+      )}
       {showDropdown && (
         <div style={{
           position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0,
