@@ -84,3 +84,27 @@ Vid nätverksfel: befintlig fi-fees.json bevaras, varning loggas, exit 0.
 - Fallback-fältet `fallbackFee` i `src/lib/funds-registry.js` ska uppdateras manuellt vid fondernas årliga avgiftsrevision (typiskt januari–mars)
 - Skriptet scripts/fetch-fi-fees.mjs ska aldrig hårdkoda ZIP-URL:en — den scrapar alltid fi.se dynamiskt
 - feeSource och feePeriod ska alltid följa med fondobjektet genom hela datapipelinen
+- feeUpdatedAt ska alltid följa med fondobjektet — sätts automatiskt vid sparande/redigering av manuella fonder i ManualFundModal, används i FeeBadge-tooltip
+
+---
+
+## UI-exponering av avgiftskälla
+
+### Badge i FundRow och FundDetailsModal
+Varje fond visar en källbadge bredvid avgiften:
+- `fi` → badge "FI", färg #3a9aa8 (FI:s profilfärg). Tooltip visar period och publiceringsdatum från fi-fees.json _meta.
+- `fallback` på registrerad fond → badge "Manuell", färg #94a3b8. Tooltip visar att avgiften saknar FI-data och är manuellt angiven i fondregistret, samt feeUpdatedAt om det finns.
+- `fallback` på manuellt tillagd fond (fund.isManual) → badge "Manuell", samma färg. Tooltip visar att avgiften är angiven av användaren samt feeUpdatedAt.
+
+### Avgiftsmodal i PortfolioPanel
+?-knapp i avgift/år-kortets rubrikrad öppnar en modal med:
+- Förklaring av viktad portföljavgift
+- Beskrivning av FI- och manuell-källorna
+- Morningstar-länkar per fond:
+  - Registrerad fond (oavsett feeSource) → direktlänk via ticker utan .ST
+  - Manuellt tillagd fond (fund.isManual) → generisk söklänk till morningstar.se
+
+### Distinktion: manuell avgift vs manuell fond
+Dessa är två separata koncept:
+- Manuell avgift: feeSource === "fallback" på en registrerad fond — har ticker, kan länkas direkt till Morningstar
+- Manuell fond: fund.isManual === true — tillagd av användaren, saknar ticker, får generisk Morningstar-länk
