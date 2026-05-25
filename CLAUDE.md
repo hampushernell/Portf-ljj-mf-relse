@@ -169,7 +169,7 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 - [x] STACK.md
 - [x] schemaVersion i localStorage med migration
 - [x] Tydlig UI-notis för fonder som misslyckades att ladda
-- [ ] Unit tests för `dateRange.js` och `blend.js`
+- [x] Unit tests för `dateRange.js` och `blend.js` — 44 tester gröna
 
 ### Fas 2 – Avgifter ✓
 - [x] Avgiftsaudit för alla 13 fonder

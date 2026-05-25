@@ -18,7 +18,7 @@ Mål: trygg grund innan ny funktionalitet byggs.
 - [x] Fyll i STACK.md med teknikstack och projektstruktur
 - [x] Lägg till schemaVersion i localStorage för manualFunds med migrationsfunktion — hanterar tre äldre format: rå array, { version/funds }, samt saknad schemaVersion
 - [x] Visa tydligt i UI vilka fonder som misslyckades att ladda från Yahoo Finance — visas som notis i FundSearch när sökfältet är tomt
-- [ ] Unit tests för dateRange.js och blend.js
+- [x] Unit tests för dateRange.js och blend.js — 44 tester gröna (19 dateRange, 25 blend)
 
 ## Fas 2 – Avgifter och datakvalitet
 
