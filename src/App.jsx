@@ -66,27 +66,6 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: BG, color: "#f0ede8", fontFamily: "'DM Sans', sans-serif" }}>
       <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-      <style>{`
-        @keyframes fadeSlideUp {
-          from { opacity: 0; transform: translateY(12px); }
-          to   { opacity: 1; transform: translateY(0);    }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
-        @keyframes slideInLeft {
-          from { opacity: 0; transform: translateX(-8px); }
-          to   { opacity: 1; transform: translateX(0);    }
-        }
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.985); }
-          to   { opacity: 1; transform: scale(1);     }
-        }
-        .mode-btn:active { transform: scale(0.94); }
-        .panel-card { transition: box-shadow 0.3s ease, border-color 0.3s ease; }
-      `}</style>
-
       {/* ── Header ── */}
       <div style={{ padding: "26px 36px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <div>
