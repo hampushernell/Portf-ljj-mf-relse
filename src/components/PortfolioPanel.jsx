@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { getWeightedFee, portfolioKrTotal } from "../lib/calculations";
 import { FUND_COLORS, formatKr, fmtFee } from "../lib/utils";
+import { COLOR, FONT } from "../lib/tokens";
 import FundRow from "./FundRow";
 import FundSearch from "./FundSearch";
 import ManualFundModal from "./ManualFundModal";
@@ -40,13 +41,13 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
       }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <BriefcaseIcon color={accent} />
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: 0 }}>{label}</h2>
+        <h2 style={{ fontFamily: FONT.family.display, fontSize: "15px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>{label}</h2>
         {funds.length > 0 && inputMode === "pct" && (
           <span style={{
             marginLeft: "auto", fontSize: "10px",
-            color: pctOk ? "#6ee7b7" : "#f87171",
+            color: pctOk ? COLOR.positive : COLOR.negative,
             background: pctOk ? "rgba(110,231,183,0.1)" : "rgba(248,113,113,0.12)",
-            padding: "2px 8px", borderRadius: "20px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+            padding: "2px 8px", borderRadius: "20px", fontFamily: FONT.family.display, fontWeight: 600,
           }}>{totalPct.toFixed(1)}% fördelat</span>
         )}
       </div>
@@ -56,9 +57,9 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           {["pct", "kr"].map(m => (
             <button key={m} onClick={() => onInputModeChange(m)} style={{
               background: inputMode === m ? "rgba(255,255,255,0.1)" : "transparent",
-              border: "none", color: inputMode === m ? "#f0ede8" : "#5a6e8a",
+              border: "none", color: inputMode === m ? COLOR.text.primary : COLOR.text.secondary,
               padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
-              fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+              fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
               transition: "all 0.2s",
             }}>{m === "pct" ? "% Procent" : "kr Kronor"}</button>
           ))}
@@ -70,11 +71,11 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               placeholder="Belopp"
               style={{
                 background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.11)",
-                borderRadius: "6px", color: "#f0ede8", fontSize: "12px",
-                padding: "5px 9px", width: "100px", outline: "none", fontFamily: "'Syne', sans-serif",
+                borderRadius: "6px", color: COLOR.text.primary, fontSize: "12px",
+                padding: "5px 9px", width: "100px", outline: "none", fontFamily: FONT.family.display,
               }}
             />
-            <span style={{ fontSize: "11px", color: "#5a6e8a" }}>kr</span>
+            <span style={{ fontSize: "11px", color: COLOR.text.secondary }}>kr</span>
           </div>
         )}
       </div>
@@ -94,7 +95,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           />
         ))}
         {funds.length === 0 && (
-          <div style={{ textAlign: "center", padding: "28px 0", color: "#444", fontSize: "13px", fontFamily: "'Syne', sans-serif" }}>
+          <div style={{ textAlign: "center", padding: "28px 0", color: COLOR.text.muted, fontSize: "13px", fontFamily: FONT.family.display }}>
             {loading ? "Laddar fonddata…" : "Sök och lägg till fonder ovan"}
           </div>
         )}
@@ -102,31 +103,31 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
 
       {funds.length > 0 && (
         <div style={{ padding: "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
-          <div style={{ fontSize: "9px", color: "#5a6e8a", marginBottom: "10px", fontFamily: "'Syne', sans-serif", textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
+          <div style={{ fontSize: "9px", color: COLOR.text.secondary, marginBottom: "10px", fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
           <div style={{ display: "flex", gap: "10px" }}>
             <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px", boxShadow: "0 3px 10px rgba(0,0,0,0.35)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
-                <span style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em" }}>Avgift/år</span>
+                <span style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Avgift/år</span>
                 <button
                   onClick={() => setShowFeeInfo(true)}
                   style={{ display: "inline-flex", alignItems: "center", justifyContent: "center",
                     width: "15px", height: "15px", borderRadius: "50%",
                     border: "1px solid rgba(255,255,255,0.2)", background: "none",
-                    color: "#5a6e8a", fontSize: "9px", cursor: "pointer", lineHeight: 1,
-                    fontFamily: "'Syne', sans-serif", flexShrink: 0, padding: 0 }}
+                    color: COLOR.text.secondary, fontSize: "9px", cursor: "pointer", lineHeight: 1,
+                    fontFamily: FONT.family.display, flexShrink: 0, padding: 0 }}
                 >?</button>
               </div>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "17px", fontWeight: 700, color: accentText }}>{fmtFee(fee)}</div>
-              {portfolioTotal > 0 && <div style={{ fontSize: "10px", color: "#5a6e8a", marginTop: "2px" }}>{formatKr(portfolioTotal * fee / 100)}</div>}
+              <div style={{ fontFamily: FONT.family.display, fontSize: "17px", fontWeight: 700, color: accentText }}>{fmtFee(fee)}</div>
+              {portfolioTotal > 0 && <div style={{ fontSize: "10px", color: COLOR.text.secondary, marginTop: "2px" }}>{formatKr(portfolioTotal * fee / 100)}</div>}
             </div>
             <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px", boxShadow: "0 3px 10px rgba(0,0,0,0.35)" }}>
-              <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>
+              <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>
                 {inputMode === "kr" ? "Totalt" : "Belopp"}
               </div>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "17px", fontWeight: 700, color: "#f0ede8" }}>
+              <div style={{ fontFamily: FONT.family.display, fontSize: "17px", fontWeight: 700, color: COLOR.text.primary }}>
                 {portfolioTotal > 0 ? formatKr(portfolioTotal) : "–"}
               </div>
-              <div style={{ fontSize: "10px", color: "#5a6e8a", marginTop: "2px" }}>{funds.length} fonder</div>
+              <div style={{ fontSize: "10px", color: COLOR.text.secondary, marginTop: "2px" }}>{funds.length} fonder</div>
             </div>
           </div>
         </div>
@@ -139,7 +140,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
             width: "100%", background: `rgba(${accentRgb}, 0.07)`,
             border: `1px solid rgba(${accentRgb}, 0.25)`, color: accent,
             borderRadius: "8px", padding: "9px 14px", cursor: "pointer",
-            fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+            fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
             transition: "background 0.2s", textAlign: "center",
           }}
           onMouseEnter={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.15)`}
@@ -167,43 +168,43 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: "#0d1120", border: "1px solid rgba(255,255,255,0.12)",
+              background: COLOR.bg.elevated, border: "1px solid rgba(255,255,255,0.12)",
               borderRadius: "16px", padding: "24px", maxWidth: "420px", width: "100%",
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: FONT.family.display,
             }}
           >
-            <div style={{ fontSize: "15px", fontWeight: 700, color: "#f0ede8", marginBottom: "12px" }}>Om avgifterna i portföljen</div>
-            <p style={{ fontSize: "12px", color: "#94a3b8", lineHeight: 1.6, margin: "0 0 16px 0" }}>
+            <div style={{ fontSize: "15px", fontWeight: 700, color: COLOR.text.primary, marginBottom: "12px" }}>Om avgifterna i portföljen</div>
+            <p style={{ fontSize: "12px", color: COLOR.text.subtle, lineHeight: 1.6, margin: "0 0 16px 0" }}>
               Den visade avgiften är den viktade förvaltningsavgiften — varje fonds avgift vägs mot dess andel av portföljvärdet och justeras automatiskt när du ändrar fördelningen.
             </p>
             <div style={{ display: "flex", gap: "10px", marginBottom: "10px", alignItems: "flex-start" }}>
-              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#3a9aa8", flexShrink: 0, marginTop: "3px" }} />
+              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: COLOR.fi, flexShrink: 0, marginTop: "3px" }} />
               <div>
-                <div style={{ fontSize: "12px", fontWeight: 600, color: "#f0ede8" }}>FI — Finansinspektionen</div>
-                <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "2px", lineHeight: 1.5 }}>Juridiskt bindande förvaltningsavgift som fondbolagen rapporterar kvartalsvis till FI. Uppdateras automatiskt månadsvis.</div>
+                <div style={{ fontSize: "12px", fontWeight: 600, color: COLOR.text.primary }}>FI — Finansinspektionen</div>
+                <div style={{ fontSize: "11px", color: COLOR.text.subtle, marginTop: "2px", lineHeight: 1.5 }}>Juridiskt bindande förvaltningsavgift som fondbolagen rapporterar kvartalsvis till FI. Uppdateras automatiskt månadsvis.</div>
               </div>
             </div>
             <div style={{ display: "flex", gap: "10px", marginBottom: "16px", alignItems: "flex-start" }}>
-              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#94a3b8", flexShrink: 0, marginTop: "3px" }} />
+              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: COLOR.fallback, flexShrink: 0, marginTop: "3px" }} />
               <div>
-                <div style={{ fontSize: "12px", fontWeight: 600, color: "#f0ede8" }}>Manuell — uppskattad avgift</div>
-                <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "2px", lineHeight: 1.5 }}>Avgiften saknar verifierad FI-data och är manuellt angiven — antingen i fondregistret eller av dig. Kontrollera aktuell avgift via fondens faktablad.</div>
+                <div style={{ fontSize: "12px", fontWeight: 600, color: COLOR.text.primary }}>Manuell — uppskattad avgift</div>
+                <div style={{ fontSize: "11px", color: COLOR.text.subtle, marginTop: "2px", lineHeight: 1.5 }}>Avgiften saknar verifierad FI-data och är manuellt angiven — antingen i fondregistret eller av dig. Kontrollera aktuell avgift via fondens faktablad.</div>
               </div>
             </div>
             <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "0 0 14px 0" }} />
-            <div style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "10px" }}>Verifiera på Morningstar</div>
+            <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "10px" }}>Verifiera på Morningstar</div>
             {funds.map(fund => {
               const ticker = fund.ticker?.replace(".ST", "");
               const isFallbackNonManual = fund.feeSource === "fallback" && !fund.isManual;
               return (
                 <div key={fund.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
                   <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span style={{ fontSize: "12px", color: "#f0ede8" }}>{fund.name}</span>
+                    <span style={{ fontSize: "12px", color: COLOR.text.primary }}>{fund.name}</span>
                     {isFallbackNonManual && (
-                      <span style={{ fontSize: "9px", color: "#94a3b8", background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell avgift</span>
+                      <span style={{ fontSize: "9px", color: COLOR.fallback, background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell avgift</span>
                     )}
                     {fund.isManual && (
-                      <span style={{ fontSize: "9px", color: "#94a3b8", background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell fond</span>
+                      <span style={{ fontSize: "9px", color: COLOR.fallback, background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell fond</span>
                     )}
                   </span>
                   <a
@@ -211,7 +212,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
                       ? "https://www.morningstar.se/se/funds/default.aspx"
                       : `https://www.morningstar.se/se/funds/snapshot/snapshot.aspx?id=${ticker}`}
                     target="_blank" rel="noopener noreferrer"
-                    style={{ fontSize: "11px", color: "#3a9aa8", textDecoration: "none" }}
+                    style={{ fontSize: "11px", color: COLOR.fi, textDecoration: "none" }}
                   >{fund.isManual ? "Sök på Morningstar ↗" : "Morningstar ↗"}</a>
                 </div>
               );

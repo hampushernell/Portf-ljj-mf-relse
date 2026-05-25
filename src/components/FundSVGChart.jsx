@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { BG, fmtPct } from "../lib/utils";
+import { COLOR, FONT } from "../lib/tokens";
 
 export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true }) {
   const W = 800, H = 220, PL = 48, PR = 12, PT = 10, PB = 28;
@@ -58,7 +59,7 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
         {yTicks.map(({ v, y }, i) => (
           <g key={i}>
             <line x1={PL} y1={y} x2={W - PR} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
-            <text x={PL - 6} y={y + 4} textAnchor="end" fill="#444" fontSize="10" fontFamily="DM Sans, sans-serif">{`${(v - 100).toFixed(0)}%`}</text>
+            <text x={PL - 6} y={y + 4} textAnchor="end" fill={COLOR.text.muted} fontSize="10" fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
           </g>
         ))}
         <line x1={PL} y1={baselineY} x2={W - PR} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
@@ -89,25 +90,25 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
           position: "absolute", top: "10px",
           left: tooltip.x / W * 100 > 60 ? "auto" : `calc(${tooltip.x / W * 100}% + 10px)`,
           right: tooltip.x / W * 100 > 60 ? `calc(${(1 - tooltip.x / W) * 100}% + 10px)` : "auto",
-          background: "#0d1120", border: "1px solid rgba(255,255,255,0.13)",
+          background: COLOR.bg.elevated, border: "1px solid rgba(255,255,255,0.13)",
           borderRadius: "8px", padding: "8px 12px", fontSize: "12px",
-          fontFamily: "'Syne', sans-serif", pointerEvents: "none", zIndex: 10,
+          fontFamily: FONT.family.display, pointerEvents: "none", zIndex: 10,
           boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "220px",
         }}>
-          <div style={{ color: "#5a6e8a", fontSize: "10px", marginBottom: "6px" }}>
+          <div style={{ color: COLOR.text.secondary, fontSize: "10px", marginBottom: "6px" }}>
             {tooltip.timestamp ? new Date(tooltip.timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" }) : ""}
           </div>
           {tooltip.portfolio != null && showPortfolioLine && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "5px" }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "white", flexShrink: 0 }} />
-              <span style={{ color: "#f0ede8", fontSize: "11px" }}>Portfölj: <strong style={{ color: (tooltip.portfolio - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(tooltip.portfolio - 100)}</strong></span>
+              <span style={{ color: COLOR.text.primary, fontSize: "11px" }}>Portfölj: <strong style={{ color: (tooltip.portfolio - 100) >= 0 ? COLOR.positive : COLOR.negative }}>{fmtPct(tooltip.portfolio - 100)}</strong></span>
             </div>
           )}
           {tooltip.funds.map(f => f.value != null && (
             <div key={f.name} style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: f.color, flexShrink: 0 }} />
-              <span style={{ color: "#8a9bb0", fontSize: "10px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {f.name.split(" ").slice(0, 2).join(" ")}: <strong style={{ color: (f.value - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(f.value - 100)}</strong>
+              <span style={{ color: COLOR.text.subtle, fontSize: "10px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {f.name.split(" ").slice(0, 2).join(" ")}: <strong style={{ color: (f.value - 100) >= 0 ? COLOR.positive : COLOR.negative }}>{fmtPct(f.value - 100)}</strong>
               </span>
             </div>
           ))}

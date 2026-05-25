@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { getFundPct } from "../lib/calculations";
 import { formatKr, fmtFee } from "../lib/utils";
+import { COLOR, FONT } from "../lib/tokens";
 import fiFees from "../data/fi-fees.json";
 
 const FI_PUBLISHED = fiFees._meta?.published
@@ -8,8 +9,8 @@ const FI_PUBLISHED = fiFees._meta?.published
   : null;
 
 const FEE_BADGE = {
-  fi:       { color: "#3a9aa8", bg: "rgba(58,154,168,0.12)" },
-  fallback: { color: "#94a3b8", bg: "rgba(148,163,184,0.12)" },
+  fi:       { color: COLOR.fi,       bg: "rgba(58,154,168,0.12)" },
+  fallback: { color: COLOR.fallback, bg: "rgba(148,163,184,0.12)" },
 };
 
 function FeeBadge({ source, period, isManual, updatedAt }) {
@@ -30,7 +31,7 @@ function FeeBadge({ source, period, isManual, updatedAt }) {
   }
   return (
     <span title={tooltip} style={{
-      fontSize: "9px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+      fontSize: "9px", fontFamily: FONT.family.display, fontWeight: 600,
       color: style.color, background: style.bg,
       padding: "1px 5px", borderRadius: "4px", lineHeight: "14px",
       whiteSpace: "nowrap", cursor: "default",
@@ -63,17 +64,17 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
         <div style={{ minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-            <span style={{ fontFamily: "'Syne', sans-serif", fontSize: "13px", color: "#f0ede8", fontWeight: 600 }}>{fund.name}</span>
-            {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: "#f59e0b", fontSize: "11px", lineHeight: 1 }}>⚠</span>}
+            <span style={{ fontFamily: FONT.family.display, fontSize: "13px", color: COLOR.text.primary, fontWeight: 600 }}>{fund.name}</span>
+            {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: COLOR.warning, fontSize: "11px", lineHeight: 1 }}>⚠</span>}
           </div>
-          <div style={{ fontSize: "11px", color: "#5a6e8a", marginTop: "1px", display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+          <div style={{ fontSize: "11px", color: COLOR.text.secondary, marginTop: "1px", display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
             <span>{fund.category} · {fmtFee(fund.fee)} avgift</span>
             <FeeBadge source={fund.feeSource} period={fund.feePeriod} isManual={fund.isManual ?? false} updatedAt={fund.updatedAt} />
             {fund.currentPrice && <span> · {fund.currentPrice.toFixed(2)} SEK</span>}
           </div>
           {fund.isManual && fund.updatedAt && (() => {
             const days = (Date.now() - fund.updatedAt) / 86400000;
-            const color = days > 90 ? "#f87171" : days > 30 ? "#fbbf24" : "#5a6e8a";
+            const color = days > 90 ? COLOR.negative : days > 30 ? COLOR.warningLight : COLOR.text.secondary;
             const dateStr = new Date(fund.updatedAt).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
             return (
               <div style={{ fontSize: "10px", color, marginTop: "2px" }}>
@@ -84,7 +85,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         </div>
       </div>
       <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        <label style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        <label style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
           {inputMode === "pct" ? "Andel %" : "Belopp kr"}
         </label>
         <input type="number" value={inputVal}
@@ -94,27 +95,27 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
           }}
           style={{
             background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.11)",
-            borderRadius: "6px", color: "#f0ede8", fontSize: "13px",
+            borderRadius: "6px", color: COLOR.text.primary, fontSize: "13px",
             padding: "5px 8px", width: "100%", outline: "none",
-            fontFamily: "'Syne', sans-serif", boxSizing: "border-box",
+            fontFamily: FONT.family.display, boxSizing: "border-box",
           }}
         />
       </div>
       <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        <label style={{ fontSize: "9px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        <label style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
           {inputMode === "pct" ? "≈ kr" : "≈ %"}
         </label>
         <div style={{
           background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
-          borderRadius: "6px", color: "#5a6e8a", fontSize: "11px", padding: "5px 8px",
+          borderRadius: "6px", color: COLOR.text.secondary, fontSize: "11px", padding: "5px 8px",
         }}>
           {inputMode === "pct" ? formatKr(kr) : `${pct.toFixed(1)}%`}
         </div>
       </div>
       <button onClick={e => { e.stopPropagation(); onRemove(); }}
-        style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "18px", padding: "2px", transition: "color 0.2s" }}
-        onMouseEnter={e => e.currentTarget.style.color = "#f87171"}
-        onMouseLeave={e => e.currentTarget.style.color = "#555"}
+        style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "18px", padding: "2px", transition: "color 0.2s" }}
+        onMouseEnter={e => e.currentTarget.style.color = COLOR.negative}
+        onMouseLeave={e => e.currentTarget.style.color = COLOR.text.secondary}
       >×</button>
     </div>
   );

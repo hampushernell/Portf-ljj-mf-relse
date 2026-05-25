@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { ACCENT_A, ACCENT_B, BG, formatKr, fmtPct } from "../lib/utils";
+import { COLOR, FONT } from "../lib/tokens";
 
 export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
   const W = 800, H = 220, PL = 48, PR = 12, PT = 10, PB = 28;
@@ -55,7 +56,7 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
         {yTicks.map(({ v, y }, i) => (
           <g key={i}>
             <line x1={PL} y1={y} x2={W - PR} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
-            <text x={PL - 6} y={y + 4} textAnchor="end" fill="#444" fontSize="10" fontFamily="DM Sans, sans-serif">
+            <text x={PL - 6} y={y + 4} textAnchor="end" fill={COLOR.text.muted} fontSize="10" fontFamily={FONT.family.body}>
               {`${(v - 100).toFixed(0)}%`}
             </text>
           </g>
@@ -76,12 +77,12 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
           position: "absolute", top: "10px",
           left: tooltip.x / W * 100 > 60 ? "auto" : `calc(${tooltip.x / W * 100}% + 10px)`,
           right: tooltip.x / W * 100 > 60 ? `calc(${(1 - tooltip.x / W) * 100}% + 10px)` : "auto",
-          background: "#0d1120", border: "1px solid rgba(255,255,255,0.13)",
+          background: COLOR.bg.elevated, border: "1px solid rgba(255,255,255,0.13)",
           borderRadius: "8px", padding: "8px 12px", fontSize: "12px",
-          fontFamily: "'Syne', sans-serif", pointerEvents: "none", zIndex: 10,
+          fontFamily: FONT.family.display, pointerEvents: "none", zIndex: 10,
           boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
         }}>
-          <div style={{ color: "#5a6e8a", fontSize: "10px", marginBottom: "4px" }}>
+          <div style={{ color: COLOR.text.secondary, fontSize: "10px", marginBottom: "4px" }}>
             {tooltip.timestamp
               ? new Date(tooltip.timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
               : `Dag ${tooltip.idx}`}
@@ -89,15 +90,15 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
           {tooltip.vA && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: tooltip.vB ? "3px" : 0 }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: ACCENT_A }} />
-              <span style={{ color: "#f0ede8" }}>A: <strong style={{ color: (tooltip.vA - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(tooltip.vA - 100)}</strong></span>
-              {totalA > 0 && <span style={{ color: "#5a6e8a", fontSize: "11px" }}>{formatKr(totalA * (tooltip.vA - 100) / 100)}</span>}
+              <span style={{ color: COLOR.text.primary }}>A: <strong style={{ color: (tooltip.vA - 100) >= 0 ? COLOR.positive : COLOR.negative }}>{fmtPct(tooltip.vA - 100)}</strong></span>
+              {totalA > 0 && <span style={{ color: COLOR.text.secondary, fontSize: "11px" }}>{formatKr(totalA * (tooltip.vA - 100) / 100)}</span>}
             </div>
           )}
           {tooltip.vB && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: ACCENT_B }} />
-              <span style={{ color: "#f0ede8" }}>B: <strong style={{ color: (tooltip.vB - 100) >= 0 ? "#6ee7b7" : "#f87171" }}>{fmtPct(tooltip.vB - 100)}</strong></span>
-              {totalB > 0 && <span style={{ color: "#5a6e8a", fontSize: "11px" }}>{formatKr(totalB * (tooltip.vB - 100) / 100)}</span>}
+              <span style={{ color: COLOR.text.primary }}>B: <strong style={{ color: (tooltip.vB - 100) >= 0 ? COLOR.positive : COLOR.negative }}>{fmtPct(tooltip.vB - 100)}</strong></span>
+              {totalB > 0 && <span style={{ color: COLOR.text.secondary, fontSize: "11px" }}>{formatKr(totalB * (tooltip.vB - 100) / 100)}</span>}
             </div>
           )}
         </div>

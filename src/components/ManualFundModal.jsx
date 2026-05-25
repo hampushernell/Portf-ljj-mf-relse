@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ACCENT_A_LIGHT, ACCENT_B } from "../lib/utils";
+import { COLOR, FONT } from "../lib/tokens";
 
 const MANUAL_SPANS = ["1 mån", "3 mån", "1 år", "3 år"];
 
@@ -17,11 +18,11 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
     width: "100%", boxSizing: "border-box",
     background: "rgba(255,255,255,0.06)",
     border: `1px solid ${err ? "rgba(248,113,113,0.55)" : "rgba(255,255,255,0.11)"}`,
-    borderRadius: "7px", color: "#f0ede8", fontSize: "13px",
-    padding: "8px 12px", outline: "none", fontFamily: "'Syne', sans-serif",
+    borderRadius: "7px", color: COLOR.text.primary, fontSize: "13px",
+    padding: "8px 12px", outline: "none", fontFamily: FONT.family.display,
   });
   const label = (txt) => (
-    <div style={{ fontSize: "10px", color: "#5a6e8a", textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: "'Syne', sans-serif", marginBottom: "5px" }}>{txt}</div>
+    <div style={{ fontSize: "10px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: FONT.family.display, marginBottom: "5px" }}>{txt}</div>
   );
 
   const handleSubmit = () => {
@@ -48,29 +49,29 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
       animation: "fadeIn 0.2s ease",
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: "#0d1120", border: "1px solid rgba(255,255,255,0.12)",
+        background: COLOR.bg.elevated, border: "1px solid rgba(255,255,255,0.12)",
         borderRadius: "16px", padding: "28px 28px 24px",
         maxWidth: "520px", width: "100%", maxHeight: "92vh",
         overflow: "auto", animation: "scaleIn 0.25s ease",
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: "16px", fontWeight: 700, color: "#f0ede8", margin: 0 }}>
+          <h2 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
             {initialData ? "Redigera fond" : "Lägg till fond manuellt"}
           </h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#5a6e8a", cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px" }}>×</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px" }}>×</button>
         </div>
 
         <a href="https://www.morningstar.se" target="_blank" rel="noopener noreferrer" style={{
           display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px",
-          color: ACCENT_B, fontFamily: "'Syne', sans-serif", textDecoration: "none", marginBottom: "14px",
+          color: ACCENT_B, fontFamily: FONT.family.display, textDecoration: "none", marginBottom: "14px",
         }}>Sök upp fonden på Morningstar ↗</a>
 
         <div style={{
           background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.28)",
           borderRadius: "10px", padding: "11px 14px", marginBottom: "20px",
-          fontSize: "12px", color: "#fbbf24", lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif",
+          fontSize: "12px", color: COLOR.warningLight, lineHeight: 1.6, fontFamily: FONT.family.body,
         }}>
-          ℹ Grafen visar en <strong style={{ color: "#fbbf24" }}>simulerad kursutveckling</strong> baserad på angiven avkastning och antagen volatilitet ~15% — den speglar inte faktisk historisk kursutveckling. Avkastningsprocenten i grafen stämmer med angiven data. Tidsspann utan data visas med varning i listan.
+          ℹ Grafen visar en <strong style={{ color: COLOR.warningLight }}>simulerad kursutveckling</strong> baserad på angiven avkastning och antagen volatilitet ~15% — den speglar inte faktisk historisk kursutveckling. Avkastningsprocenten i grafen stämmer med angiven data. Tidsspann utan data visas med varning i listan.
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -78,7 +79,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
             {label("Fondnamn *")}
             <input value={name} onChange={e => { setName(e.target.value); setErrors(p => ({ ...p, name: false })); }}
               placeholder="t.ex. Länsförsäkringar Global Index" style={fieldStyle(errors.name)} />
-            {errors.name && <div style={{ fontSize: "11px", color: "#f87171", marginTop: "3px" }}>Obligatoriskt fält</div>}
+            {errors.name && <div style={{ fontSize: "11px", color: COLOR.negative, marginTop: "3px" }}>Obligatoriskt fält</div>}
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -99,7 +100,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
             <input type="number" step="0.01" value={fee}
               onChange={e => { setFee(e.target.value); setErrors(p => ({ ...p, fee: false })); }}
               placeholder="t.ex. 0.20" style={{ ...fieldStyle(errors.fee), width: "48%" }} />
-            {errors.fee && <div style={{ fontSize: "11px", color: "#f87171", marginTop: "3px" }}>Obligatoriskt fält</div>}
+            {errors.fee && <div style={{ fontSize: "11px", color: COLOR.negative, marginTop: "3px" }}>Obligatoriskt fält</div>}
           </div>
 
           <div>
@@ -110,8 +111,8 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
                 return (
                   <div key={s}>
                     <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "5px" }}>
-                      <span style={{ fontSize: "10px", fontFamily: "'Syne', sans-serif", fontWeight: 600, color: filled ? "#6ee7b7" : "#5a6e8a" }}>{s}</span>
-                      {filled && <span style={{ color: "#6ee7b7", fontSize: "12px", lineHeight: 1 }}>✓</span>}
+                      <span style={{ fontSize: "10px", fontFamily: FONT.family.display, fontWeight: 600, color: filled ? COLOR.positive : COLOR.text.secondary }}>{s}</span>
+                      {filled && <span style={{ color: COLOR.positive, fontSize: "12px", lineHeight: 1 }}>✓</span>}
                     </div>
                     <input type="number" step="0.01" value={returns[s]}
                       onChange={e => setReturns(p => ({ ...p, [s]: e.target.value }))}
@@ -131,8 +132,8 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
                 onMouseLeave={e => e.currentTarget.style.background = "rgba(248,113,113,0.1)"}
                 style={{
                   background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.35)",
-                  color: "#f87171", borderRadius: "8px", padding: "9px 16px",
-                  cursor: "pointer", fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+                  color: COLOR.negative, borderRadius: "8px", padding: "9px 16px",
+                  cursor: "pointer", fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
                   transition: "background 0.2s",
                 }}>Ta bort fond</button>
             )}
@@ -140,8 +141,8 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
           <div style={{ display: "flex", gap: "10px" }}>
             <button onClick={onClose} style={{
               background: "transparent", border: "1px solid rgba(255,255,255,0.13)",
-              color: "#5a6e8a", borderRadius: "8px", padding: "9px 20px",
-              cursor: "pointer", fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+              color: COLOR.text.secondary, borderRadius: "8px", padding: "9px 20px",
+              cursor: "pointer", fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
             }}>Avbryt</button>
             <button onClick={handleSubmit}
               onMouseEnter={e => e.currentTarget.style.background = "rgba(0,24,245,0.28)"}
@@ -149,7 +150,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
               style={{
                 background: "rgba(0,24,245,0.15)", border: "1px solid rgba(0,24,245,0.4)",
                 color: ACCENT_A_LIGHT, borderRadius: "8px", padding: "9px 20px",
-                cursor: "pointer", fontSize: "12px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+                cursor: "pointer", fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
                 transition: "background 0.2s",
               }}>{initialData ? "Spara ändringar" : "Lägg till fond"}</button>
           </div>

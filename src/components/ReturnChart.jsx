@@ -1,5 +1,6 @@
 import { portfolioReturn, computePortfolioContext } from "../lib/calculations";
 import { ACCENT_A, ACCENT_B, TIME_SPANS, formatKr, fmtPct } from "../lib/utils";
+import { COLOR, FONT } from "../lib/tokens";
 import SVGChart from "./SVGChart";
 
 export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldestTsA, oldestTsB, onSpanChange, totalA, totalB, latestNavTs }) {
@@ -14,24 +15,24 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
     <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px", animation: "scaleIn 0.3s ease" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
         <div>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "15px", fontWeight: 700, color: "#f0ede8", margin: "0 0 8px" }}>Historisk avkastning</h3>
+          <h3 style={{ fontFamily: FONT.family.display, fontSize: "15px", fontWeight: 700, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
           <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
             {seriesA.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={ACCENT_A} strokeWidth="2.5" strokeLinecap="round"/></svg>
-                <span style={{ fontSize: "12px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>
-                  A: <span style={{ color: retA >= 0 ? "#6ee7b7" : "#f87171", fontWeight: 700 }}>{fmtPct(retA)}</span>
+                <span style={{ fontSize: "12px", color: COLOR.text.primary, fontFamily: FONT.family.display }}>
+                  A: <span style={{ color: retA >= 0 ? COLOR.positive : COLOR.negative, fontWeight: 700 }}>{fmtPct(retA)}</span>
                 </span>
-                {totalA > 0 && <span style={{ fontSize: "11px", color: "#5a6e8a" }}>({formatKr(totalA * retA / 100)})</span>}
+                {totalA > 0 && <span style={{ fontSize: "11px", color: COLOR.text.secondary }}>({formatKr(totalA * retA / 100)})</span>}
               </div>
             )}
             {showB && seriesB.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={ACCENT_B} strokeWidth="2.5" strokeLinecap="round"/></svg>
-                <span style={{ fontSize: "12px", color: "#f0ede8", fontFamily: "'Syne', sans-serif" }}>
-                  B: <span style={{ color: retB >= 0 ? "#6ee7b7" : "#f87171", fontWeight: 700 }}>{fmtPct(retB)}</span>
+                <span style={{ fontSize: "12px", color: COLOR.text.primary, fontFamily: FONT.family.display }}>
+                  B: <span style={{ color: retB >= 0 ? COLOR.positive : COLOR.negative, fontWeight: 700 }}>{fmtPct(retB)}</span>
                 </span>
-                {totalB > 0 && <span style={{ fontSize: "11px", color: "#5a6e8a" }}>({formatKr(totalB * retB / 100)})</span>}
+                {totalB > 0 && <span style={{ fontSize: "11px", color: COLOR.text.secondary }}>({formatKr(totalB * retB / 100)})</span>}
               </div>
             )}
           </div>
@@ -46,9 +47,9 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
                   style={{
                     background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
                     border: "none",
-                    color: selectedSpan === ts.label ? "#f0ede8" : full ? "#5a6e8a" : "#6b4c1a",
+                    color: selectedSpan === ts.label ? COLOR.text.primary : full ? COLOR.text.secondary : COLOR.warning,
                     padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
-                    fontSize: "11px", fontFamily: "'Syne', sans-serif", fontWeight: 600,
+                    fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
                     transition: "all 0.18s", whiteSpace: "nowrap",
                     boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
                   }}
@@ -57,7 +58,7 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
             })}
           </div>
           {isIncomplete && actualFromStr && (
-            <div style={{ fontSize: "10px", color: "#b45309", fontFamily: "'Syne', sans-serif" }}>
+            <div style={{ fontSize: "10px", color: COLOR.warning, fontFamily: FONT.family.display }}>
               Data fr.o.m. {actualFromStr} – Yahoo Finance saknar äldre historik
             </div>
           )}
@@ -70,21 +71,21 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
         const fmtDate = ts => new Date(ts * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
         return (
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", padding: "0 2px" }}>
-            <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: "11px", color: COLOR.text.secondary, fontFamily: FONT.family.body, whiteSpace: "nowrap" }}>
               {fmtDate(startTs)}
             </span>
             <div style={{ flex: 1, position: "relative", height: "12px", display: "flex", alignItems: "center" }}>
               <div style={{ position: "absolute", left: 0, right: 0, height: "1px", background: "rgba(90,110,138,0.35)" }} />
               <div style={{
                 position: "absolute", left: "50%", transform: "translateX(-50%)",
-                background: "#090d1a", padding: "0 8px",
-                fontSize: "10px", color: "#5a6e8a", fontFamily: "'Syne', sans-serif",
+                background: COLOR.bg.base, padding: "0 8px",
+                fontSize: "10px", color: COLOR.text.secondary, fontFamily: FONT.family.display,
                 fontWeight: 600, letterSpacing: "0.04em", whiteSpace: "nowrap",
               }}>
                 {selectedSpan}
               </div>
             </div>
-            <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: "'DM Sans', sans-serif", whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: "11px", color: COLOR.text.secondary, fontFamily: FONT.family.body, whiteSpace: "nowrap" }}>
               {fmtDate(endTs)}
             </span>
           </div>
@@ -104,7 +105,7 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
             borderRadius: "9px", display: "flex", alignItems: "center", gap: "10px",
           }}>
             <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: winnerCol, flexShrink: 0 }} />
-            <span style={{ fontSize: "12px", color: "#f0ede8", fontFamily: "'DM Sans', sans-serif" }}>
+            <span style={{ fontSize: "12px", color: COLOR.text.primary, fontFamily: FONT.family.body }}>
               Portfölj <strong style={{ color: winnerCol }}>{winner}</strong> har gett{" "}
               <strong style={{ color: winnerCol }}>{Math.abs(diff).toFixed(1)} %-enheter</strong> högre avkastning under vald period.
               {refTotal > 0 && ` Det motsvarar ${formatKr(Math.abs(refTotal * diff / 100))}.`}
