@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-25T00:00:00Z",
+  "title": "Design System: minportfölj.se",
+  "extensions": {
+    "colorMeta": {
+      "abyss-navy":      { "role": "neutral",   "displayName": "Abyss Navy",      "canonical": "oklch(8% 0.02 264)",   "tonalRamp": ["#04060d","#090d1a","#0d1422","#1a2340","#2a3a60","#3d5280","#5a6e8a","#94a3b8"] },
+      "surface-night":   { "role": "neutral",   "displayName": "Surface Night",   "canonical": "oklch(9% 0.02 264)",   "tonalRamp": ["#060810","#0d1120","#141c30","#1e2d40","#2e3f58","#445470","#607090","#94a3b8"] },
+      "electric-cobalt": { "role": "primary",   "displayName": "Electric Cobalt", "canonical": "oklch(35% 0.32 264)",  "tonalRamp": ["#03083a","#000ea0","#0018f5","#2a4aff","#5570ff","#7b93ff","#a8b8ff","#d4dcff"] },
+      "cobalt-mist":     { "role": "primary",   "displayName": "Cobalt Mist",     "canonical": "oklch(65% 0.22 264)",  "tonalRamp": ["#0a1040","#0c1880","#2535c8","#4a60e8","#7b93ff","#9eb2ff","#bfcfff","#dfe8ff"] },
+      "arctic-sky":      { "role": "secondary", "displayName": "Arctic Sky",      "canonical": "oklch(74% 0.18 210)",  "tonalRamp": ["#052533","#084060","#1468a0","#1e90d0","#38bdf8","#71d3fa","#a9e7fc","#d6f4fe"] },
+      "warm-chalk":      { "role": "neutral",   "displayName": "Warm Chalk",      "canonical": "oklch(95% 0.01 75)",   "tonalRamp": ["#1e1a16","#3c3630","#5a534a","#7a7066","#9a9086","#bab0a8","#d8d0c8","#f0ede8"] },
+      "steel-slate":     { "role": "neutral",   "displayName": "Steel Slate",     "canonical": "oklch(44% 0.06 230)",  "tonalRamp": ["#0e141c","#1a2230","#253044","#334058","#445272","#5a6e8a","#7a8eaa","#94a8c4"] },
+      "neutral-slate":   { "role": "neutral",   "displayName": "Neutral Slate",   "canonical": "oklch(63% 0.05 224)",  "tonalRamp": ["#131820","#222c38","#334050","#475668","#607080","#7a909a","#94a3b8","#b4c3d4"] },
+      "positive-mint":   { "role": "tertiary",  "displayName": "Positive Mint",   "canonical": "oklch(88% 0.12 160)",  "tonalRamp": ["#062018","#0a3828","#106040","#1e9060","#38c880","#6ee7b7","#9af0cc","#c8f8e4"] },
+      "alert-coral":     { "role": "tertiary",  "displayName": "Alert Coral",     "canonical": "oklch(69% 0.19 15)",   "tonalRamp": ["#200808","#400e0e","#701818","#a02020","#d04040","#f87171","#fca0a0","#fecece"] },
+      "warning-amber":   { "role": "tertiary",  "displayName": "Warning Amber",   "canonical": "oklch(74% 0.19 72)",   "tonalRamp": ["#1c1004","#381c06","#602c08","#904808","#c07010","#f59e0b","#fbbf24","#fde68a"] },
+      "authority-teal":  { "role": "tertiary",  "displayName": "Authority Teal",  "canonical": "oklch(58% 0.09 200)",  "tonalRamp": ["#041418","#082830","#104040","#1c6068","#2a8090","#3a9aa8","#58b8c8","#88d0dc"] }
+    },
+    "shadows": [
+      { "name": "ambient-micro", "value": "0 2px 6px rgba(0,0,0,0.2)",   "purpose": "Fund rows. Whisper-level separation from background." },
+      { "name": "ambient-low",   "value": "0 2px 8px rgba(0,0,0,0.4)",   "purpose": "Portfolio panel cards. Base elevation." },
+      { "name": "ambient-mid",   "value": "0 3px 10px rgba(0,0,0,0.35)", "purpose": "Stat cards inside panel summaries." },
+      { "name": "ambient-high",  "value": "0 4px 20px rgba(0,0,0,0.5)",  "purpose": "Tooltips. Highest-priority floating element." },
+      { "name": "deep-lift",     "value": "0 6px 24px rgba(0,0,0,0.5)",  "purpose": "Fee summary section. Heaviest content card." },
+      { "name": "cobalt-glow",   "value": "0 0 28px rgba(0,24,245,0.13)","purpose": "Portfolio A panel at rest. Only accent-colored shadow." },
+      { "name": "cobalt-glow-active", "value": "0 0 28px rgba(0,24,245,0.2)", "purpose": "Portfolio A panel on hover. Glow intensifies." }
+    ],
+    "motion": [
+      { "name": "fast",        "value": "0.2s",          "purpose": "Tab and button state transitions." },
+      { "name": "base",        "value": "0.3s",          "purpose": "Panel card box-shadow and border transitions." },
+      { "name": "slide",       "value": "0.22s ease",    "purpose": "slideInLeft animation on fund row mount." },
+      { "name": "bar-grow",    "value": "0.5s ease",     "purpose": "CompareBar width animation." },
+      { "name": "ease-out",    "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Standard easing for interactive transitions." }
+    ],
+    "keyframes": [
+      { "name": "fadeSlideUp", "from": "opacity:0; transform:translateY(12px)", "to": "opacity:1; transform:translateY(0)", "usage": "Portfolio panel and modal mount animation." },
+      { "name": "fadeIn",      "from": "opacity:0",                             "to": "opacity:1",                          "usage": "Inline amount input appearing when mode switches to pct." },
+      { "name": "slideInLeft", "from": "opacity:0; transform:translateX(-8px)", "to": "opacity:1; transform:translateX(0)", "usage": "Fund row entrance when added to portfolio." },
+      { "name": "scaleIn",     "from": "opacity:0; transform:scale(0.985)",     "to": "opacity:1; transform:scale(1)",      "usage": "Reserved for modal content entrance." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Fund Row",
+      "kind": "custom",
+      "refersTo": "fund-row",
+      "description": "The primary list item. A mini-card grid showing fund identity, allocation input, calculated value, and remove button.",
+      "html": "<div class=\"ds-fund-row\"><div class=\"ds-fund-row-left\"><div class=\"ds-fund-dot\"></div><div><div class=\"ds-fund-name\">Avanza Global</div><div class=\"ds-fund-meta\">Global · 0.11% avgift<span class=\"ds-badge-fi\">FI</span></div></div></div><div class=\"ds-fund-input-group\"><label class=\"ds-label\">Andel %</label><input class=\"ds-fund-input\" type=\"number\" value=\"60\" /></div><div class=\"ds-fund-calc\"><label class=\"ds-label\">≈ kr</label><div class=\"ds-fund-calc-val\">60 000 kr</div></div><button class=\"ds-fund-remove\">×</button></div>",
+      "css": ".ds-fund-row { display: grid; grid-template-columns: 1fr 100px 90px 26px; gap: 8px; align-items: center; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; margin-bottom: 7px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: background 0.15s; animation: ds-slide-in-left 0.22s ease; } .ds-fund-row:hover { background: rgba(255,255,255,0.055); } .ds-fund-row-left { display: flex; align-items: center; gap: 8px; min-width: 0; } .ds-fund-dot { width: 8px; height: 8px; border-radius: 50%; background: #0018f5; flex-shrink: 0; } .ds-fund-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; color: #f0ede8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-fund-meta { font-size: 11px; color: #5a6e8a; margin-top: 1px; display: flex; align-items: center; gap: 5px; } .ds-badge-fi { font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 600; color: #3a9aa8; background: rgba(58,154,168,0.12); padding: 1px 5px; border-radius: 4px; } .ds-fund-input-group { display: flex; flex-direction: column; gap: 2px; } .ds-label { font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 600; color: #5a6e8a; text-transform: uppercase; letter-spacing: 0.05em; } .ds-fund-input { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.11); border-radius: 6px; color: #f0ede8; font-size: 13px; padding: 5px 8px; width: 100%; outline: none; font-family: 'Syne', sans-serif; box-sizing: border-box; } .ds-fund-calc { display: flex; flex-direction: column; gap: 2px; } .ds-fund-calc-val { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; color: #5a6e8a; font-size: 11px; padding: 5px 8px; } .ds-fund-remove { background: none; border: none; color: #555; cursor: pointer; font-size: 18px; padding: 2px; transition: color 0.2s; } .ds-fund-remove:hover { color: #f87171; } @keyframes ds-slide-in-left { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Full-width fund search field. Placeholder in Steel Slate; text in Warm Chalk. Dropdown appears below on input.",
+      "html": "<div class=\"ds-search-wrap\"><input class=\"ds-search\" type=\"text\" placeholder=\"Sök fond, kategori eller ticker…\" /></div>",
+      "css": ".ds-search-wrap { position: relative; } .ds-search { width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.13); border-radius: 8px; color: #f0ede8; font-size: 13px; padding: 9px 14px; outline: none; font-family: 'Syne', sans-serif; transition: border-color 0.2s; } .ds-search::placeholder { color: #5a6e8a; } .ds-search:focus { border-color: rgba(255,255,255,0.22); }"
+    },
+    {
+      "name": "Search Dropdown",
+      "kind": "custom",
+      "refersTo": "input-default",
+      "description": "Result list below the search input. Elevated to Surface Night. Keyboard-navigable.",
+      "html": "<div class=\"ds-dropdown\"><div class=\"ds-dropdown-item ds-dropdown-item--active\"><div class=\"ds-dropdown-name\">Avanza Global</div><div class=\"ds-dropdown-meta\">Global · 0.11% avgift/år</div></div><div class=\"ds-dropdown-item\"><div class=\"ds-dropdown-name\">Länsförsäkringar Global Index</div><div class=\"ds-dropdown-meta\">Global · 0.20% avgift/år</div></div><div class=\"ds-dropdown-add\"><div class=\"ds-add-circle\">+</div><span>Lägg till fond manuellt</span></div></div>",
+      "css": ".ds-dropdown { background: #0d1120; border: 1px solid rgba(255,255,255,0.13); border-radius: 8px; overflow: hidden; } .ds-dropdown-item { padding: 9px 14px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.06); transition: background 0.12s; } .ds-dropdown-item:hover, .ds-dropdown-item--active { background: rgba(255,255,255,0.09); } .ds-dropdown-name { font-size: 13px; color: #f0ede8; font-family: 'Syne', sans-serif; } .ds-dropdown-meta { font-size: 11px; color: #5a6e8a; margin-top: 2px; } .ds-dropdown-add { padding: 9px 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.12s; border-top: 1px solid rgba(255,255,255,0.08); } .ds-dropdown-add:hover { background: rgba(255,255,255,0.05); } .ds-add-circle { width: 17px; height: 17px; border-radius: 50%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 14px; color: #8a9bb0; line-height: 1; } .ds-dropdown-add span { font-size: 12px; color: #8a9bb0; font-family: 'Syne', sans-serif; }"
+    },
+    {
+      "name": "Mode Tab Toggle",
+      "kind": "nav",
+      "refersTo": "tab-active",
+      "description": "Two-state toggle grouping Jämför and Fondläge modes. Pill container with nested tab buttons.",
+      "html": "<div class=\"ds-tab-group\"><button class=\"ds-tab ds-tab--active\">⇄ Jämför</button><button class=\"ds-tab\">◈ Fondläge</button></div>",
+      "css": ".ds-tab-group { display: flex; background: rgba(255,255,255,0.05); border-radius: 7px; padding: 3px; gap: 2px; } .ds-tab { background: transparent; border: none; color: #5a6e8a; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 600; transition: all 0.2s; } .ds-tab--active { background: rgba(255,255,255,0.10); color: #f0ede8; } .ds-tab:active { transform: scale(0.94); }"
+    },
+    {
+      "name": "Accent Button",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "Ghost-style CTA tinted with the portfolio accent. Used for 'Visa fullständig historik'.",
+      "html": "<button class=\"ds-btn-accent\">Visa fullständig historik &amp; detaljer</button>",
+      "css": ".ds-btn-accent { width: 100%; background: rgba(0,24,245,0.07); border: 1px solid rgba(0,24,245,0.25); color: #0018f5; border-radius: 8px; padding: 9px 14px; cursor: pointer; font-size: 12px; font-family: 'Syne', sans-serif; font-weight: 600; transition: background 0.2s; text-align: center; } .ds-btn-accent:hover { background: rgba(0,24,245,0.15); }"
+    },
+    {
+      "name": "Source Badge",
+      "kind": "chip",
+      "refersTo": "badge-fi",
+      "description": "Inline provenance badge. FI = Finansinspektionen (teal); Manuell = fallback or user-defined (slate).",
+      "html": "<span class=\"ds-badge ds-badge--fi\">FI</span><span class=\"ds-badge ds-badge--manual\">Manuell</span>",
+      "css": ".ds-badge { font-size: 9px; font-family: 'Syne', sans-serif; font-weight: 600; padding: 1px 5px; border-radius: 4px; line-height: 14px; white-space: nowrap; cursor: default; } .ds-badge--fi { color: #3a9aa8; background: rgba(58,154,168,0.12); } .ds-badge--manual { color: #94a3b8; background: rgba(148,163,184,0.12); }"
+    },
+    {
+      "name": "Chart Tooltip",
+      "kind": "custom",
+      "refersTo": "surface-night",
+      "description": "Floating data card on chart hover. Positioned dynamically; flips left/right at 60% x-axis mark.",
+      "html": "<div class=\"ds-tooltip\"><div class=\"ds-tooltip-date\">15 jan 2024</div><div class=\"ds-tooltip-row\"><div class=\"ds-tooltip-dot\" style=\"background:#0018f5\"></div><span class=\"ds-tooltip-label\">A: <strong class=\"ds-tooltip-positive\">+18.42%</strong></span><span class=\"ds-tooltip-kr\">184 200 kr</span></div><div class=\"ds-tooltip-row\"><div class=\"ds-tooltip-dot\" style=\"background:#38bdf8\"></div><span class=\"ds-tooltip-label\">B: <strong class=\"ds-tooltip-negative\">-2.11%</strong></span><span class=\"ds-tooltip-kr\">-21 100 kr</span></div></div>",
+      "css": ".ds-tooltip { background: #0d1120; border: 1px solid rgba(255,255,255,0.13); border-radius: 8px; padding: 8px 12px; font-family: 'Syne', sans-serif; pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.5); min-width: 140px; } .ds-tooltip-date { color: #5a6e8a; font-size: 10px; margin-bottom: 4px; } .ds-tooltip-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; } .ds-tooltip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; } .ds-tooltip-label { color: #f0ede8; font-size: 12px; } .ds-tooltip-positive { color: #6ee7b7; } .ds-tooltip-negative { color: #f87171; } .ds-tooltip-kr { color: #5a6e8a; font-size: 11px; margin-left: auto; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Clarity Terminal",
+    "overview": "minportfölj.se feels like a precision instrument someone built for themselves — dark, fast, zero decorative noise. Every surface is purposefully dim so the data can speak at full volume. The interface doesn't try to impress; it tries to answer. When a user opens the tool, the question is already posed. The design's job is to get out of the way and let the numbers close it.\n\nThe palette is almost exclusively dark navy with restrained semi-transparent layering. Two accent colors — Electric Cobalt for Portfolio A, Arctic Sky for Portfolio B — do the only chromatic work. They appear on interactive elements, chart lines, and accent glows. Nothing else competes. Positive returns are Mint, negative are Coral — semantic, not decorative.\n\nTypography pairs Syne (sharp, confident, slightly angular) for all UI chrome, labels, and headings with DM Sans (warm, readable, humanist) for body copy.",
+    "keyCharacteristics": [
+      "Dark by mission: dim surfaces reduce cognitive load so numerical differences read clearly",
+      "Two-voice typography: Syne for chrome, DM Sans for content — never reversed",
+      "Accent restraint: Electric Cobalt and Arctic Sky appear on ≤20% of any surface",
+      "Functional elevation: depth via tonal layering and selective accent glow, not shadow stacking",
+      "Uppercase labels with wide tracking (0.05–0.06em) anchor every data section"
+    ],
+    "rules": [
+      { "name": "The Two-Accent Rule", "body": "Electric Cobalt and Arctic Sky are the only saturated colors in the system. Every other chromatic touch is semantic, not decorative. Adding a third decorative accent is forbidden.", "section": "colors" },
+      { "name": "The Opacity Stack Rule", "body": "Component backgrounds are never solid colors — they are semi-transparent white layers on the dark field (rgba(255,255,255,0.02–0.10)). This ensures surfaces remain coherent at any depth.", "section": "colors" },
+      { "name": "The Chrome/Content Split Rule", "body": "Syne carries all interface chrome. DM Sans carries all explanatory prose. Swapping this breaks the system's voice.", "section": "typography" },
+      { "name": "The Label Contract", "body": "Every data field is preceded by an uppercase Syne label at 9px with letter-spacing 0.05em and color Steel Slate. Unlabelled data fields are prohibited.", "section": "typography" },
+      { "name": "The Glow-Is-Semantic Rule", "body": "The only colored shadow is the Electric Cobalt glow on Portfolio A panels. It marks which portfolio the user is interacting with. Colored glows on other elements are forbidden.", "section": "elevation" },
+      { "name": "The Flat-by-Default Rule", "body": "Elements are flat at rest unless elevation is necessary for layering context. Shadows and glows respond to state or depth — they are not default styling.", "section": "elevation" },
+      { "name": "The Ghost-Over-Filled Rule", "body": "Fully filled buttons (solid Electric Cobalt background) do not exist. Buttons are always tinted ghosts. The accent is strong enough at partial opacity.", "section": "components" }
+    ],
+    "dos": [
+      "Do use uppercase Syne labels (9px, 0.05em tracking, Steel Slate) above every data field",
+      "Do use rgba(255,255,255,N) for all surface backgrounds — components layer above #090d1a",
+      "Do color positive return values #6ee7b7 and negative #f87171 — everywhere, consistently",
+      "Do use slideInLeft 0.22s ease for list items that mount dynamically",
+      "Do keep Syne on all UI chrome and DM Sans only in explanatory prose",
+      "Do limit saturated color to Electric Cobalt and Arctic Sky"
+    ],
+    "donts": [
+      "Don't use storbankernas tunga byråkratidesign: compliance banners, legal-text overflow, multiple competing CTAs",
+      "Don't use generiska SaaS-dashboards: blå gradienter, hero-metrics, identical card grids",
+      "Don't use gamifierade fintech patterns: confetti, progress streaks, push-moment celebrations",
+      "Don't use reklamtunga jämförelsesajter patterns: sponsored slots, badge proliferation",
+      "Don't use border-left greater than 1px as a colored stripe accent on any card or row",
+      "Don't use gradient text (background-clip: text) — use solid Mint or Coral for emphasis",
+      "Don't add a third decorative accent color",
+      "Don't fill a button with solid Electric Cobalt — buttons are always tinted ghosts",
+      "Don't put DM Sans on a tab, badge, label, or button — only Syne",
+      "Don't show a number without an uppercase label naming the unit"
+    ]
+  }
+}
