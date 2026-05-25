@@ -16,7 +16,6 @@ Appen saknar mobilstöd, automatiska tester och har ett antal kända tekniska sk
 Mål: trygg grund innan ny funktionalitet byggs.
 
 - [x] Fyll i STACK.md med teknikstack och projektstruktur
-- [ ] Flytta ms_token från funds.js till miljövariabel
 - [x] Lägg till schemaVersion i localStorage för manualFunds med migrationsfunktion — hanterar tre äldre format: rå array, { version/funds }, samt saknad schemaVersion
 - [x] Visa tydligt i UI vilka fonder som misslyckades att ladda från Yahoo Finance — visas som notis i FundSearch när sökfältet är tomt
 - [ ] Unit tests för dateRange.js och blend.js
@@ -58,7 +57,6 @@ Mål: bredare fondutbud med bibehållen datakvalitet.
 
 ## Teknisk skuld
 
-- ms_token ligger i klartext i funds.js – ska till miljövariabel (Fas 1)
 - buildSeries i calculations.js är legacy – används endast av FundDetailsModal, ska fasas ut
 - getYahooRef i calculations.js är en stub för bakåtkompatibilitet – ska fasas ut när App.jsx refaktoreras
 - Ingen mobilanpassning trots "mobil först" i AI_RULES.md (Fas 3)

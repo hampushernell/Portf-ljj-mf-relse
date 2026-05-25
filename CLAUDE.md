@@ -3,6 +3,13 @@
 Läs alltid den här filen först. Den innehåller allt du behöver för att arbeta med projektet.
 Läs sedan bara de filer som är direkt relevanta för uppgiften — aldrig hela kodbasen.
 
+**Läs dessa projektdokument när relevant:**
+- `project-docs/DESIGN.md` — läs alltid vid UI-ändringar, nya komponenter eller designbeslut
+- `project-docs/PRODUCT.md` — läs vid produktbeslut, ny funktionalitet eller copy-ändringar
+- `project-docs/ARCHITECTURE.md` — läs vid arkitektur- eller datapipelineändringar
+- `project-docs/FEE_ENGINE.md` — läs vid avgiftsrelaterade ändringar
+- `project-docs/RETURN_SYSTEM_SPEC.md` — läs vid avkastningsberäkningar
+
 ---
 
 ## Projekt
@@ -63,7 +70,9 @@ scripts/
 project-docs/
   ARCHITECTURE.md      Detaljerad arkitektur och datapipeline
   AI_RULES.md          Regler för Claude
+  DESIGN.md            Design system — färger, typografi, komponenter, do's/don'ts
   FEE_ENGINE.md        Avgiftskällor, prioritetsordning, UI-exponering
+  PRODUCT.md           Produktsyfte, användare, varumärke och designprinciper
   RETURN_SYSTEM_SPEC.md  Specifikation för avkastningsberäkning
   ROADMAP.md           Fas 1–5 och teknisk skuld
   STACK.md             Tech stack
@@ -160,7 +169,6 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 - [x] STACK.md
 - [x] schemaVersion i localStorage med migration
 - [x] Tydlig UI-notis för fonder som misslyckades att ladda
-- [ ] Flytta `ms_token` från `funds.js` till Vercel miljövariabel
 - [ ] Unit tests för `dateRange.js` och `blend.js`
 
 ### Fas 2 – Avgifter ✓
@@ -178,16 +186,7 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 - Fler fonder, kategorifilter, ETF-stöd
 
 ### Teknisk skuld
-- `ms_token` i klartext i `funds.js`
 - `buildSeries` och `getYahooRef` ska fasas ut
-
----
-
-## Miljövariabler
-
-| Variabel | Var | Status |
-|----------|-----|--------|
-| `MORNINGSTAR_TOKEN` (ms_token) | `api/funds.js` | Ligger i klartext — ska till Vercel env |
 
 ---
 
