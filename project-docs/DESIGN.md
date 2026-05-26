@@ -186,11 +186,10 @@ No surface in this system uses a raised white-background card on a light page. A
 - **Ambient mid** (`0 3px 10px rgba(0,0,0,0.35)`): Stat cards inside panel summaries.
 - **Ambient high** (`0 4px 20px rgba(0,0,0,0.5)`): Tooltip. The highest-priority floating element; shadow communicates urgency.
 - **Deep lift** (`0 6px 24px rgba(0,0,0,0.5)`): Fee summary section. Heavier shadow for the heaviest content card.
-- **Cobalt glow** (`0 0 28px rgba(0,24,245,0.13)`): Portfolio A panel at rest. The only accent-colored shadow in the system.
-- **Cobalt glow active** (`0 0 28px rgba(0,24,245,0.2)`): Portfolio A panel on hover. The glow intensifies, confirming interactivity.
+~~**Cobalt glow** — removed. The accent glow on portfolio panels has been replaced by accent-tinted backgrounds (see Portfolio Panel).~~
 
 ### Named Rules
-**The Glow-Is-Semantic Rule.** The only colored shadow in the system is the Electric Cobalt glow on Portfolio A panels. It is not decorative; it marks which portfolio the user is interacting with. Adding colored glows to other elements dilutes this signal and is forbidden.
+**The Tint-Is-Identity Rule.** Portfolio panels use an accent-tinted background (`rgba(accentRgb, 0.045)`) instead of colored glows. The tint is barely perceptible but sufficient to establish identity between A and B. Colored box-shadows on panels are forbidden — elevation is handled by ambient shadows only.
 
 **The Flat-by-Default Rule.** Elements are flat at rest unless elevation is necessary for layering context (tooltips, modals, dropdowns). Shadows and glows are a response to state or depth — not a default styling choice.
 
@@ -235,7 +234,10 @@ Elevated to Surface Night (`#0d1120`), 8px radius, `rgba(255,255,255,0.13)` bord
 Elevated card on Surface Night, 8px radius, `rgba(255,255,255,0.13)` border, shadow ambient-high. Smart positioning: flips left/right at the 60% x-axis mark. Contains: date label (10px Steel Slate), one row per portfolio with a color dot (7px circle), portfolio label, return value (colored Mint/Coral based on sign), kr value (Steel Slate 11px).
 
 ### Portfolio Panel
-The primary structural container. Semi-transparent surface (`rgba(255,255,255,0.02)`), accent-colored border (`{accent}33` — accent at 20% opacity), 14px radius, Cobalt glow shadow. On mouse enter, border brightens and glow intensifies. Animation: `fadeSlideUp 0.35s ease` on mount.
+The primary structural container. Accent-tinted background (`rgba(accentRgb, 0.045)`) — A gets Electric Cobalt tint, B gets Arctic Sky tint — accent-colored border (`{accent}33` — accent at 20% opacity), 14px radius, ambient-low shadow. On mouse enter, border brightens slightly; no glow. Animation: `fadeSlideUp 0.35s ease` on mount.
+
+### Chart Card (ReturnChart / FundReturnChart)
+The historical return chart container. Fully transparent background, thin border only (`1px solid rgba(255,255,255,0.10)`), 14px radius. The absence of a fill lets the chart lines carry the full visual weight — no competing surface. Animation: `scaleIn 0.3s ease` on mount.
 
 ## 6. Do's and Don'ts
 

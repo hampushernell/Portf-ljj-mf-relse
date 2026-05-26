@@ -183,6 +183,9 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 - [x] Design tokens i `src/lib/tokens.js` — alla komponenter migrerade
 - [x] Kontrastfixar, typografisk hierarki (headline 16px), spacing 4px-grid
 - [x] Snabb jämförelse borttagen
+- [x] Accenttint-bakgrund på fondkort — `rgba(accentRgb, 0.045)`, A cobalt / B arctic sky
+- [x] Glow borttaget från fondkort — ersatt av accenttint
+- [x] Grafkort transparent — `background: transparent`, border `1px solid rgba(255,255,255,0.10)`
 - [ ] Animationskonsistens, tydligare skillnad Jämför/Fondläge
 
 ### Fas 5 – Fondutbud
