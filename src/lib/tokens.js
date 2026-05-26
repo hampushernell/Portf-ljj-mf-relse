@@ -61,7 +61,7 @@ export const FONT = {
     sm:    "11px",
     md:    "12px",
     base:  "13px",
-    lg:    "15px",
+    lg:    "16px",
     xl:    "17px",
     "2xl": "18px",
     "3xl": "20px",

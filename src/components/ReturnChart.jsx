@@ -17,12 +17,12 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
     <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px 16px" : "22px 24px", animation: "scaleIn 0.3s ease" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
         <div>
-          <h3 style={{ fontFamily: FONT.family.display, fontSize: "15px", fontWeight: 700, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
+          <h3 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
           <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
             {seriesA.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={ACCENT_A} strokeWidth="2.5" strokeLinecap="round"/></svg>
-                <span style={{ fontSize: "12px", color: COLOR.text.primary, fontFamily: FONT.family.display }}>
+                <span style={{ fontSize: "13px", color: COLOR.text.primary, fontFamily: FONT.family.display }}>
                   A: <span style={{ color: retA >= 0 ? COLOR.positive : COLOR.negative, fontWeight: 700 }}>{fmtPct(retA)}</span>
                 </span>
                 {totalA > 0 && <span style={{ fontSize: "11px", color: COLOR.text.secondary }}>({formatKr(totalA * retA / 100)})</span>}
@@ -31,7 +31,7 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
             {showB && seriesB.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={ACCENT_B} strokeWidth="2.5" strokeLinecap="round"/></svg>
-                <span style={{ fontSize: "12px", color: COLOR.text.primary, fontFamily: FONT.family.display }}>
+                <span style={{ fontSize: "13px", color: COLOR.text.primary, fontFamily: FONT.family.display }}>
                   B: <span style={{ color: retB >= 0 ? COLOR.positive : COLOR.negative, fontWeight: 700 }}>{fmtPct(retB)}</span>
                 </span>
                 {totalB > 0 && <span style={{ fontSize: "11px", color: COLOR.text.secondary }}>({formatKr(totalB * retB / 100)})</span>}

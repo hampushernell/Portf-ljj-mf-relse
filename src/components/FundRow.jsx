@@ -67,7 +67,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         {/* Rad 1 */}
         <div style={{ display: "flex", alignItems: "center", gap: "7px", marginBottom: "7px" }}>
           {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
-          <span style={{ fontFamily: FONT.family.display, fontSize: "12px", fontWeight: 600, color: COLOR.text.primary, flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span style={{ fontFamily: FONT.family.display, fontSize: "13px", fontWeight: 600, color: COLOR.text.primary, flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {fund.name}
           </span>
           {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: COLOR.warning, fontSize: "11px", lineHeight: 1 }}>⚠</span>}
@@ -88,7 +88,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
                 const val = parseFloat(e.target.value) || 0;
                 onUpdate(inputMode === "pct" ? { pct: val } : { kr: val });
               }}
-              style={{ background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`, borderRadius: "6px", color: COLOR.text.primary, fontSize: "12px", padding: "5px 8px", width: "100%", outline: "none", fontFamily: FONT.family.display, boxSizing: "border-box" }}
+              style={{ background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`, borderRadius: "6px", color: COLOR.text.primary, fontSize: "13px", padding: "5px 8px", width: "100%", outline: "none", fontFamily: FONT.family.display, boxSizing: "border-box" }}
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
