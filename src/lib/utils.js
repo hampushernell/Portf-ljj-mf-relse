@@ -3,7 +3,7 @@ import { FUNDS_REGISTRY } from "./funds-registry.js";
 export const ACCENT_A       = "#0018F5";
 export const ACCENT_A_LIGHT = "#7b93ff";
 export const ACCENT_B       = "#38bdf8";
-export const BG             = "#090d1a";
+export const BG             = "#080e15";
 
 export const FUND_COLORS = ["#0018F5","#38bdf8","#6ee7b7","#f59e0b","#f87171","#a78bfa","#84cc16","#facc15","#f472b6","#e879f9"];
 

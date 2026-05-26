@@ -4,8 +4,8 @@
 // ── Färger ───────────────────────────────────────────────────────────────────
 export const COLOR = {
   bg: {
-    base:     "#090d1a",
-    elevated: "#0d1120",
+    base:     "#080e15",
+    elevated: "#0f1a22",
     overlay:  "rgba(0,0,0,0.6)",
   },
 
@@ -28,10 +28,10 @@ export const COLOR = {
   },
 
   text: {
-    primary:   "#f0ede8",
+    primary:   "#dde6ee",
     secondary: "#5a6e8a",
     muted:     "#94a3b8",
-    ghost:     "#1e2d3a",
+    ghost:     "#1a2a36",
     subtle:    "#94a3b8",
   },
 
