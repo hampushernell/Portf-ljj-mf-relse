@@ -44,6 +44,12 @@ Mål: appen ska fungera och kännas bra på 375px. Mobil först enligt AI_RULES.
 Mål: konsekvent och skalbart designsystem.
 
 - [x] Design tokens centraliserade i src/lib/tokens.js (COLOR, FONT, RADIUS, SHADOW, SPACE, TRANSITION) — alla komponenter migrerade, inga hårdkodade färger eller fontsträngar kvar
+- [x] Kontrastfixar: ACCENT_A_LIGHT (#7b93ff) används som textfärg istället för ACCENT_A (#0018f5) — kritisk kontrastbugg åtgärdad
+- [x] text.muted-token ändrad från #444 till #94a3b8 — läsbar på mörk bakgrund
+- [x] Google Fonts flyttade från JSX-body till index.html head med preconnect — eliminerar FOUF
+- [x] Typografisk hierarki skärpt: headline 15px → 16px, innehållstext konsoliderad från 12px → 13px, DM Sans explicit på prosatext i modaler
+- [x] Spacing normaliserat till 4px-grid — FundRow, PortfolioPanel summary och avgiftsmodal
+- [x] Snabb jämförelse-blocket borttaget — graferna kommunicerar samma data utan push-moment-design
 - [ ] Konsekvent animationsanvändning genom hela appen
 - [ ] Förtydliga skillnaden mellan Jämför-läge och Fondläge visuellt
 
@@ -59,9 +65,7 @@ Mål: bredare fondutbud med bibehållen datakvalitet.
 
 ## Teknisk skuld
 
-- buildSeries i calculations.js är legacy – används endast av FundDetailsModal, ska fasas ut
-- getYahooRef i calculations.js är en stub för bakåtkompatibilitet – ska fasas ut när App.jsx refaktoreras
-- Ingen mobilanpassning trots "mobil först" i AI_RULES.md (Fas 3)
+- CompareBar.jsx i components/ är oanvänd sedan Snabb jämförelse togs bort — kan raderas
 
 ---
 
@@ -70,5 +74,4 @@ Mål: bredare fondutbud med bibehållen datakvalitet.
 - Läs alltid AI_RULES.md innan du börjar
 - Rör inte filer som inte är direkt relevanta för uppgiften
 - Följ datapipelinen: normalize → dateRange → blend → calculations
-- Använd aldrig buildSeries eller getYahooRef i ny kod
 - Mobilanpassning ska alltid beaktas

@@ -24,7 +24,7 @@ typography:
     letterSpacing: "-0.02em"
   headline:
     fontFamily: "'Syne', sans-serif"
-    fontSize: "15px"
+    fontSize: "16px"
     fontWeight: 700
     lineHeight: 1.3
   title:
@@ -164,7 +164,7 @@ A near-monochromatic dark field interrupted only by two precise accent signals.
 
 ### Hierarchy
 - **Display** (800, 20px, line-height 1.1, tracking -0.02em): Page title "MinPortfölj". One instance per page.
-- **Headline** (700, 15px, line-height 1.3): Panel headers ("Portfölj A", "Snabb jämförelse"). Section anchors.
+- **Headline** (700, 16px, line-height 1.3): Panel headers ("Portfölj A", "Historisk avkastning"). Section anchors.
 - **Title** (600–700, 13px, line-height 1.4): Fund names in rows, modal section headers, stat values. The workhorse of UI text.
 - **Body** (DM Sans 400, 13px, line-height 1.6): Modal explanatory copy. Never used for UI chrome. Max line length 65ch.
 - **Label** (600, 9px, uppercase, tracking 0.05–0.06em): All data labels ("Avgift/år", "Andel %", section labels in summaries). Syne uppercase at 9px with wide tracking functions as a unit marker, not a heading.
@@ -236,9 +236,6 @@ Elevated card on Surface Night, 8px radius, `rgba(255,255,255,0.13)` border, sha
 
 ### Portfolio Panel
 The primary structural container. Semi-transparent surface (`rgba(255,255,255,0.02)`), accent-colored border (`{accent}33` — accent at 20% opacity), 14px radius, Cobalt glow shadow. On mouse enter, border brightens and glow intensifies. Animation: `fadeSlideUp 0.35s ease` on mount.
-
-### Compare Bar
-Horizontal bar chart at micro scale (7px height bars). Two bars grow from center outward — Portfolio A (Electric Cobalt) left, Portfolio B (Arctic Sky) right. The losing bar renders at 30% opacity. Value labels between the bars in matching accent colors. Animated width via `transition: width 0.5s ease`.
 
 ## 6. Do's and Don'ts
 

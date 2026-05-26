@@ -150,8 +150,6 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 ## Viktiga regler och legacy-kod
 
 ### Får ALDRIG användas i ny kod:
-- `buildSeries` — legacy, används bara av `FundDetailsModal` (ska fasas ut)
-- `getYahooRef` — stub för bakåtkompatibilitet (ska fasas ut)
 - `MONTH_SECS` — finns i `utils.js` men används inte för spanberäkning
 
 ### Kritiska invarianter:
@@ -183,13 +181,15 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 
 ### Fas 4 – Designöversyn
 - [x] Design tokens i `src/lib/tokens.js` — alla komponenter migrerade
+- [x] Kontrastfixar, typografisk hierarki (headline 16px), spacing 4px-grid
+- [x] Snabb jämförelse borttagen
 - [ ] Animationskonsistens, tydligare skillnad Jämför/Fondläge
 
 ### Fas 5 – Fondutbud
 - Fler fonder, kategorifilter, ETF-stöd
 
 ### Teknisk skuld
-- `buildSeries` och `getYahooRef` ska fasas ut
+- `CompareBar.jsx` är oanvänd — kan raderas
 
 ---
 
