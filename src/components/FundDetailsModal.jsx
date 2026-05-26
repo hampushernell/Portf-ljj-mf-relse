@@ -1,4 +1,7 @@
-import { buildSeries } from "../lib/calculations";
+import { getLatestNavTs } from "../lib/calculations";
+import { normalizeToCalendar } from "../lib/normalize";
+import { rebaseSeries } from "../lib/blend";
+import { getDisplayRange } from "../lib/dateRange";
 import { FUND_ISINS, fmtFee, fmtPct } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
 import fiFees from "../data/fi-fees.json";
@@ -39,6 +42,7 @@ function FeeBadge({ source, period, isManual, updatedAt }) {
 }
 
 export default function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
+  const latestNavTs = getLatestNavTs(funds.filter(f => !f.isManual));
   return (
     <div
       onClick={onClose}
@@ -81,8 +85,13 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
         </div>
 
         {funds.map(fund => {
-          const s1y = buildSeries(fund.prices, 12);
-          const ret1y = s1y.length ? s1y[s1y.length - 1].value - 100 : null;
+          let ret1y = null;
+          if (!fund.isManual && fund.prices?.length) {
+            const { startTs, endTs } = getDisplayRange("1Å", latestNavTs);
+            const normalized = normalizeToCalendar(fund.prices, startTs, endTs);
+            const s1y = rebaseSeries(normalized);
+            ret1y = s1y.length ? s1y[s1y.length - 1].value - 100 : null;
+          }
           const oldestDate = fund.prices?.[0]?.timestamp
             ? new Date(fund.prices[0].timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
             : "–";

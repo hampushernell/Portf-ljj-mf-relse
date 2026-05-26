@@ -28,14 +28,16 @@ Mål: avgiften är en kärnfunktion och måste vara korrekt och transparent.
 - [x] Källbadge i UI för alla fonder — "FI" (turkos) eller "Manuell" (grå) med tooltip, visas i FundRow och FundDetailsModal
 - [x] Avgiftsmodal i PortfolioPanel med förklaring av viktad avgift, källbeskrivning och Morningstar-verifieringslänkar
 
-## Fas 3 – Mobildesign
+## Fas 3 – Mobildesign ✓
 
 Mål: appen ska fungera och kännas bra på 375px. Mobil först enligt AI_RULES.md.
 
-- [ ] Responsiv layout för PortfolioPanel – stapla vertikalt på mobil
-- [ ] FundRow-grid anpassad för små skärmar
-- [ ] Touch-vänliga tooltips i SVGChart och FundSVGChart
-- [ ] Span-knappar i ReturnChart och FundReturnChart ska fungera på 375px
+- [x] useBreakpoint-hook i hooks/ — bryter vid 768px, isMobile-flagga i alla komponenter
+- [x] Responsiv layout för PortfolioPanel – staplar vertikalt på mobil (A ovanför B)
+- [x] FundRow-grid anpassad för små skärmar — 3-radsmodell: namn/×, input/beräknat, kategori·avgift·badge
+- [x] Touch-vänliga tooltips i SVGChart och FundSVGChart
+- [x] Span-knappar i ReturnChart och FundReturnChart scrollar horisontellt på 375px
+- [x] I fondläge döljs Portfölj B (oförändrat beteende via compareMode)
 
 ## Fas 4 – Designöversyn
 

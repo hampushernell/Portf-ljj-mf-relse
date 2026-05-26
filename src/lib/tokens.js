@@ -30,7 +30,7 @@ export const COLOR = {
   text: {
     primary:   "#f0ede8",
     secondary: "#5a6e8a",
-    muted:     "#444",
+    muted:     "#94a3b8",
     ghost:     "#1e2d3a",
     subtle:    "#94a3b8",
   },

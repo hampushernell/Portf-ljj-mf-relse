@@ -15,27 +15,6 @@ function normalRandom(rng) {
   return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * rng());
 }
 
-export function buildSeries(prices, months, refNow = null) {
-  if (!prices || prices.length === 0) return [];
-  let sliced;
-  if (months === null) {
-    sliced = prices;
-  } else {
-    const now = refNow ?? prices[prices.length - 1]?.timestamp ?? Date.now() / 1000;
-    const cutoffTs = now - months * MONTH_SECS;
-    let startIdx = prices.findIndex(p => p.timestamp >= cutoffTs);
-    if (startIdx === -1) return [];
-    if (startIdx > 0) startIdx--;
-    sliced = prices.slice(startIdx);
-  }
-  const base = sliced[0]?.value;
-  if (!base || base <= 0) return [];
-  return sliced.map((p, i) => ({
-    month: i,
-    timestamp: p.timestamp,
-    value: parseFloat(((p.value / base) * 100).toFixed(2)),
-  }));
-}
 
 export function generateSimulatedSeries(totalReturnPct, months, fundId, endTs = null, nSteps = null) {
   const refEnd     = endTs ?? Date.now() / 1000;
@@ -82,11 +61,6 @@ export function getWeightedFee(funds, allocs, inputMode, portfolioTotal) {
   }, 0);
 }
 
-// Thin stub kept for App.jsx compatibility — sharedRef.latestNavTs is passed to components.
-export function getYahooRef(funds) {
-  const n = getLatestNavTs(funds);
-  return { refEndTs: n, refLen: null, latestNavTs: n };
-}
 
 export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, spanMonths, spanLabel, colors }) {
   const latestNavTs = getLatestNavTs(funds);

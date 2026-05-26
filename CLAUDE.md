@@ -31,7 +31,7 @@ Målgrupp: privatpersoner som vill fatta bättre fondbeslut.
 - UI-komponenter ska vara reusable och innehålla ingen beräkningslogik
 - Rör inte orelaterade filer
 - Refactor före workaround
-- Mobil först (ännu ej implementerat — se Fas 3 i Roadmap)
+- Mobil först — `useBreakpoint()` hook, bryter vid 768px
 - TypeScript är **inte** aktivt — projektet är ren JS/JSX trots att @types/react finns
 
 ---
@@ -176,8 +176,10 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 - [x] Källbadge (FI/Manuell) i FundRow och FundDetailsModal
 - [x] Avgiftsmodal i PortfolioPanel
 
-### Fas 3 – Mobildesign (ej påbörjad)
-- Responsiv layout, touch-tooltips, span-knappar på 375px
+### Fas 3 – Mobildesign ✓
+- [x] useBreakpoint-hook — bryter vid 768px
+- [x] Responsiv layout, touch-tooltips, span-knappar på 375px
+- [x] FundRow 3-radsmodell på mobil — badge på rad 3 bredvid avgiften
 
 ### Fas 4 – Designöversyn
 - [x] Design tokens i `src/lib/tokens.js` — alla komponenter migrerade

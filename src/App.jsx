@@ -3,10 +3,9 @@ import useBreakpoint from "./hooks/useBreakpoint";
 import {
   getWeightedFee,
   portfolioKrTotal,
-  getYahooRef,
+  getLatestNavTs,
   computeReturnBundle,
 } from "./lib/calculations";
-import { formatCompareStats } from "./lib/comparisons";
 import useFundData from "./hooks/useFundData";
 import usePortfolio from "./hooks/usePortfolio";
 import { loadManualFunds, saveManualFunds } from "./lib/storage";
@@ -16,7 +15,6 @@ import {
 } from "./lib/utils";
 import { COLOR, FONT } from "./lib/tokens";
 import PortfolioPanel from "./components/PortfolioPanel";
-import CompareBar from "./components/CompareBar";
 import ReturnChart from "./components/ReturnChart";
 import FundReturnChart from "./components/FundReturnChart";
 
@@ -35,20 +33,18 @@ export default function App() {
   const totalB = portfolioB.inputMode === "kr" ? portfolioKrTotal(portfolioB.funds, portfolioB.allocs) : portfolioB.manualAmount;
   const spanMonths = TIME_SPANS.find(t => t.label === span)?.months ?? null;
 
-  const sharedRef = useMemo(() => {
+  const latestNavTs = useMemo(() => {
     const funds = compareMode
       ? [...portfolioA.funds, ...portfolioB.funds]
       : portfolioA.funds;
-    return getYahooRef(funds, spanMonths);
-  }, [compareMode, portfolioA.funds, portfolioB.funds, spanMonths]);
-  const bundleA = useMemo(() => computeReturnBundle({ funds: portfolioA.funds, allocs: portfolioA.allocs, inputMode: portfolioA.inputMode, portfolioTotal: totalA, spanMonths, spanLabel: span, colors: FUND_COLORS, sharedRef }), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span, sharedRef]);
-  const bundleB = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths, spanLabel: span, colors: FUND_COLORS, sharedRef }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span, sharedRef]);
+    return getLatestNavTs(funds);
+  }, [compareMode, portfolioA.funds, portfolioB.funds]);
+  const bundleA = useMemo(() => computeReturnBundle({ funds: portfolioA.funds, allocs: portfolioA.allocs, inputMode: portfolioA.inputMode, portfolioTotal: totalA, spanMonths, spanLabel: span, colors: FUND_COLORS }), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span]);
+  const bundleB = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths, spanLabel: span, colors: FUND_COLORS }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span]);
   const { portfolioSeries: seriesA, fundLines: fundSeriesA, portfolioReturn: retA, oldestTs: oldestTsA } = bundleA;
   const { portfolioSeries: seriesB, portfolioReturn: retB, oldestTs: oldestTsB } = bundleB;
 
   const fee1 = getWeightedFee(portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA);
-  const fee2 = getWeightedFee(portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB);
-  const compareStats = compareMode ? formatCompareStats(retA, retB, fee1, fee2, totalA, totalB) : null;
 
   const saveManualFund = fund => {
     const updated = [...manualFundsDb.filter(f => f.id !== fund.id), fund];
@@ -68,7 +64,6 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", background: BG, color: COLOR.text.primary, fontFamily: FONT.family.body }}>
-      <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       {/* ── Header ── */}
       <div style={{ padding: isMobile ? "12px 16px 10px" : "26px 36px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <div>
@@ -79,7 +74,7 @@ export default function App() {
           <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
             {[
               { value: "compare", label: "⇄ Jämför",   activeColor: ACCENT_B,       activeBg: "rgba(56,189,248,0.15)"  },
-              { value: "fund",    label: "◈ Fondläge", activeColor: ACCENT_A,       activeBg: "rgba(0,24,245,0.18)"    },
+              { value: "fund",    label: "◈ Fondläge", activeColor: ACCENT_A_LIGHT, activeBg: "rgba(0,24,245,0.18)"    },
             ].map(({ value, label, activeColor, activeBg }) => (
               <button key={value} className="mode-btn" onClick={() => setViewMode(value)} style={{
                 background: viewMode === value ? activeBg : "transparent",
@@ -142,7 +137,7 @@ export default function App() {
                 fundLines={fundSeriesA} portfolioSeries={seriesA}
                 selectedSpan={span} spanMonths={spanMonths} onSpanChange={setSpan}
                 totalA={totalA} fee1={fee1} oldestTsA={oldestTsA}
-                latestNavTs={sharedRef.latestNavTs}
+                latestNavTs={latestNavTs}
               />
             )}
 
@@ -153,36 +148,10 @@ export default function App() {
                 selectedSpan={span} spanMonths={spanMonths} onSpanChange={setSpan}
                 totalA={totalA} totalB={totalB}
                 oldestTsA={oldestTsA} oldestTsB={oldestTsB}
-                latestNavTs={sharedRef.latestNavTs}
+                latestNavTs={latestNavTs}
               />
             )}
 
-            {compareMode && portfolioA.funds.length > 0 && portfolioB.funds.length > 0 && (
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px 16px" : "20px 24px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-                  <div style={{ fontSize: "9px", color: ACCENT_A_LIGHT, background: "rgba(0,24,245,0.1)", padding: "3px 9px", borderRadius: "20px", fontFamily: FONT.family.display, fontWeight: 600 }}>A</div>
-                  <h3 style={{ fontFamily: FONT.family.display, fontSize: "13px", fontWeight: 700, margin: 0, color: COLOR.text.primary }}>Snabb jämförelse</h3>
-                  <div style={{ fontSize: "9px", color: ACCENT_B, background: "rgba(56,189,248,0.1)", padding: "3px 9px", borderRadius: "20px", fontFamily: FONT.family.display, fontWeight: 600 }}>B</div>
-                </div>
-                <div style={{ maxWidth: "560px", margin: "0 auto" }}>
-                  <CompareBar label="Avgift per år" val1={fee1} val2={fee2} unit="%" higherIsBetter={false} />
-                  {(totalA > 0 || totalB > 0) && <CompareBar label="Avgift i kr/år" val1={compareStats.feeKrA} val2={compareStats.feeKrB} higherIsBetter={false} />}
-                  <CompareBar label={`Avkastning (${span})`} val1={retA} val2={retB} unit="%" higherIsBetter={true} />
-                  {(totalA > 0 || totalB > 0) && <CompareBar label={`Avkastning i kr (${span})`} val1={compareStats.retKrA} val2={compareStats.retKrB} higherIsBetter={true} />}
-                </div>
-                <div style={{ marginTop: "16px", display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
-                  {[
-                    { label: "Lägre avgift",        winner: compareStats.feeWinner, accentRgb: compareStats.feeWinner === "A" ? "0,24,245" : "56,189,248", accentText: compareStats.feeWinner === "A" ? ACCENT_A_LIGHT : ACCENT_B },
-                    { label: `Bäst avk. (${span})`, winner: compareStats.retWinner, accentRgb: compareStats.retWinner === "A" ? "0,24,245" : "56,189,248", accentText: compareStats.retWinner === "A" ? ACCENT_A_LIGHT : ACCENT_B },
-                  ].map(({ label: lbl, winner, accentRgb, accentText }) => (
-                    <div key={lbl} style={{ textAlign: "center", padding: "14px 24px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px" }}>
-                      <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px", fontFamily: FONT.family.display }}>{lbl}</div>
-                      <div style={{ fontSize: "18px", fontFamily: FONT.family.display, fontWeight: 800, color: accentText }}>Portfölj {winner}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </>
         )}
 

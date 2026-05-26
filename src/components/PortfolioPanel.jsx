@@ -100,7 +100,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           />
         ))}
         {funds.length === 0 && (
-          <div style={{ textAlign: "center", padding: "28px 0", color: COLOR.text.muted, fontSize: "13px", fontFamily: FONT.family.display }}>
+          <div style={{ textAlign: "center", padding: "28px 0", color: COLOR.text.subtle, fontSize: "13px", fontFamily: FONT.family.display }}>
             {loading ? "Laddar fonddata…" : "Sök och lägg till fonder ovan"}
           </div>
         )}
