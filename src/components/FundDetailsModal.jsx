@@ -87,7 +87,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
         {funds.map(fund => {
           let ret1y = null;
           if (!fund.isManual && fund.prices?.length) {
-            const { startTs, endTs } = getDisplayRange("1Å", latestNavTs);
+            const { startTs, endTs } = getDisplayRange("1 år", latestNavTs);
             const normalized = normalizeToCalendar(fund.prices, startTs, endTs);
             const s1y = rebaseSeries(normalized);
             ret1y = s1y.length ? s1y[s1y.length - 1].value - 100 : null;
