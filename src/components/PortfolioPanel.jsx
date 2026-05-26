@@ -108,8 +108,8 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
 
       {funds.length > 0 && (
         <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
-          <div style={{ fontSize: "9px", color: COLOR.text.secondary, marginBottom: "10px", fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ fontSize: "9px", color: COLOR.text.secondary, marginBottom: "12px", fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
+          <div style={{ display: "flex", gap: "12px" }}>
             <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px", boxShadow: "0 3px 10px rgba(0,0,0,0.35)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
                 <span style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Avgift/år</span>
@@ -182,14 +182,14 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
             <p style={{ fontSize: "13px", fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: "0 0 16px 0" }}>
               Den visade avgiften är den viktade förvaltningsavgiften — varje fonds avgift vägs mot dess andel av portföljvärdet och justeras automatiskt när du ändrar fördelningen.
             </p>
-            <div style={{ display: "flex", gap: "10px", marginBottom: "10px", alignItems: "flex-start" }}>
+            <div style={{ display: "flex", gap: "12px", marginBottom: "12px", alignItems: "flex-start" }}>
               <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: COLOR.fi, flexShrink: 0, marginTop: "3px" }} />
               <div>
                 <div style={{ fontSize: "12px", fontWeight: 600, color: COLOR.text.primary }}>FI — Finansinspektionen</div>
                 <div style={{ fontSize: "11px", fontFamily: FONT.family.body, color: COLOR.text.subtle, marginTop: "2px", lineHeight: 1.5 }}>Juridiskt bindande förvaltningsavgift som fondbolagen rapporterar kvartalsvis till FI. Uppdateras automatiskt månadsvis.</div>
               </div>
             </div>
-            <div style={{ display: "flex", gap: "10px", marginBottom: "16px", alignItems: "flex-start" }}>
+            <div style={{ display: "flex", gap: "12px", marginBottom: "16px", alignItems: "flex-start" }}>
               <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: COLOR.fallback, flexShrink: 0, marginTop: "3px" }} />
               <div>
                 <div style={{ fontSize: "12px", fontWeight: 600, color: COLOR.text.primary }}>Manuell — uppskattad avgift</div>
@@ -197,7 +197,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               </div>
             </div>
             <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "0 0 14px 0" }} />
-            <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "10px" }}>Verifiera på Morningstar</div>
+            <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>Verifiera på Morningstar</div>
             {funds.map(fund => {
               const ticker = fund.ticker?.replace(".ST", "");
               const isFallbackNonManual = fund.feeSource === "fallback" && !fund.isManual;

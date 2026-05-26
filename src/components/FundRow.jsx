@@ -51,7 +51,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
   const wrapperStyle = {
     padding: "10px 12px",
     background: hovered ? "rgba(255,255,255,0.055)" : "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "7px",
+    border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "8px",
     animation: "slideInLeft 0.22s ease", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
     transition: "background 0.15s",
     cursor: clickable ? "pointer" : "default",
@@ -65,7 +65,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         onClick={clickable ? () => onEdit(fund) : undefined}
         style={wrapperStyle}>
         {/* Rad 1 */}
-        <div style={{ display: "flex", alignItems: "center", gap: "7px", marginBottom: "7px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
           {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
           <span style={{ fontFamily: FONT.family.display, fontSize: "13px", fontWeight: 600, color: COLOR.text.primary, flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {fund.name}
@@ -128,7 +128,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         display: "grid", gridTemplateColumns: "1fr 100px 90px 26px", gap: "8px", alignItems: "center",
         padding: "10px 12px",
         background: hovered ? "rgba(255,255,255,0.055)" : "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "7px",
+        border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "8px",
         animation: "slideInLeft 0.22s ease", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
         transition: "background 0.15s",
         cursor: clickable ? "pointer" : "default",
