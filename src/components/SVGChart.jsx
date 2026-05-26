@@ -2,6 +2,12 @@ import { useState, useRef, useCallback } from "react";
 import { ACCENT_A, ACCENT_B, BG, formatKr, fmtPct } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
 
+const getSVGX = (e, svgEl) => {
+  const rect = svgEl.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  return clientX - rect.left;
+};
+
 export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
   const W = 800, H = 220, PL = 48, PR = 12, PT = 10, PB = 28;
   const chartW = W - PL - PR;
@@ -36,7 +42,7 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
   const handleMouseMove = useCallback(e => {
     if (!svgRef.current || !seriesA.length) return;
     const rect = svgRef.current.getBoundingClientRect();
-    const mx = (e.clientX - rect.left) * (W / rect.width);
+    const mx = getSVGX(e, svgRef.current) * (W / rect.width);
     const idx = Math.round(((mx - PL) / chartW) * (seriesA.length - 1));
     const clamped = Math.max(0, Math.min(seriesA.length - 1, idx));
     const bIdx = showB && seriesB.length ? Math.min(clamped, seriesB.length - 1) : null;
@@ -51,8 +57,10 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block" }}
-        onMouseMove={handleMouseMove} onMouseLeave={() => setTooltip(null)}>
+      <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block", touchAction: "none" }}
+        onMouseMove={handleMouseMove} onMouseLeave={() => setTooltip(null)}
+        onTouchMove={e => { e.preventDefault(); handleMouseMove(e); }}
+        onTouchEnd={() => setTooltip(null)}>
         {yTicks.map(({ v, y }, i) => (
           <g key={i}>
             <line x1={PL} y1={y} x2={W - PR} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>

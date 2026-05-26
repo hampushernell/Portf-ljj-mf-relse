@@ -2,15 +2,17 @@ import { portfolioReturn, computePortfolioContext } from "../lib/calculations";
 import { TIME_SPANS, formatKr, fmtFee, fmtPct } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
 import FundSVGChart from "./FundSVGChart";
+import useBreakpoint from "../hooks/useBreakpoint";
 
 export default function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths, oldestTsA, onSpanChange, totalA, fee1, latestNavTs }) {
   const retPortfolio = portfolioReturn(portfolioSeries);
+  const { isMobile } = useBreakpoint();
   const { refNow, startTs, endTs, spanHasFullData, isIncomplete, actualFromStr } =
     computePortfolioContext({ latestNavTs, spanMonths, oldestTs: oldestTsA, allSeries: [portfolioSeries] });
 
   return (
-    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "22px 24px", animation: "scaleIn 0.3s ease" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
+    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px 16px" : "22px 24px", animation: "scaleIn 0.3s ease" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
         <div>
           <h3 style={{ fontFamily: FONT.family.display, fontSize: "15px", fontWeight: 700, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
           {fundLines.length > 1 && portfolioSeries.length > 0 && (
@@ -23,23 +25,25 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
           )}
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
-          <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "3px", flexWrap: "wrap" }}>
-            {TIME_SPANS.map(ts => {
-              const full = spanHasFullData(ts);
-              return (
-                <button key={ts.label} onClick={() => onSpanChange(ts.label)}
-                  title={!full ? "Ofullständig data" : undefined}
-                  style={{
-                    background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
-                    border: "none", color: selectedSpan === ts.label ? COLOR.text.primary : full ? COLOR.text.secondary : COLOR.warning,
-                    padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
-                    fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
-                    transition: "all 0.18s", whiteSpace: "nowrap",
-                    boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
-                  }}
-                >{ts.label}{!full ? " ⚠" : ""}</button>
-              );
-            })}
+          <div style={{ overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch" }}>
+            <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
+              {TIME_SPANS.map(ts => {
+                const full = spanHasFullData(ts);
+                return (
+                  <button key={ts.label} onClick={() => onSpanChange(ts.label)}
+                    title={!full ? "Ofullständig data" : undefined}
+                    style={{
+                      background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
+                      border: "none", color: selectedSpan === ts.label ? COLOR.text.primary : full ? COLOR.text.secondary : COLOR.warning,
+                      padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
+                      fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
+                      transition: "all 0.18s", whiteSpace: "nowrap",
+                      boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
+                    }}
+                  >{ts.label}{!full ? " ⚠" : ""}</button>
+                );
+              })}
+            </div>
           </div>
           {isIncomplete && actualFromStr && (
             <div style={{ fontSize: "10px", color: COLOR.warning, fontFamily: FONT.family.display }}>

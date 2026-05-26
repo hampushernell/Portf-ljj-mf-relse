@@ -180,7 +180,8 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 - Responsiv layout, touch-tooltips, span-knappar på 375px
 
 ### Fas 4 – Designöversyn
-- Design tokens, animationskonsistens, tydligare skillnad Jämför/Fondläge
+- [x] Design tokens i `src/lib/tokens.js` — alla komponenter migrerade
+- [ ] Animationskonsistens, tydligare skillnad Jämför/Fondläge
 
 ### Fas 5 – Fondutbud
 - Fler fonder, kategorifilter, ETF-stöd

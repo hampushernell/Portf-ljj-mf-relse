@@ -2,6 +2,7 @@ import { useState } from "react";
 import { getFundPct } from "../lib/calculations";
 import { formatKr, fmtFee } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
+import useBreakpoint from "../hooks/useBreakpoint";
 import fiFees from "../data/fi-fees.json";
 
 const FI_PUBLISHED = fiFees._meta?.published
@@ -45,6 +46,78 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
   const inputVal = inputMode === "pct" ? (allocation.pct || "") : (allocation.kr || "");
   const [hovered, setHovered] = useState(false);
   const clickable = fund.isManual && !!onEdit;
+  const { isMobile } = useBreakpoint();
+
+  const wrapperStyle = {
+    padding: "10px 12px",
+    background: hovered ? "rgba(255,255,255,0.055)" : "rgba(255,255,255,0.03)",
+    border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "7px",
+    animation: "slideInLeft 0.22s ease", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+    transition: "background 0.15s",
+    cursor: clickable ? "pointer" : "default",
+  };
+
+  if (isMobile) {
+    return (
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onClick={clickable ? () => onEdit(fund) : undefined}
+        style={wrapperStyle}>
+        {/* Rad 1 */}
+        <div style={{ display: "flex", alignItems: "center", gap: "7px", marginBottom: "7px" }}>
+          {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
+          <span style={{ fontFamily: FONT.family.display, fontSize: "12px", fontWeight: 600, color: COLOR.text.primary, flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {fund.name}
+          </span>
+          {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: COLOR.warning, fontSize: "11px", lineHeight: 1 }}>⚠</span>}
+          <button onClick={e => { e.stopPropagation(); onRemove(); }}
+            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "18px", padding: "2px" }}
+            onMouseEnter={e => e.currentTarget.style.color = COLOR.negative}
+            onMouseLeave={e => e.currentTarget.style.color = COLOR.text.secondary}>×</button>
+        </div>
+        {/* Rad 2 */}
+        <div onClick={e => e.stopPropagation()}
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "6px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+            <label style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              {inputMode === "pct" ? "Andel %" : "Belopp kr"}
+            </label>
+            <input type="number" value={inputVal}
+              onChange={e => {
+                const val = parseFloat(e.target.value) || 0;
+                onUpdate(inputMode === "pct" ? { pct: val } : { kr: val });
+              }}
+              style={{ background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`, borderRadius: "6px", color: COLOR.text.primary, fontSize: "12px", padding: "5px 8px", width: "100%", outline: "none", fontFamily: FONT.family.display, boxSizing: "border-box" }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+            <label style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              {inputMode === "pct" ? "≈ kr" : "≈ %"}
+            </label>
+            <div style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${COLOR.border.muted}`, borderRadius: "6px", color: COLOR.text.secondary, fontSize: "11px", padding: "5px 8px" }}>
+              {inputMode === "pct" ? formatKr(kr) : `${pct.toFixed(1)}%`}
+            </div>
+          </div>
+        </div>
+        {/* Rad 3 */}
+        <div style={{ fontSize: "10px", color: COLOR.text.secondary, display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+          <span>{fund.category} · {fmtFee(fund.fee)} avgift/år</span>
+          <FeeBadge source={fund.feeSource} period={fund.feePeriod} isManual={fund.isManual ?? false} updatedAt={fund.updatedAt} />
+        </div>
+        {fund.isManual && fund.updatedAt && (() => {
+          const days = (Date.now() - fund.updatedAt) / 86400000;
+          const color = days > 90 ? COLOR.negative : days > 30 ? COLOR.warningLight : COLOR.text.secondary;
+          const dateStr = new Date(fund.updatedAt).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
+          return (
+            <div style={{ fontSize: "10px", color, marginTop: "4px" }}>
+              {days > 30 ? "⚠️ " : ""}Uppdaterad: {dateStr}
+            </div>
+          );
+        })()}
+      </div>
+    );
+  }
 
   return (
     <div

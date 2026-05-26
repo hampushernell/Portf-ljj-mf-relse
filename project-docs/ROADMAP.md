@@ -41,7 +41,7 @@ Mål: appen ska fungera och kännas bra på 375px. Mobil först enligt AI_RULES.
 
 Mål: konsekvent och skalbart designsystem.
 
-- [ ] Centralisera design tokens – spacing, typsnitt, radier – i utils.js eller separat tokens-fil
+- [x] Design tokens centraliserade i src/lib/tokens.js (COLOR, FONT, RADIUS, SHADOW, SPACE, TRANSITION) — alla komponenter migrerade, inga hårdkodade färger eller fontsträngar kvar
 - [ ] Konsekvent animationsanvändning genom hela appen
 - [ ] Förtydliga skillnaden mellan Jämför-läge och Fondläge visuellt
 

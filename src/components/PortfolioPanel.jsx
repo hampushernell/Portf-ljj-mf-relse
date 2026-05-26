@@ -2,6 +2,7 @@ import { useState } from "react";
 import { getWeightedFee, portfolioKrTotal } from "../lib/calculations";
 import { FUND_COLORS, formatKr, fmtFee } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
+import useBreakpoint from "../hooks/useBreakpoint";
 import FundRow from "./FundRow";
 import FundSearch from "./FundSearch";
 import ManualFundModal from "./ManualFundModal";
@@ -21,6 +22,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
   const [showDetails, setShowDetails] = useState(false);
   const [editingFund, setEditingFund] = useState(null);
   const [showFeeInfo, setShowFeeInfo] = useState(false);
+  const { isMobile } = useBreakpoint();
   const portfolioTotal = inputMode === "kr" ? portfolioKrTotal(funds, allocations) : manualAmount;
   const fee = getWeightedFee(funds, allocations, inputMode, portfolioTotal);
   const totalPct = inputMode === "pct"
@@ -34,12 +36,15 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
       onMouseLeave={e => e.currentTarget.style.boxShadow = `0 0 28px rgba(${accentRgb},0.13), 0 2px 8px rgba(0,0,0,0.4)`}
       style={{
         flex: 1, minWidth: 0, background: "rgba(255,255,255,0.02)",
-        border: `1px solid ${accent}33`, borderRadius: "14px", padding: "20px",
+        border: `1px solid ${accent}33`, borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px" : "20px",
         display: "flex", flexDirection: "column", gap: "12px",
         animation: "fadeSlideUp 0.35s ease",
         boxShadow: `0 0 28px rgba(${accentRgb},0.13), 0 2px 8px rgba(0,0,0,0.4)`,
       }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {isMobile && (
+          <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: accent, flexShrink: 0 }} />
+        )}
         <BriefcaseIcon color={accent} />
         <h2 style={{ fontFamily: FONT.family.display, fontSize: "15px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>{label}</h2>
         {funds.length > 0 && inputMode === "pct" && (
@@ -102,7 +107,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
       </div>
 
       {funds.length > 0 && (
-        <div style={{ padding: "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
+        <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
           <div style={{ fontSize: "9px", color: COLOR.text.secondary, marginBottom: "10px", fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
           <div style={{ display: "flex", gap: "10px" }}>
             <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px", boxShadow: "0 3px 10px rgba(0,0,0,0.35)" }}>

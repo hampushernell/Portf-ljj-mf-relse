@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import useBreakpoint from "./hooks/useBreakpoint";
 import {
   getWeightedFee,
   portfolioKrTotal,
@@ -28,6 +29,7 @@ export default function App() {
   const [span, setSpan]         = useState("Max");
 
   const compareMode = viewMode === "compare";
+  const { isMobile } = useBreakpoint();
 
   const totalA = portfolioA.inputMode === "kr" ? portfolioKrTotal(portfolioA.funds, portfolioA.allocs) : portfolioA.manualAmount;
   const totalB = portfolioB.inputMode === "kr" ? portfolioKrTotal(portfolioB.funds, portfolioB.allocs) : portfolioB.manualAmount;
@@ -68,7 +70,7 @@ export default function App() {
     <div style={{ minHeight: "100vh", background: BG, color: COLOR.text.primary, fontFamily: FONT.family.body }}>
       <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       {/* ── Header ── */}
-      <div style={{ padding: "26px 36px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+      <div style={{ padding: isMobile ? "12px 16px 10px" : "26px 36px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <div>
           <h1 style={{ fontFamily: FONT.family.display, fontSize: "20px", fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: COLOR.text.primary }}>MinPortfölj</h1>
           <p style={{ margin: "3px 0 0", fontSize: "11px", color: COLOR.text.secondary }}>Jämför avgifter & historisk avkastning</p>
@@ -90,7 +92,7 @@ export default function App() {
         </div>
       </div>
 
-      <div style={{ padding: "22px 36px", display: "flex", flexDirection: "column", gap: "18px" }}>
+      <div style={{ padding: isMobile ? "12px 14px" : "22px 36px", display: "flex", flexDirection: "column", gap: isMobile ? "12px" : "18px" }}>
 
         {error && (
           <div style={{ padding: "16px", background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "10px", color: COLOR.negative, fontSize: "13px", fontFamily: FONT.family.display }}>
@@ -112,7 +114,7 @@ export default function App() {
 
         {!loading && !error && (
           <>
-            <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
+            <div style={{ display: "flex", gap: isMobile ? "12px" : "16px", alignItems: "flex-start", flexDirection: isMobile ? "column" : "row" }}>
               <PortfolioPanel label={viewMode === "fund" ? "Portfölj" : "Portfölj A"} accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
                 funds={portfolioA.funds} allocations={portfolioA.allocs} inputMode={portfolioA.inputMode} manualAmount={portfolioA.manualAmount}
                 onInputModeChange={portfolioA.setInputMode} onManualAmountChange={portfolioA.setManualAmount}
@@ -156,7 +158,7 @@ export default function App() {
             )}
 
             {compareMode && portfolioA.funds.length > 0 && portfolioB.funds.length > 0 && (
-              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "20px 24px" }}>
+              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px 16px" : "20px 24px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
                   <div style={{ fontSize: "9px", color: ACCENT_A_LIGHT, background: "rgba(0,24,245,0.1)", padding: "3px 9px", borderRadius: "20px", fontFamily: FONT.family.display, fontWeight: 600 }}>A</div>
                   <h3 style={{ fontFamily: FONT.family.display, fontSize: "13px", fontWeight: 700, margin: 0, color: COLOR.text.primary }}>Snabb jämförelse</h3>
@@ -168,7 +170,7 @@ export default function App() {
                   <CompareBar label={`Avkastning (${span})`} val1={retA} val2={retB} unit="%" higherIsBetter={true} />
                   {(totalA > 0 || totalB > 0) && <CompareBar label={`Avkastning i kr (${span})`} val1={compareStats.retKrA} val2={compareStats.retKrB} higherIsBetter={true} />}
                 </div>
-                <div style={{ marginTop: "16px", display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
+                <div style={{ marginTop: "16px", display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
                   {[
                     { label: "Lägre avgift",        winner: compareStats.feeWinner, accentRgb: compareStats.feeWinner === "A" ? "0,24,245" : "56,189,248", accentText: compareStats.feeWinner === "A" ? ACCENT_A_LIGHT : ACCENT_B },
                     { label: `Bäst avk. (${span})`, winner: compareStats.retWinner, accentRgb: compareStats.retWinner === "A" ? "0,24,245" : "56,189,248", accentText: compareStats.retWinner === "A" ? ACCENT_A_LIGHT : ACCENT_B },
