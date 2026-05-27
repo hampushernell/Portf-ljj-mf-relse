@@ -4,9 +4,9 @@
 // ── Färger ───────────────────────────────────────────────────────────────────
 export const COLOR = {
   bg: {
-    base:     "#080e15",
+    base:     "#020a13",
     elevated: "#0d1120",
-    overlay:  "rgba(0, 0, 0, 0)",
+    overlay:  "rgba(0, 0, 0, 0.3)",
   },
 
   surface: {
@@ -39,10 +39,10 @@ export const COLOR = {
   accentALight: "#7891ff",
   accentB:      "#38bdf8",
 
-  positive:     "#36cd6d",
+  positive:     "#36e877",
   warning:      "#f59e0b",
   warningLight: "#fbbf24",
-  negative:     "#de4040",
+  negative:     "#e21b1b",
 
   fi:       "#3a9aa8",
   fallback: "#94a3b8",
