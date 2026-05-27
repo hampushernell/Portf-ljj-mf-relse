@@ -6,7 +6,7 @@ export const COLOR = {
   bg: {
     base:     "#080e15",
     elevated: "#0d1120",
-    overlay:  "rgba(0,0,0,0.72)",
+    overlay:  "rgba(0, 0, 0, 0)",
   },
 
   surface: {
@@ -36,13 +36,13 @@ export const COLOR = {
   },
 
   accentA:      "#0018F5",
-  accentALight: "#7b93ff",
+  accentALight: "#7891ff",
   accentB:      "#38bdf8",
 
-  positive:     "#6ee7b7",
+  positive:     "#36cd6d",
   warning:      "#f59e0b",
   warningLight: "#fbbf24",
-  negative:     "#f87171",
+  negative:     "#de4040",
 
   fi:       "#3a9aa8",
   fallback: "#94a3b8",
