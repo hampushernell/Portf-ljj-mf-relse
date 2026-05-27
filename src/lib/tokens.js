@@ -39,10 +39,10 @@ export const COLOR = {
   accentALight: "#7891ff",
   accentB:      "#38bdf8",
 
-  positive:     "#36e877",
+  positive:     "#56ec8d",
   warning:      "#f59e0b",
   warningLight: "#fbbf24",
-  negative:     "#e21b1b",
+  negative:     "#ba2d2d",
 
   fi:       "#3a9aa8",
   fallback: "#94a3b8",
