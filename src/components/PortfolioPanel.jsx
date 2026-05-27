@@ -166,8 +166,9 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
         <div
           onClick={() => setShowFeeInfo(false)}
           style={{
-            position: "fixed", inset: 0, background: COLOR.bg.overlay,
-            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000,
+            position: "fixed", inset: 0, background: COLOR.bg.overlay, backdropFilter: "blur(4px)",
+            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "20px",
+            animation: "fadeIn 0.2s ease",
           }}
         >
           <div
