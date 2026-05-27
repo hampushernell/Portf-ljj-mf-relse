@@ -4,9 +4,9 @@
 // ── Färger ───────────────────────────────────────────────────────────────────
 export const COLOR = {
   bg: {
-    base:     "#020a13",
+    base:     "#010911",
     elevated: "#0d1120",
-    overlay:  "rgba(0, 0, 0, 0.3)",
+    overlay:  "rgba(0, 0, 0, 0)",
   },
 
   surface: {
