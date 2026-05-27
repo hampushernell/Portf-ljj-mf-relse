@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
-import { ACCENT_A, ACCENT_B, BG, formatKr, fmtPct } from "../lib/utils";
-import { COLOR, FONT } from "../lib/tokens";
+import { ACCENT_A, ACCENT_B, formatKr, fmtPct } from "../lib/utils";
+import { COLOR, FONT, SHADOW } from "../lib/tokens";
 
 const getSVGX = (e, svgEl) => {
   const rect = svgEl.getBoundingClientRect();
@@ -75,8 +75,8 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
         {tooltip && (
           <>
             <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
-            {tooltip.vA && <circle cx={tooltip.x} cy={toY(tooltip.vA)} r="5" fill={ACCENT_A} stroke={BG} strokeWidth="2"/>}
-            {tooltip.vB && <circle cx={tooltip.x} cy={toY(tooltip.vB)} r="5" fill={ACCENT_B} stroke={BG} strokeWidth="2"/>}
+            {tooltip.vA && <circle cx={tooltip.x} cy={toY(tooltip.vA)} r="5" fill={ACCENT_A} stroke={COLOR.bg.base} strokeWidth="2"/>}
+            {tooltip.vB && <circle cx={tooltip.x} cy={toY(tooltip.vB)} r="5" fill={ACCENT_B} stroke={COLOR.bg.base} strokeWidth="2"/>}
           </>
         )}
       </svg>
@@ -85,10 +85,10 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
           position: "absolute", top: "10px",
           left: tooltip.x / W * 100 > 60 ? "auto" : `calc(${tooltip.x / W * 100}% + 10px)`,
           right: tooltip.x / W * 100 > 60 ? `calc(${(1 - tooltip.x / W) * 100}% + 10px)` : "auto",
-          background: COLOR.bg.elevated, border: "1px solid rgba(255,255,255,0.13)",
+          background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.strong}`,
           borderRadius: "8px", padding: "8px 12px", fontSize: "12px",
           fontFamily: FONT.family.display, pointerEvents: "none", zIndex: 10,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+          boxShadow: SHADOW.tooltip,
         }}>
           <div style={{ color: COLOR.text.secondary, fontSize: "10px", marginBottom: "4px" }}>
             {tooltip.timestamp

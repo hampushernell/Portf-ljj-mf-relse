@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getWeightedFee, portfolioKrTotal } from "../lib/calculations";
 import { FUND_COLORS, formatKr, fmtFee } from "../lib/utils";
-import { COLOR, FONT } from "../lib/tokens";
+import { COLOR, FONT, SHADOW } from "../lib/tokens";
 import useBreakpoint from "../hooks/useBreakpoint";
 import FundRow from "./FundRow";
 import FundSearch from "./FundSearch";
@@ -32,14 +32,14 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
 
   return (
     <div className="panel-card"
-      onMouseEnter={e => e.currentTarget.style.boxShadow = `0 0 0 1px rgba(255,255,255,0.07), 0 12px 40px rgba(0,0,0,0.3)`}
-      onMouseLeave={e => e.currentTarget.style.boxShadow = `0 2px 8px rgba(0,0,0,0.4)`}
+      onMouseEnter={e => e.currentTarget.style.boxShadow = SHADOW.cardHover}
+      onMouseLeave={e => e.currentTarget.style.boxShadow = SHADOW.card}
       style={{
         flex: 1, minWidth: 0, background: `rgba(${accentRgb},0.045)`,
         border: `1px solid ${accent}33`, borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px" : "20px",
         display: "flex", flexDirection: "column", gap: "12px",
         animation: "fadeSlideUp 0.35s ease",
-        boxShadow: `0 2px 8px rgba(0,0,0,0.4)`,
+        boxShadow: SHADOW.card,
       }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         {isMobile && (
@@ -51,17 +51,17 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           <span style={{
             marginLeft: "auto", fontSize: "10px",
             color: pctOk ? COLOR.positive : COLOR.negative,
-            background: pctOk ? "rgba(110,231,183,0.1)" : "rgba(248,113,113,0.12)",
+            background: pctOk ? COLOR.tint.positive : COLOR.tint.negativeStrong,
             padding: "2px 8px", borderRadius: "20px", fontFamily: FONT.family.display, fontWeight: 600,
           }}>{totalPct.toFixed(1)}% fördelat</span>
         )}
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
+        <div style={{ display: "flex", background: COLOR.surface.tab, borderRadius: "7px", padding: "3px", gap: "2px" }}>
           {["pct", "kr"].map(m => (
             <button key={m} onClick={() => onInputModeChange(m)} style={{
-              background: inputMode === m ? "rgba(255,255,255,0.1)" : "transparent",
+              background: inputMode === m ? COLOR.surface.active : "transparent",
               border: "none", color: inputMode === m ? COLOR.text.primary : COLOR.text.secondary,
               padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
               fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
@@ -75,7 +75,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               onChange={e => onManualAmountChange(parseFloat(e.target.value) || 0)}
               placeholder="Belopp"
               style={{
-                background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.11)",
+                background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`,
                 borderRadius: "6px", color: COLOR.text.primary, fontSize: "13px",
                 padding: "5px 9px", width: "100px", outline: "none", fontFamily: FONT.family.display,
               }}
@@ -110,14 +110,14 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
         <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
           <div style={{ fontSize: "9px", color: COLOR.text.secondary, marginBottom: "12px", fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
           <div style={{ display: "flex", gap: "12px" }}>
-            <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px", boxShadow: "0 3px 10px rgba(0,0,0,0.35)" }}>
+            <div style={{ flex: 1, background: COLOR.surface[1], borderRadius: "8px", padding: "10px 12px", boxShadow: SHADOW.medium }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
                 <span style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Avgift/år</span>
                 <button
                   onClick={() => setShowFeeInfo(true)}
                   style={{ display: "inline-flex", alignItems: "center", justifyContent: "center",
                     width: "15px", height: "15px", borderRadius: "50%",
-                    border: "1px solid rgba(255,255,255,0.2)", background: "none",
+                    border: `1px solid ${COLOR.border.circle}`, background: "none",
                     color: COLOR.text.secondary, fontSize: "9px", cursor: "pointer", lineHeight: 1,
                     fontFamily: FONT.family.display, flexShrink: 0, padding: 0 }}
                 >?</button>
@@ -125,7 +125,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               <div style={{ fontFamily: FONT.family.display, fontSize: "17px", fontWeight: 700, color: accentText }}>{fmtFee(fee)}</div>
               {portfolioTotal > 0 && <div style={{ fontSize: "10px", color: COLOR.text.secondary, marginTop: "2px" }}>{formatKr(portfolioTotal * fee / 100)}</div>}
             </div>
-            <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "10px 12px", boxShadow: "0 3px 10px rgba(0,0,0,0.35)" }}>
+            <div style={{ flex: 1, background: COLOR.surface[1], borderRadius: "8px", padding: "10px 12px", boxShadow: SHADOW.medium }}>
               <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>
                 {inputMode === "kr" ? "Totalt" : "Belopp"}
               </div>
@@ -173,7 +173,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: COLOR.bg.elevated, border: "1px solid rgba(255,255,255,0.12)",
+              background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.default}`,
               borderRadius: "16px", padding: "24px", maxWidth: "420px", width: "100%",
               fontFamily: FONT.family.display,
             }}
@@ -196,7 +196,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
                 <div style={{ fontSize: "11px", fontFamily: FONT.family.body, color: COLOR.text.subtle, marginTop: "2px", lineHeight: 1.5 }}>Avgiften saknar verifierad FI-data och är manuellt angiven — antingen i fondregistret eller av dig. Kontrollera aktuell avgift via fondens faktablad.</div>
               </div>
             </div>
-            <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "0 0 14px 0" }} />
+            <div style={{ height: "1px", background: COLOR.border.muted, margin: "0 0 14px 0" }} />
             <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>Verifiera på Morningstar</div>
             {funds.map(fund => {
               const ticker = fund.ticker?.replace(".ST", "");
@@ -206,10 +206,10 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
                   <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <span style={{ fontSize: "12px", color: COLOR.text.primary }}>{fund.name}</span>
                     {isFallbackNonManual && (
-                      <span style={{ fontSize: "9px", color: COLOR.fallback, background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell avgift</span>
+                      <span style={{ fontSize: "9px", color: COLOR.fallback, background: COLOR.tint.fallback, padding: "1px 5px", borderRadius: "4px" }}>Manuell avgift</span>
                     )}
                     {fund.isManual && (
-                      <span style={{ fontSize: "9px", color: COLOR.fallback, background: "rgba(148,163,184,0.12)", padding: "1px 5px", borderRadius: "4px" }}>Manuell fond</span>
+                      <span style={{ fontSize: "9px", color: COLOR.fallback, background: COLOR.tint.fallback, padding: "1px 5px", borderRadius: "4px" }}>Manuell fond</span>
                     )}
                   </span>
                   <a

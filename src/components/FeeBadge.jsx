@@ -6,8 +6,8 @@ const FI_PUBLISHED = fiFees._meta?.published
   : null;
 
 const FEE_BADGE = {
-  fi:       { color: COLOR.fi,       bg: "rgba(58,154,168,0.12)" },
-  fallback: { color: COLOR.fallback, bg: "rgba(148,163,184,0.12)" },
+  fi:       { color: COLOR.fi,       bg: COLOR.tint.fi },
+  fallback: { color: COLOR.fallback, bg: COLOR.tint.fallback },
 };
 
 export function FeeBadge({ source, period, isManual, updatedAt }) {

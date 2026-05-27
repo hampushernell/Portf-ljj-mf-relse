@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getFundPct } from "../lib/calculations";
 import { formatKr, fmtFee } from "../lib/utils";
-import { COLOR, FONT } from "../lib/tokens";
+import { COLOR, FONT, SHADOW } from "../lib/tokens";
 import useBreakpoint from "../hooks/useBreakpoint";
 import { FeeBadge } from "./FeeBadge";
 
@@ -15,9 +15,9 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
 
   const wrapperStyle = {
     padding: "10px 12px",
-    background: hovered ? "rgba(255,255,255,0.055)" : "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "8px",
-    animation: "slideInLeft 0.22s ease", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+    background: hovered ? COLOR.surface.hover : COLOR.surface.faint,
+    border: `1px solid ${COLOR.border.subtle}`, borderRadius: "9px", marginBottom: "8px",
+    animation: "slideInLeft 0.22s ease", boxShadow: SHADOW.subtle,
     transition: "background 0.15s",
     cursor: clickable ? "pointer" : "default",
   };
@@ -60,7 +60,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
             <label style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
               {inputMode === "pct" ? "≈ kr" : "≈ %"}
             </label>
-            <div style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${COLOR.border.muted}`, borderRadius: "6px", color: COLOR.text.secondary, fontSize: "11px", padding: "5px 8px" }}>
+            <div style={{ background: COLOR.surface.faint, border: `1px solid ${COLOR.border.muted}`, borderRadius: "6px", color: COLOR.text.secondary, fontSize: "11px", padding: "5px 8px" }}>
               {inputMode === "pct" ? formatKr(kr) : `${pct.toFixed(1)}%`}
             </div>
           </div>
@@ -92,9 +92,9 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
       style={{
         display: "grid", gridTemplateColumns: "1fr 100px 90px 26px", gap: "8px", alignItems: "center",
         padding: "10px 12px",
-        background: hovered ? "rgba(255,255,255,0.055)" : "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.07)", borderRadius: "9px", marginBottom: "8px",
-        animation: "slideInLeft 0.22s ease", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+        background: hovered ? COLOR.surface.hover : COLOR.surface.faint,
+        border: `1px solid ${COLOR.border.subtle}`, borderRadius: "9px", marginBottom: "8px",
+        animation: "slideInLeft 0.22s ease", boxShadow: SHADOW.subtle,
         transition: "background 0.15s",
         cursor: clickable ? "pointer" : "default",
       }}>
@@ -132,7 +132,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
             onUpdate(inputMode === "pct" ? { pct: val } : { kr: val });
           }}
           style={{
-            background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.11)",
+            background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`,
             borderRadius: "6px", color: COLOR.text.primary, fontSize: "13px",
             padding: "5px 8px", width: "100%", outline: "none",
             fontFamily: FONT.family.display, boxSizing: "border-box",
@@ -144,7 +144,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
           {inputMode === "pct" ? "≈ kr" : "≈ %"}
         </label>
         <div style={{
-          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+          background: COLOR.surface.faint, border: `1px solid ${COLOR.border.muted}`,
           borderRadius: "6px", color: COLOR.text.secondary, fontSize: "11px", padding: "5px 8px",
         }}>
           {inputMode === "pct" ? formatKr(kr) : `${pct.toFixed(1)}%`}

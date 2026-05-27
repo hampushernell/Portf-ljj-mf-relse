@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
-import { BG, fmtPct } from "../lib/utils";
-import { COLOR, FONT } from "../lib/tokens";
+import { fmtPct } from "../lib/utils";
+import { COLOR, FONT, SHADOW } from "../lib/tokens";
 
 const getSVGX = (e, svgEl) => {
   const rect = svgEl.getBoundingClientRect();
@@ -89,7 +89,7 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
         {tooltip && (
           <>
             <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
-            {tooltip.portfolio != null && showPortfolioLine && <circle cx={tooltip.x} cy={toY(tooltip.portfolio)} r="5" fill="white" stroke={BG} strokeWidth="2"/>}
+            {tooltip.portfolio != null && showPortfolioLine && <circle cx={tooltip.x} cy={toY(tooltip.portfolio)} r="5" fill="white" stroke={COLOR.bg.base} strokeWidth="2"/>}
           </>
         )}
       </svg>
@@ -98,10 +98,10 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
           position: "absolute", top: "10px",
           left: tooltip.x / W * 100 > 60 ? "auto" : `calc(${tooltip.x / W * 100}% + 10px)`,
           right: tooltip.x / W * 100 > 60 ? `calc(${(1 - tooltip.x / W) * 100}% + 10px)` : "auto",
-          background: COLOR.bg.elevated, border: "1px solid rgba(255,255,255,0.13)",
+          background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.strong}`,
           borderRadius: "8px", padding: "8px 12px", fontSize: "12px",
           fontFamily: FONT.family.display, pointerEvents: "none", zIndex: 10,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.5)", maxWidth: "220px",
+          boxShadow: SHADOW.tooltip, maxWidth: "220px",
         }}>
           <div style={{ color: COLOR.text.secondary, fontSize: "10px", marginBottom: "6px" }}>
             {tooltip.timestamp ? new Date(tooltip.timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" }) : ""}

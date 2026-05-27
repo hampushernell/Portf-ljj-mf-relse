@@ -16,8 +16,8 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
 
   const fieldStyle = (err) => ({
     width: "100%", boxSizing: "border-box",
-    background: "rgba(255,255,255,0.06)",
-    border: `1px solid ${err ? "rgba(248,113,113,0.55)" : "rgba(255,255,255,0.11)"}`,
+    background: COLOR.surface.input,
+    border: `1px solid ${err ? "rgba(248,113,113,0.55)" : COLOR.border.input}`,
     borderRadius: "7px", color: COLOR.text.primary, fontSize: "13px",
     padding: "8px 12px", outline: "none", fontFamily: FONT.family.display,
   });
@@ -49,7 +49,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
       animation: "fadeIn 0.2s ease",
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: COLOR.bg.elevated, border: "1px solid rgba(255,255,255,0.12)",
+        background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.default}`,
         borderRadius: "16px", padding: "28px 28px 24px",
         maxWidth: "520px", width: "100%", maxHeight: "92vh",
         overflow: "auto", animation: "scaleIn 0.25s ease",
@@ -67,7 +67,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
         }}>Sök upp fonden på Morningstar ↗</a>
 
         <div style={{
-          background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.28)",
+          background: COLOR.tint.warning, border: "1px solid rgba(251,191,36,0.28)",
           borderRadius: "10px", padding: "11px 14px", marginBottom: "20px",
           fontSize: "12px", color: COLOR.warningLight, lineHeight: 1.6, fontFamily: FONT.family.body,
         }}>
@@ -129,9 +129,9 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
             {onDelete && (
               <button onClick={onDelete}
                 onMouseEnter={e => e.currentTarget.style.background = "rgba(248,113,113,0.2)"}
-                onMouseLeave={e => e.currentTarget.style.background = "rgba(248,113,113,0.1)"}
+                onMouseLeave={e => e.currentTarget.style.background = COLOR.tint.negative}
                 style={{
-                  background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.35)",
+                  background: COLOR.tint.negative, border: "1px solid rgba(248,113,113,0.35)",
                   color: COLOR.negative, borderRadius: "8px", padding: "9px 16px",
                   cursor: "pointer", fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
                   transition: "background 0.2s",
@@ -140,7 +140,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
           </div>
           <div style={{ display: "flex", gap: "10px" }}>
             <button onClick={onClose} style={{
-              background: "transparent", border: "1px solid rgba(255,255,255,0.13)",
+              background: "transparent", border: `1px solid ${COLOR.border.strong}`,
               color: COLOR.text.secondary, borderRadius: "8px", padding: "9px 20px",
               cursor: "pointer", fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
             }}>Avbryt</button>

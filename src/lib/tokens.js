@@ -10,6 +10,7 @@ export const COLOR = {
   },
 
   surface: {
+    faint:  "rgba(255,255,255,0.03)",
     0:      "rgba(255,255,255,0.02)",
     1:      "rgba(255,255,255,0.04)",
     hover:  "rgba(255,255,255,0.055)",
@@ -25,6 +26,7 @@ export const COLOR = {
     strong:  "rgba(255,255,255,0.13)",
     input:   "rgba(255,255,255,0.11)",
     circle:  "rgba(255,255,255,0.2)",
+    card:    "rgba(255,255,255,0.1)",
   },
 
   text: {
@@ -33,6 +35,15 @@ export const COLOR = {
     muted:     "#94a3b8",
     ghost:     "#1a2a36",
     subtle:    "#94a3b8",
+  },
+
+  tint: {
+    positive:       "rgba(110,231,183,0.1)",
+    negative:       "rgba(248,113,113,0.1)",
+    negativeStrong: "rgba(248,113,113,0.12)",
+    warning:        "rgba(251,191,36,0.08)",
+    fi:             "rgba(58,154,168,0.12)",
+    fallback:       "rgba(148,163,184,0.12)",
   },
 
   accentA:      "#0018F5",
@@ -97,13 +108,11 @@ export const RADIUS = {
 
 // ── Skuggor ───────────────────────────────────────────────────────────────────
 export const SHADOW = {
-  sm:        "0 2px 6px rgba(0,0,0,0.2)",
-  md:        "0 2px 8px rgba(0,0,0,0.4)",
-  lg:        "0 3px 10px rgba(0,0,0,0.35)",
-  xl:        "0 4px 20px rgba(0,0,0,0.5)",
-  "2xl":     "0 6px 24px rgba(0,0,0,0.5)",
-  glowA:     "0 0 28px rgba(0,24,245,0.13)",
-  glowAHover:"0 0 28px rgba(0,24,245,0.2)",
+  card:      "0 2px 8px rgba(0,0,0,0.4)",
+  cardHover: "0 0 0 1px rgba(255,255,255,0.07), 0 12px 40px rgba(0,0,0,0.3)",
+  tooltip:   "0 4px 20px rgba(0,0,0,0.5)",
+  subtle:    "0 2px 6px rgba(0,0,0,0.2)",
+  medium:    "0 3px 10px rgba(0,0,0,0.35)",
 };
 
 // ── Övergångar ────────────────────────────────────────────────────────────────

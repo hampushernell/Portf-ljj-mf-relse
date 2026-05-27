@@ -10,7 +10,7 @@ import useFundData from "./hooks/useFundData";
 import usePortfolio from "./hooks/usePortfolio";
 import { loadManualFunds, saveManualFunds } from "./lib/storage";
 import {
-  ACCENT_A, ACCENT_A_LIGHT, ACCENT_B, BG,
+  ACCENT_A, ACCENT_A_LIGHT, ACCENT_B,
   FUND_COLORS, TIME_SPANS,
 } from "./lib/utils";
 import { COLOR, FONT } from "./lib/tokens";
@@ -63,15 +63,15 @@ export default function App() {
   const searchableFunds = useMemo(() => [...allFunds, ...manualFundsDb], [allFunds, manualFundsDb]);
 
   return (
-    <div style={{ minHeight: "100vh", background: BG, color: COLOR.text.primary, fontFamily: FONT.family.body }}>
+    <div style={{ minHeight: "100vh", background: COLOR.bg.base, color: COLOR.text.primary, fontFamily: FONT.family.body }}>
       {/* ── Header ── */}
-      <div style={{ padding: isMobile ? "12px 16px 10px" : "26px 36px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+      <div style={{ padding: isMobile ? "12px 16px 10px" : "26px 36px 18px", borderBottom: `1px solid ${COLOR.border.subtle}`, display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <div>
           <h1 style={{ fontFamily: FONT.family.display, fontSize: "20px", fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: COLOR.text.primary }}>MinPortfölj</h1>
           <p style={{ margin: "3px 0 0", fontSize: "11px", color: COLOR.text.secondary }}>Jämför avgifter & historisk avkastning</p>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-          <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: "7px", padding: "3px", gap: "2px" }}>
+          <div style={{ display: "flex", background: COLOR.surface.tab, borderRadius: "7px", padding: "3px", gap: "2px" }}>
             {[
               { value: "compare", label: "⇄ Jämför",   activeColor: ACCENT_B,       activeBg: "rgba(56,189,248,0.15)"  },
               { value: "fund",    label: "◈ Fondläge", activeColor: ACCENT_A_LIGHT, activeBg: "rgba(0,24,245,0.18)"    },
@@ -90,7 +90,7 @@ export default function App() {
       <div style={{ padding: isMobile ? "12px 14px" : "22px 36px", display: "flex", flexDirection: "column", gap: isMobile ? "12px" : "18px" }}>
 
         {error && (
-          <div style={{ padding: "16px", background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "10px", color: COLOR.negative, fontSize: "13px", fontFamily: FONT.family.display }}>
+          <div style={{ padding: "16px", background: COLOR.tint.negative, border: "1px solid rgba(248,113,113,0.3)", borderRadius: "10px", color: COLOR.negative, fontSize: "13px", fontFamily: FONT.family.display }}>
             {error}
           </div>
         )}

@@ -11,7 +11,7 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
     computePortfolioContext({ latestNavTs, spanMonths, oldestTs: oldestTsA, allSeries: [portfolioSeries] });
 
   return (
-    <div style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.1)", borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px 16px" : "22px 24px", animation: "scaleIn 0.3s ease" }}>
+    <div style={{ background: "transparent", border: `1px solid ${COLOR.border.card}`, borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px 16px" : "22px 24px", animation: "scaleIn 0.3s ease" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
         <div>
           <h3 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
@@ -26,14 +26,14 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
           <div style={{ overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch" }}>
-            <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
+            <div style={{ display: "flex", gap: "3px", background: COLOR.surface[1], borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
               {TIME_SPANS.map(ts => {
                 const full = spanHasFullData(ts);
                 return (
                   <button key={ts.label} onClick={() => onSpanChange(ts.label)}
                     title={!full ? "Ofullständig data" : undefined}
                     style={{
-                      background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
+                      background: selectedSpan === ts.label ? COLOR.surface.active : "transparent",
                       border: "none", color: selectedSpan === ts.label ? COLOR.text.primary : full ? COLOR.text.secondary : COLOR.warning,
                       padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
                       fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
@@ -61,8 +61,9 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", padding: "0 2px" }}>
             <span style={{ fontSize: "11px", color: COLOR.text.secondary, fontFamily: FONT.family.body, whiteSpace: "nowrap" }}>{fmtDate(startTs)}</span>
             <div style={{ flex: 1, position: "relative", height: "12px", display: "flex", alignItems: "center" }}>
-              <div style={{ position: "absolute", left: 0, right: 0, height: "1px", background: "rgba(90,110,138,0.35)" }} />
-              <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", background: COLOR.bg.base, padding: "0 8px", fontSize: "10px", color: COLOR.text.secondary, fontFamily: FONT.family.display, fontWeight: 600, whiteSpace: "nowrap" }}>{selectedSpan}</div>
+              <div style={{ position: "absolute", left: 0, width: "45%", height: "1px", background: "rgba(90,110,138,0.35)" }} />
+              <div style={{ position: "absolute", right: 0, width: "45%", height: "1px", background: "rgba(90,110,138,0.35)" }} />
+              <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", background: "transparent", fontSize: "10px", color: COLOR.text.secondary, fontFamily: FONT.family.display, fontWeight: 600, whiteSpace: "nowrap" }}>{selectedSpan}</div>
             </div>
             <span style={{ fontSize: "11px", color: COLOR.text.secondary, fontFamily: FONT.family.body, whiteSpace: "nowrap" }}>{fmtDate(endTs)}</span>
           </div>
@@ -93,7 +94,7 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
           { lbl: `Avkastning (${selectedSpan})`, val: fmtPct(retPortfolio), col: retPortfolio >= 0 ? COLOR.positive : COLOR.negative, sub: totalA > 0 ? formatKr(totalA * retPortfolio / 100) : null },
           { lbl: "Investerat belopp", val: totalA > 0 ? formatKr(totalA) : "–" },
         ].map(({ lbl, val, col, sub }) => (
-          <div key={lbl} style={{ background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px 16px" }}>
+          <div key={lbl} style={{ background: COLOR.surface[1], borderRadius: "10px", padding: "12px 16px" }}>
             <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px", fontFamily: FONT.family.display }}>{lbl}</div>
             <div style={{ fontFamily: FONT.family.display, fontSize: "17px", fontWeight: 700, color: col || COLOR.text.primary }}>{val}</div>
             {sub && <div style={{ fontSize: "10px", color: COLOR.text.secondary, marginTop: "2px" }}>{sub}</div>}
