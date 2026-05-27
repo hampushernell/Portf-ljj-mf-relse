@@ -79,12 +79,13 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
               {fmtDate(startTs)}
             </span>
             <div style={{ flex: 1, position: "relative", height: "12px", display: "flex", alignItems: "center" }}>
-              <div style={{ position: "absolute", left: 0, right: 0, height: "1px", background: "rgba(90,110,138,0.35)" }} />
+              <div style={{ position: "absolute", left: 0, width: "45%", height: "1px", background: "rgba(90,110,138,0.35)" }} />
+              <div style={{ position: "absolute", right: 0, width: "45%", height: "1px", background: "rgba(90,110,138,0.35)" }} />
               <div style={{
                 position: "absolute", left: "50%", transform: "translateX(-50%)",
-                background: COLOR.bg.base, padding: "0 8px",
+                background: "transparent",
                 fontSize: "10px", color: COLOR.text.secondary, fontFamily: FONT.family.display,
-                fontWeight: 600, letterSpacing: "0.04em", whiteSpace: "nowrap",
+                fontWeight: 600, whiteSpace: "nowrap",
               }}>
                 {selectedSpan}
               </div>

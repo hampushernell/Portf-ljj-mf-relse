@@ -44,7 +44,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
   return (
     <div onClick={onClose} style={{
       position: "fixed", inset: 0, zIndex: 1000,
-      background: "rgba(0,0,0,0.72)", backdropFilter: "blur(4px)",
+      background: COLOR.bg.overlay, backdropFilter: "blur(4px)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
       animation: "fadeIn 0.2s ease",
     }}>

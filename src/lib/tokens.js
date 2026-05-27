@@ -5,8 +5,8 @@
 export const COLOR = {
   bg: {
     base:     "#080e15",
-    elevated: "#0f1a22",
-    overlay:  "rgba(0,0,0,0.6)",
+    elevated: "#0d1120",
+    overlay:  "rgba(0,0,0,0.72)",
   },
 
   surface: {
@@ -28,7 +28,7 @@ export const COLOR = {
   },
 
   text: {
-    primary:   "#dde6ee",
+    primary:   "#f0ede8",
     secondary: "#5a6e8a",
     muted:     "#94a3b8",
     ghost:     "#1a2a36",
