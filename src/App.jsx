@@ -112,7 +112,7 @@ export default function App() {
             </div>
 
             <div style={{ display: "flex", gap: isMobile ? "12px" : "16px", alignItems: "flex-start", flexDirection: isMobile ? "column" : "row" }}>
-              <div style={{ flex: 1, minWidth: 0, alignSelf: "flex-start" }}>
+              <div style={{ flex: 1, minWidth: 0, alignSelf: isMobile ? "stretch" : "flex-start" }}>
                 <PortfolioPanel label={viewMode === "fund" ? "Portfölj" : "Portfölj A"} accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
                   funds={portfolioA.funds} allocations={portfolioA.allocs} inputMode={portfolioA.inputMode} manualAmount={portfolioA.manualAmount}
                   onInputModeChange={portfolioA.setInputMode} onManualAmountChange={portfolioA.setManualAmount}
@@ -127,7 +127,7 @@ export default function App() {
                 <button
                   onClick={() => setViewMode("compare")}
                   style={{
-                    flex: 1, minWidth: 0, minHeight: "240px", alignSelf: "flex-start",
+                    flex: 1, minWidth: 0, minHeight: isMobile ? "120px" : "240px", alignSelf: isMobile ? "stretch" : "flex-start",
                     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                     gap: "10px", padding: "28px 16px",
                     background: "transparent",
@@ -151,7 +151,7 @@ export default function App() {
                 </button>
               )}
               {compareMode && (
-                <div style={{ flex: 1, minWidth: 0, alignSelf: "flex-start" }}>
+                <div style={{ flex: 1, minWidth: 0, alignSelf: isMobile ? "stretch" : "flex-start" }}>
                   <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
                     funds={portfolioB.funds} allocations={portfolioB.allocs} inputMode={portfolioB.inputMode} manualAmount={portfolioB.manualAmount}
                     onInputModeChange={portfolioB.setInputMode} onManualAmountChange={portfolioB.setManualAmount}
