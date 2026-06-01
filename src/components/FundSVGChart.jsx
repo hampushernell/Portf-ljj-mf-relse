@@ -69,7 +69,7 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
         {yTicks.map(({ v, y }, i) => (
           <g key={i}>
             <line x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
-            <text x={8} y={y - 4} textAnchor="start" fill={COLOR.text.muted} fontSize="10" fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
+            <text x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.muted} fontSize={isMobile ? 16 : 10} fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
           </g>
         ))}
         <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
