@@ -111,21 +111,23 @@ export default function App() {
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: isMobile ? "12px" : "16px", alignItems: "stretch", flexDirection: isMobile ? "column" : "row" }}>
-              <PortfolioPanel label={viewMode === "fund" ? "Portfölj" : "Portfölj A"} accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
-                funds={portfolioA.funds} allocations={portfolioA.allocs} inputMode={portfolioA.inputMode} manualAmount={portfolioA.manualAmount}
-                onInputModeChange={portfolioA.setInputMode} onManualAmountChange={portfolioA.setManualAmount}
-                allFunds={searchableFunds} loading={loading} viewMode={viewMode}
-                onAddFund={portfolioA.addFund} onUpdateAlloc={portfolioA.updateAlloc} onRemoveFund={portfolioA.removeFund}
-                span={span} onSaveManualFund={saveManualFund}
-                onDeleteManualFund={deleteManualFund} onUpdateFundData={portfolioA.updateFundData}
-                failedFunds={failedFunds}
-              />
+            <div style={{ display: "flex", gap: isMobile ? "12px" : "16px", alignItems: "flex-start", flexDirection: isMobile ? "column" : "row" }}>
+              <div style={{ flex: 1, minWidth: 0, alignSelf: "flex-start" }}>
+                <PortfolioPanel label={viewMode === "fund" ? "Portfölj" : "Portfölj A"} accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
+                  funds={portfolioA.funds} allocations={portfolioA.allocs} inputMode={portfolioA.inputMode} manualAmount={portfolioA.manualAmount}
+                  onInputModeChange={portfolioA.setInputMode} onManualAmountChange={portfolioA.setManualAmount}
+                  allFunds={searchableFunds} loading={loading} viewMode={viewMode}
+                  onAddFund={portfolioA.addFund} onUpdateAlloc={portfolioA.updateAlloc} onRemoveFund={portfolioA.removeFund}
+                  span={span} onSaveManualFund={saveManualFund}
+                  onDeleteManualFund={deleteManualFund} onUpdateFundData={portfolioA.updateFundData}
+                  failedFunds={failedFunds}
+                />
+              </div>
               {!compareMode && (
                 <button
                   onClick={() => setViewMode("compare")}
                   style={{
-                    flex: 1, minWidth: 0,
+                    flex: 1, minWidth: 0, minHeight: "240px", alignSelf: "flex-start",
                     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                     gap: "10px", padding: "28px 16px",
                     background: "transparent",
@@ -149,15 +151,17 @@ export default function App() {
                 </button>
               )}
               {compareMode && (
-                <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
-                  funds={portfolioB.funds} allocations={portfolioB.allocs} inputMode={portfolioB.inputMode} manualAmount={portfolioB.manualAmount}
-                  onInputModeChange={portfolioB.setInputMode} onManualAmountChange={portfolioB.setManualAmount}
-                  allFunds={searchableFunds} loading={loading} viewMode={viewMode}
-                  onAddFund={portfolioB.addFund} onUpdateAlloc={portfolioB.updateAlloc} onRemoveFund={portfolioB.removeFund}
-                  span={span} onSaveManualFund={saveManualFund}
-                  onDeleteManualFund={deleteManualFund} onUpdateFundData={portfolioB.updateFundData}
-                  failedFunds={failedFunds}
-                />
+                <div style={{ flex: 1, minWidth: 0, alignSelf: "flex-start" }}>
+                  <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
+                    funds={portfolioB.funds} allocations={portfolioB.allocs} inputMode={portfolioB.inputMode} manualAmount={portfolioB.manualAmount}
+                    onInputModeChange={portfolioB.setInputMode} onManualAmountChange={portfolioB.setManualAmount}
+                    allFunds={searchableFunds} loading={loading} viewMode={viewMode}
+                    onAddFund={portfolioB.addFund} onUpdateAlloc={portfolioB.updateAlloc} onRemoveFund={portfolioB.removeFund}
+                    span={span} onSaveManualFund={saveManualFund}
+                    onDeleteManualFund={deleteManualFund} onUpdateFundData={portfolioB.updateFundData}
+                    failedFunds={failedFunds}
+                  />
+                </div>
               )}
             </div>
 
