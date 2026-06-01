@@ -38,11 +38,14 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
     if (!svgRef.current || !refSeries.length) return;
     const rect = svgRef.current.getBoundingClientRect();
     const mx   = getSVGX(e, svgRef.current) * (W / rect.width);
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const pyPct = (clientY - rect.top) / rect.height * 100;
     const idx  = Math.round(((mx - PL) / chartW) * (refSeries.length - 1));
     const ci   = Math.max(0, Math.min(refSeries.length - 1, idx));
     const isLast = ci === refSeries.length - 1;
     setTooltip({
       x: toX(ci, refSeries.length),
+      yPct: pyPct,
       timestamp: refSeries[ci]?.timestamp,
       portfolio: portfolioSeries[ci]?.value,
       funds: lines.map(l => {
@@ -66,20 +69,12 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
         onTouchMove={e => { e.preventDefault(); handleMouseMove(e); }}
         onTouchEnd={() => setTooltip(null)}>
 
-        {yTicks.map(({ v, y }, i) => {
-          const label = `${(v - 100).toFixed(0)}%`;
-          const fs = isMobile ? 16 : 10;
-          const ty = y + (isMobile ? 18 : 14);
-          const padX = 3, padY = 2;
-          const approxW = label.length * (isMobile ? 9 : 6);
-          return (
-            <g key={i}>
-              <line x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
-              <rect x={8 - padX} y={ty - fs - padY} width={approxW + padX * 2} height={fs + padY * 2} rx="3" fill="rgba(10,12,20,0.72)"/>
-              <text x={8} y={ty} textAnchor="start" fill={COLOR.text.muted} fontSize={fs} fontFamily={FONT.family.body}>{label}</text>
-            </g>
-          );
-        })}
+        {yTicks.map(({ v, y }, i) => (
+          <g key={i}>
+            <line x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
+            <text x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.muted} fontSize={isMobile ? 16 : 10} fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
+          </g>
+        ))}
         <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
         {lines.map(l => {
           if (l.series.length <= 1) return null;
@@ -105,9 +100,10 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
       </svg>
       {tooltip && (
         <div style={{
-          position: "absolute", top: "10px",
-          left: tooltip.x / W * 100 > 60 ? "auto" : `calc(${tooltip.x / W * 100}% + 10px)`,
-          right: tooltip.x / W * 100 > 60 ? `calc(${(1 - tooltip.x / W) * 100}% + 10px)` : "auto",
+          position: "absolute",
+          top: `calc(${Math.min(tooltip.yPct, 70)}% - 10px)`,
+          left: tooltip.x / W * 100 > 60 ? "auto" : `calc(${tooltip.x / W * 100}% + 14px)`,
+          right: tooltip.x / W * 100 > 60 ? `calc(${(1 - tooltip.x / W) * 100}% + 14px)` : "auto",
           background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.strong}`,
           borderRadius: "8px", padding: "8px 12px", fontSize: "12px",
           fontFamily: FONT.family.display, pointerEvents: "none", zIndex: 10,
