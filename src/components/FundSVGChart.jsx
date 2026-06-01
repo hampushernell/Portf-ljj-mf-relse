@@ -9,7 +9,7 @@ const getSVGX = (e, svgEl) => {
 };
 
 export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true }) {
-  const W = 800, H = 400, PL = 48, PR = 0, PT = 10, PB = 28;
+  const W = 800, H = 400, PL = 0, PR = 0, PT = 10, PB = 28;
   const chartW = W - PL - PR;
   const chartH = H - PT - PB;
 
@@ -66,11 +66,11 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
 
         {yTicks.map(({ v, y }, i) => (
           <g key={i}>
-            <line x1={PL} y1={y} x2={W - PR} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
-            <text x={PL - 6} y={y + 4} textAnchor="end" fill={COLOR.text.muted} fontSize="10" fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
+            <line x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
+            <text x={8} y={y - 4} textAnchor="start" fill={COLOR.text.muted} fontSize="10" fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
           </g>
         ))}
-        <line x1={PL} y1={baselineY} x2={W - PR} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
+        <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
         {lines.map(l => {
           if (l.series.length <= 1) return null;
           return (
