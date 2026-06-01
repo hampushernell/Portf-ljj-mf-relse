@@ -66,12 +66,20 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
         onTouchMove={e => { e.preventDefault(); handleMouseMove(e); }}
         onTouchEnd={() => setTooltip(null)}>
 
-        {yTicks.map(({ v, y }, i) => (
-          <g key={i}>
-            <line x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
-            <text x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.muted} fontSize={isMobile ? 16 : 10} fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
-          </g>
-        ))}
+        {yTicks.map(({ v, y }, i) => {
+          const label = `${(v - 100).toFixed(0)}%`;
+          const fs = isMobile ? 16 : 10;
+          const ty = y + (isMobile ? 18 : 14);
+          const padX = 3, padY = 2;
+          const approxW = label.length * (isMobile ? 9 : 6);
+          return (
+            <g key={i}>
+              <line x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
+              <rect x={8 - padX} y={ty - fs - padY} width={approxW + padX * 2} height={fs + padY * 2} rx="3" fill="rgba(10,12,20,0.72)"/>
+              <text x={8} y={ty} textAnchor="start" fill={COLOR.text.muted} fontSize={fs} fontFamily={FONT.family.body}>{label}</text>
+            </g>
+          );
+        })}
         <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
         {lines.map(l => {
           if (l.series.length <= 1) return null;
