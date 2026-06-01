@@ -118,7 +118,7 @@ Yahoo råpriser
 | Fil | Ansvar |
 |-----|--------|
 | `PortfolioPanel.jsx` | Fondlista + allokeringshantering per portfölj |
-| `CompareBar.jsx` | Jämförelsebar mellan portfölj A och B |
+| `ComparePlaceholder.jsx` | Klickbar placeholder som aktiverar jämförelseläget (visas istället för Portfölj B tills jämförelse aktiveras) |
 | `ReturnChart.jsx` | Portföljgraf (Jämför-läge) |
 | `FundReturnChart.jsx` | Fondgraf (Fondläge) |
 | `SVGChart.jsx` | SVG-baserad grafkomponent (portfölj) |

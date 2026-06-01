@@ -9,7 +9,7 @@ const getSVGX = (e, svgEl) => {
 };
 
 export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
-  const W = 800, H = 220, PL = 48, PR = 12, PT = 10, PB = 28;
+  const W = 800, H = 400, PL = 48, PR = 0, PT = 10, PB = 28;
   const chartW = W - PL - PR;
   const chartH = H - PT - PB;
 

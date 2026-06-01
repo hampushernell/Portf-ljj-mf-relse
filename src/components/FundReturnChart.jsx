@@ -11,7 +11,8 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
     computePortfolioContext({ latestNavTs, spanMonths, oldestTs: oldestTsA, allSeries: [portfolioSeries] });
 
   return (
-    <div style={{ background: "transparent", border: `1px solid ${COLOR.border.card}`, borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px 16px" : "22px 24px", animation: "scaleIn 0.3s ease" }}>
+    <div style={{ background: "transparent", border: `1px solid ${COLOR.border.card}`, borderRadius: isMobile ? "10px" : "14px", overflow: "hidden", animation: "scaleIn 0.3s ease" }}>
+      <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
         <div>
           <h3 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
@@ -53,8 +54,11 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
         </div>
       </div>
 
+      </div>
+
       <FundSVGChart lines={fundLines} portfolioSeries={portfolioSeries} showPortfolioLine={fundLines.length > 1} />
 
+      <div style={{ padding: isMobile ? "10px 16px 14px" : "10px 24px 22px" }}>
       {portfolioSeries.length > 0 && (() => {
         const fmtDate = ts => new Date(ts * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
         return (
@@ -100,6 +104,7 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
             {sub && <div style={{ fontSize: "10px", color: COLOR.text.secondary, marginTop: "2px" }}>{sub}</div>}
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

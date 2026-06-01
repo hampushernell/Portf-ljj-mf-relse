@@ -51,7 +51,7 @@ Mål: konsekvent och skalbart designsystem.
 - [x] Spacing normaliserat till 4px-grid — FundRow, PortfolioPanel summary och avgiftsmodal
 - [x] Snabb jämförelse-blocket borttaget — graferna kommunicerar samma data utan push-moment-design
 - [ ] Konsekvent animationsanvändning genom hela appen
-- [ ] Förtydliga skillnaden mellan Jämför-läge och Fondläge visuellt
+- [x] Förtydliga skillnaden mellan Jämför-läge och Fondläge visuellt — lägesväxlare flyttad till ovanför panelerna (Fonder → Jämför), ComparePlaceholder visar tydlig ingång till jämförelseläget
 
 ## Fas 5 – Fondutbud
 
@@ -65,7 +65,7 @@ Mål: bredare fondutbud med bibehållen datakvalitet.
 
 ## Teknisk skuld
 
-- CompareBar.jsx i components/ är oanvänd sedan Snabb jämförelse togs bort — kan raderas
+~~- CompareBar.jsx i components/ är oanvänd sedan Snabb jämförelse togs bort — kan raderas~~ (raderad)
 
 ---
 

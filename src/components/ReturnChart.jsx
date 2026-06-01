@@ -14,7 +14,8 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
     computePortfolioContext({ latestNavTs, spanMonths, oldestTs, allSeries: [seriesA, seriesB] });
 
   return (
-    <div style={{ background: "transparent", border: `1px solid ${COLOR.border.card}`, borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px 16px" : "22px 24px", animation: "scaleIn 0.3s ease" }}>
+    <div style={{ background: "transparent", border: `1px solid ${COLOR.border.card}`, borderRadius: isMobile ? "10px" : "14px", overflow: "hidden", animation: "scaleIn 0.3s ease" }}>
+      <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
         <div>
           <h3 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
@@ -69,8 +70,11 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
         </div>
       </div>
 
+      </div>
+
       <SVGChart seriesA={seriesA} seriesB={seriesB} showB={showB} totalA={totalA} totalB={totalB} />
 
+      <div style={{ padding: isMobile ? "10px 16px 14px" : "10px 24px 22px" }}>
       {(seriesA.length > 0 || seriesB.length > 0) && (() => {
         const fmtDate = ts => new Date(ts * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
         return (
@@ -118,6 +122,7 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
           </div>
         );
       })()}
+      </div>
     </div>
   );
 }
