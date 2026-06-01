@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { ACCENT_A, ACCENT_B, formatKr, fmtPct } from "../lib/utils";
 import { COLOR, FONT, SHADOW } from "../lib/tokens";
 import useBreakpoint from "../hooks/useBreakpoint";
@@ -40,6 +40,23 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
   const baselineY = toY(100);
   const [tooltip, setTooltip] = useState(null);
   const svgRef = useRef(null);
+  const GRACE = isMobile ? 0 : 32;
+
+  useEffect(() => {
+    if (isMobile) return;
+    const handleGlobalMove = e => {
+      if (!svgRef.current) return;
+      const rect = svgRef.current.getBoundingClientRect();
+      const outside =
+        e.clientX < rect.left - GRACE ||
+        e.clientX > rect.right + GRACE ||
+        e.clientY < rect.top - GRACE ||
+        e.clientY > rect.bottom + GRACE;
+      if (outside) setTooltip(null);
+    };
+    window.addEventListener("mousemove", handleGlobalMove);
+    return () => window.removeEventListener("mousemove", handleGlobalMove);
+  }, [isMobile]);
 
   const handleMouseMove = useCallback(e => {
     if (!svgRef.current || !seriesA.length) return;
@@ -63,7 +80,7 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block", touchAction: "none" }}
-        onMouseMove={handleMouseMove} onMouseLeave={() => setTooltip(null)}
+        onMouseMove={handleMouseMove} onMouseLeave={isMobile ? () => setTooltip(null) : undefined}
         onTouchMove={e => { e.preventDefault(); handleMouseMove(e); }}
         onTouchEnd={() => setTooltip(null)}>
         {yTicks.map(({ v, y }, i) => (
