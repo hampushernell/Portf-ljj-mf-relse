@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { fmtPct } from "../lib/utils";
 import { COLOR, FONT, SHADOW } from "../lib/tokens";
+import useBreakpoint from "../hooks/useBreakpoint";
 
 const getSVGX = (e, svgEl) => {
   const rect = svgEl.getBoundingClientRect();
@@ -9,7 +10,8 @@ const getSVGX = (e, svgEl) => {
 };
 
 export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true }) {
-  const W = 800, H = 400, PL = 0, PR = 0, PT = 10, PB = 28;
+  const { isMobile } = useBreakpoint();
+  const W = 800, H = isMobile ? 400 : 330, PL = 0, PR = 0, PT = 10, PB = 28;
   const chartW = W - PL - PR;
   const chartH = H - PT - PB;
 
