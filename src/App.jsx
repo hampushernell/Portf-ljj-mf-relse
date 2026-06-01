@@ -111,7 +111,7 @@ export default function App() {
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: isMobile ? "12px" : "16px", alignItems: "flex-start", flexDirection: isMobile ? "column" : "row" }}>
+            <div style={{ display: "flex", gap: isMobile ? "12px" : "16px", alignItems: "stretch", flexDirection: isMobile ? "column" : "row" }}>
               <PortfolioPanel label={viewMode === "fund" ? "Portfölj" : "Portfölj A"} accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
                 funds={portfolioA.funds} allocations={portfolioA.allocs} inputMode={portfolioA.inputMode} manualAmount={portfolioA.manualAmount}
                 onInputModeChange={portfolioA.setInputMode} onManualAmountChange={portfolioA.setManualAmount}
