@@ -70,21 +70,6 @@ export default function App() {
           <h1 style={{ fontFamily: FONT.family.display, fontSize: "20px", fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: COLOR.text.primary }}>MinPortfölj</h1>
           <p style={{ margin: "3px 0 0", fontSize: "11px", color: COLOR.text.secondary }}>Jämför avgifter & historisk avkastning</p>
         </div>
-        <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-          <div style={{ display: "flex", background: COLOR.surface.tab, borderRadius: "7px", padding: "3px", gap: "2px" }}>
-            {[
-              { value: "compare", label: "⇄ Jämför",   activeColor: ACCENT_B,       activeBg: "rgba(56,189,248,0.15)"  },
-              { value: "fund",    label: "◈ Fondläge", activeColor: ACCENT_A_LIGHT, activeBg: "rgba(0,24,245,0.18)"    },
-            ].map(({ value, label, activeColor, activeBg }) => (
-              <button key={value} className="mode-btn" onClick={() => setViewMode(value)} style={{
-                background: viewMode === value ? activeBg : "transparent",
-                border: "none", color: viewMode === value ? activeColor : COLOR.text.secondary,
-                padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
-                fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600, transition: "all 0.2s",
-              }}>{label}</button>
-            ))}
-          </div>
-        </div>
       </div>
 
       <div style={{ padding: isMobile ? "12px 14px" : "22px 36px", display: "flex", flexDirection: "column", gap: isMobile ? "12px" : "18px" }}>
@@ -109,6 +94,23 @@ export default function App() {
 
         {!loading && !error && (
           <>
+            {/* ── Lägesväxlare ── */}
+            <div>
+              <div style={{ display: "flex", background: COLOR.surface.tab, borderRadius: "7px", padding: "3px", gap: "2px", width: "fit-content" }}>
+                {[
+                  { value: "fund",    label: "◈ Fonder",  activeColor: ACCENT_A_LIGHT, activeBg: "rgba(0,24,245,0.18)"   },
+                  { value: "compare", label: "⇄ Jämför",  activeColor: ACCENT_B,       activeBg: "rgba(56,189,248,0.15)" },
+                ].map(({ value, label, activeColor, activeBg }) => (
+                  <button key={value} className="mode-btn" onClick={() => setViewMode(value)} style={{
+                    background: viewMode === value ? activeBg : "transparent",
+                    border: "none", color: viewMode === value ? activeColor : COLOR.text.secondary,
+                    padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
+                    fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600, transition: "all 0.2s",
+                  }}>{label}</button>
+                ))}
+              </div>
+            </div>
+
             <div style={{ display: "flex", gap: isMobile ? "12px" : "16px", alignItems: "flex-start", flexDirection: isMobile ? "column" : "row" }}>
               <PortfolioPanel label={viewMode === "fund" ? "Portfölj" : "Portfölj A"} accent={ACCENT_A} accentRgb="0,24,245" accentText={ACCENT_A_LIGHT}
                 funds={portfolioA.funds} allocations={portfolioA.allocs} inputMode={portfolioA.inputMode} manualAmount={portfolioA.manualAmount}
@@ -119,6 +121,33 @@ export default function App() {
                 onDeleteManualFund={deleteManualFund} onUpdateFundData={portfolioA.updateFundData}
                 failedFunds={failedFunds}
               />
+              {!compareMode && (
+                <button
+                  onClick={() => setViewMode("compare")}
+                  style={{
+                    flex: 1, minWidth: 0,
+                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                    gap: "10px", padding: "28px 16px",
+                    background: "transparent",
+                    border: "1px dashed rgba(255,255,255,0.14)",
+                    borderRadius: "14px",
+                    cursor: "pointer",
+                    transition: "background 0.2s, border-color 0.2s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(56,189,248,0.04)"; e.currentTarget.style.borderColor = "rgba(56,189,248,0.30)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)"; }}
+                >
+                  <div style={{
+                    width: "36px", height: "36px", borderRadius: "50%",
+                    background: "rgba(56,189,248,0.10)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "18px", color: ACCENT_B,
+                  }}>⇄</div>
+                  <span style={{ fontSize: "11px", fontWeight: 600, color: COLOR.text.secondary, fontFamily: FONT.family.display, letterSpacing: "0.02em" }}>
+                    Jämför portfölj
+                  </span>
+                </button>
+              )}
               {compareMode && (
                 <PortfolioPanel label="Portfölj B" accent={ACCENT_B} accentRgb="56,189,248" accentText={ACCENT_B}
                   funds={portfolioB.funds} allocations={portfolioB.allocs} inputMode={portfolioB.inputMode} manualAmount={portfolioB.manualAmount}
