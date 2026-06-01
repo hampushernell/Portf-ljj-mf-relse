@@ -109,10 +109,7 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
           />
         )}
         {tooltip && (
-          <>
-            <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
-            {tooltip.portfolio != null && showPortfolioLine && <circle cx={tooltip.x} cy={toY(tooltip.portfolio)} r="5" fill="white" stroke={COLOR.bg.base} strokeWidth="2"/>}
-          </>
+          <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
         )}
       </svg>
       {tooltip && (
