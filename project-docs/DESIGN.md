@@ -236,6 +236,9 @@ Elevated card on Surface Night, 8px radius, `rgba(255,255,255,0.13)` border, sha
 ### Portfolio Panel
 The primary structural container. Accent-tinted background (`rgba(accentRgb, 0.045)`) — A gets Electric Cobalt tint, B gets Arctic Sky tint — accent-colored border (`{accent}33` — accent at 20% opacity), 14px radius, ambient-low shadow. On mouse enter, border brightens slightly; no glow. Animation: `fadeSlideUp 0.35s ease` on mount.
 
+### Modal Overlay
+All modals share a consistent overlay pattern: `position: fixed`, `inset: 0`, `z-index: 1000`, `background: rgba(0,0,0,0.3)` (COLOR.bg.overlay), `backdropFilter: "blur(4px)"`, centered content via flex, `padding: "20px"` (edge clearance on mobile), `animation: "fadeIn 0.2s ease"`. Clicking the overlay closes the modal; the inner dialog stops propagation. This pattern applies to FundDetailsModal, ManualFundModal, and the fee info overlay in PortfolioPanel — every modal in the system.
+
 ### Chart Card (ReturnChart / FundReturnChart)
 The historical return chart container. Fully transparent background, thin border only (`1px solid rgba(255,255,255,0.10)`), 14px radius. The absence of a fill lets the chart lines carry the full visual weight — no competing surface. Animation: `scaleIn 0.3s ease` on mount.
 
