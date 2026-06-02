@@ -41,12 +41,12 @@ export default function CAGRTable({ compareMode, portfolios }) {
     <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: color, flexShrink: 0 }} />
   );
 
-  const ValCell = ({ v, size = "13px" }) => (
+  const ValCell = ({ v, size = "13px", muted = false }) => (
     <span style={{
       fontFamily: FONT.family.display,
       fontSize: size,
       fontWeight: v != null ? 600 : 400,
-      color: cagrColor(v),
+      color: muted ? COLOR.text.secondary : cagrColor(v),
       textAlign: "right",
     }}>
       {fmtCAGR(v)}
@@ -126,8 +126,8 @@ export default function CAGRTable({ compareMode, portfolios }) {
                     color: COLOR.text.secondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                   }}>{f.name}</span>
                 </div>
-                <ValCell v={f.cagr3y} size="12px" />
-                <ValCell v={f.cagrMax} size="12px" />
+                <ValCell v={f.cagr3y} size="12px" muted />
+                <ValCell v={f.cagrMax} size="12px" muted />
               </div>
             ))}
           </>
@@ -181,8 +181,8 @@ export default function CAGRTable({ compareMode, portfolios }) {
                   color: COLOR.text.secondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                 }}>{f.name}</span>
               </div>
-              <ValCell v={f.cagr3y} size="12px" />
-              <ValCell v={f.cagrMax} size="12px" />
+              <ValCell v={f.cagr3y} size="12px" muted />
+              <ValCell v={f.cagrMax} size="12px" muted />
             </div>
           ))}
         </div>
