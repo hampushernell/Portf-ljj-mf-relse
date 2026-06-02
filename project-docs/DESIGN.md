@@ -231,7 +231,7 @@ Inline pill badges at 9px Syne 600 uppercase.
 Elevated to Surface Night (`#0d1120`), 8px radius, `rgba(255,255,255,0.13)` border, `z-index: 200`. Each result row: 9px 14px padding, `1px solid rgba(255,255,255,0.06)` bottom border, hover at `rgba(255,255,255,0.09)`. `transition: background 0.12s`. The "add manually" action row sits at the bottom separated by a muted divider.
 
 ### Tooltip (Chart)
-Elevated card on Surface Night, 8px radius, `rgba(255,255,255,0.13)` border, shadow ambient-high. Smart positioning: flips left/right at the 60% x-axis mark. Contains: date label (10px Steel Slate), one row per portfolio with a color dot (7px circle), portfolio label, return value (colored Mint/Coral based on sign), kr value (Steel Slate 11px).
+Elevated card on Surface Night, 8px radius, `rgba(255,255,255,0.13)` border, shadow ambient-high. Följer muspekaren/fingret vertikalt (klämt till max 70% av höjden). Flips left/right vid 60% x-axelmark. På desktop stängs via globalt `window` mousemove-lyssnare med 32px grace-zon — möjliggör att slutpunkten nås vid kant-till-kant-design. På mobil stängs via `touchEnd`. Innehåller: datum (10px Steel Slate), en rad per portfölj med färgpunkt (7px), label, returvärde (Mint/Coral), kr-värde (Steel Slate 11px). Inga cirkelmarkörer på graflinjen.
 
 ### Portfolio Panel
 The primary structural container. Accent-tinted background (`rgba(accentRgb, 0.045)`) — A gets Electric Cobalt tint, B gets Arctic Sky tint — accent-colored border (`{accent}33` — accent at 20% opacity), 14px radius, ambient-low shadow. On mouse enter, border brightens slightly; no glow. Animation: `fadeSlideUp 0.35s ease` on mount.
@@ -240,7 +240,9 @@ The primary structural container. Accent-tinted background (`rgba(accentRgb, 0.0
 All modals share a consistent overlay pattern: `position: fixed`, `inset: 0`, `z-index: 1000`, `background: rgba(0,0,0,0.3)` (COLOR.bg.overlay), `backdropFilter: "blur(4px)"`, centered content via flex, `padding: "20px"` (edge clearance on mobile), `animation: "fadeIn 0.2s ease"`. Clicking the overlay closes the modal; the inner dialog stops propagation. This pattern applies to FundDetailsModal, ManualFundModal, and the fee info overlay in PortfolioPanel — every modal in the system.
 
 ### Chart Card (ReturnChart / FundReturnChart)
-The historical return chart container. Fully transparent background, thin border only (`1px solid rgba(255,255,255,0.10)`), 14px radius. The absence of a fill lets the chart lines carry the full visual weight — no competing surface. Animation: `scaleIn 0.3s ease` on mount.
+Transparent background, `1px solid rgba(255,255,255,0.10)` border, 14px radius, `overflow: hidden`. Header (titel, legend, span-knappar) har intern padding `22px 24px 16px` desktop / `14px 16px 16px` mobil. SVG-grafen blöder kant-till-kant utan horisontell padding. Footer (datumrad, jämförelsebar) har padding `10px 24px 22px` desktop. Animation: `scaleIn 0.3s ease` on mount.
+
+**SVG:** `viewBox="0 0 800 H"`, `H=330` desktop / `H=400` mobil. `PL=PR=0` — linjer och gridlinjer löper från x=0 till x=W. Y-axeletiketter inuti grafen (`x=8`, under gridlinjen), fontSize `10` desktop / `16` mobil. Strokewidth `1.5` i båda lägena.
 
 ## 6. Do's and Don'ts
 

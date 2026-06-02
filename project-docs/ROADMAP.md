@@ -52,6 +52,7 @@ Mål: konsekvent och skalbart designsystem.
 - [x] Snabb jämförelse-blocket borttaget — graferna kommunicerar samma data utan push-moment-design
 - [ ] Konsekvent animationsanvändning genom hela appen
 - [x] Förtydliga skillnaden mellan Jämför-läge och Fondläge visuellt — lägesväxlare flyttad till ovanför panelerna (Fonder → Jämför), ComparePlaceholder visar tydlig ingång till jämförelseläget
+- [x] Grafdesign: kant-till-kant SVG (PL=PR=0, overflow:hidden), responsiv höjd (330 desktop / 400 mobil), y-axeletiketter inuti grafen, enhetlig strokewidth 1.5, tooltip följer cursor vertikalt med 32px grace-zon på desktop
 
 ## Fas 5 – Fondutbud
 
