@@ -45,37 +45,52 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
   useEffect(() => {
     if (isMobile) return;
     const handleGlobalMove = e => {
-      if (!svgRef.current) return;
+      if (!svgRef.current || !seriesA.length) return;
       const rect = svgRef.current.getBoundingClientRect();
       const outside =
         e.clientX < rect.left - GRACE ||
         e.clientX > rect.right + GRACE ||
         e.clientY < rect.top - GRACE ||
         e.clientY > rect.bottom + GRACE;
-      if (outside) setTooltip(null);
+      if (outside) { setTooltip(null); return; }
+      const mx = Math.max(0, Math.min(rect.width, e.clientX - rect.left)) * (W / rect.width);
+      const pyPct = Math.max(0, Math.min(rect.height, e.clientY - rect.top)) / rect.height * 100;
+      const idx = Math.round((mx / chartW) * (seriesA.length - 1));
+      const clamped = Math.max(0, Math.min(seriesA.length - 1, idx));
+      const bIdx = showB && seriesB.length ? Math.min(clamped, seriesB.length - 1) : null;
+      setTooltip({
+        x: toX(clamped, seriesA.length),
+        yPct: pyPct,
+        idx: clamped,
+        timestamp: seriesA[clamped]?.timestamp,
+        vA: seriesA[clamped]?.value,
+        vB: bIdx !== null ? seriesB[bIdx]?.value : null,
+      });
     };
     window.addEventListener("mousemove", handleGlobalMove);
     return () => window.removeEventListener("mousemove", handleGlobalMove);
-  }, [isMobile]);
+  }, [isMobile, seriesA, seriesB, showB]);
 
   const handleMouseMove = useCallback(e => {
-    if (!svgRef.current || !seriesA.length) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const mx = getSVGX(e, svgRef.current) * (W / rect.width);
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    const pyPct = (clientY - rect.top) / rect.height * 100;
-    const idx = Math.round(((mx - PL) / chartW) * (seriesA.length - 1));
-    const clamped = Math.max(0, Math.min(seriesA.length - 1, idx));
-    const bIdx = showB && seriesB.length ? Math.min(clamped, seriesB.length - 1) : null;
-    setTooltip({
-      x: toX(clamped, seriesA.length),
-      yPct: pyPct,
-      idx: clamped,
-      timestamp: seriesA[clamped]?.timestamp,
-      vA: seriesA[clamped]?.value,
-      vB: bIdx !== null ? seriesB[bIdx]?.value : null,
-    });
-  }, [seriesA, seriesB, showB]);
+    if (isMobile) {
+      if (!svgRef.current || !seriesA.length) return;
+      const rect = svgRef.current.getBoundingClientRect();
+      const mx = getSVGX(e, svgRef.current) * (W / rect.width);
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const pyPct = (clientY - rect.top) / rect.height * 100;
+      const idx = Math.round(((mx - PL) / chartW) * (seriesA.length - 1));
+      const clamped = Math.max(0, Math.min(seriesA.length - 1, idx));
+      const bIdx = showB && seriesB.length ? Math.min(clamped, seriesB.length - 1) : null;
+      setTooltip({
+        x: toX(clamped, seriesA.length),
+        yPct: pyPct,
+        idx: clamped,
+        timestamp: seriesA[clamped]?.timestamp,
+        vA: seriesA[clamped]?.value,
+        vB: bIdx !== null ? seriesB[bIdx]?.value : null,
+      });
+    }
+  }, [isMobile, seriesA, seriesB, showB]);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>

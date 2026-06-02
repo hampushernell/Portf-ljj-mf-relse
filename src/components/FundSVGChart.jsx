@@ -33,26 +33,46 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
   const svgRef = useRef(null);
   const GRACE = isMobile ? 0 : 32;
 
+  const refSeries = portfolioSeries.length ? portfolioSeries : lines[0]?.series ?? [];
+
   useEffect(() => {
     if (isMobile) return;
     const handleGlobalMove = e => {
-      if (!svgRef.current) return;
+      if (!svgRef.current || !refSeries.length) return;
       const rect = svgRef.current.getBoundingClientRect();
       const outside =
         e.clientX < rect.left - GRACE ||
         e.clientX > rect.right + GRACE ||
         e.clientY < rect.top - GRACE ||
         e.clientY > rect.bottom + GRACE;
-      if (outside) setTooltip(null);
+      if (outside) { setTooltip(null); return; }
+      const mx = Math.max(0, Math.min(rect.width, e.clientX - rect.left)) * (W / rect.width);
+      const pyPct = Math.max(0, Math.min(rect.height, e.clientY - rect.top)) / rect.height * 100;
+      const idx = Math.round((mx / chartW) * (refSeries.length - 1));
+      const ci = Math.max(0, Math.min(refSeries.length - 1, idx));
+      const isLast = ci === refSeries.length - 1;
+      setTooltip({
+        x: toX(ci, refSeries.length),
+        yPct: pyPct,
+        timestamp: refSeries[ci]?.timestamp,
+        portfolio: portfolioSeries[ci]?.value,
+        funds: lines.map(l => {
+          const s = l.series;
+          const ts = refSeries[ci]?.timestamp;
+          const fi = ts != null
+            ? s.reduce((best, p, i) => Math.abs(p.timestamp - ts) < Math.abs(s[best].timestamp - ts) ? i : best, 0)
+            : Math.min(ci, s.length - 1);
+          const value = isLast ? (100 + l.returnValue) : s[fi]?.value;
+          return { name: l.name, color: l.color, value };
+        }),
+      });
     };
     window.addEventListener("mousemove", handleGlobalMove);
     return () => window.removeEventListener("mousemove", handleGlobalMove);
-  }, [isMobile]);
-
-  const refSeries = portfolioSeries.length ? portfolioSeries : lines[0]?.series ?? [];
+  }, [isMobile, refSeries, portfolioSeries, lines]);
 
   const handleMouseMove = useCallback(e => {
-    if (!svgRef.current || !refSeries.length) return;
+    if (!isMobile || !svgRef.current || !refSeries.length) return;
     const rect = svgRef.current.getBoundingClientRect();
     const mx   = getSVGX(e, svgRef.current) * (W / rect.width);
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
