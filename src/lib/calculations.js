@@ -134,3 +134,15 @@ export function computePortfolioContext({ latestNavTs, spanMonths, oldestTs, all
   const { spanHasFullData, isIncomplete, actualFromStr } = computeSpanMeta({ spanMonths, refNow, oldestTs, actualFromTs });
   return { refNow, startTs, endTs, spanHasFullData, isIncomplete, actualFromStr };
 }
+
+export function seriesYears(series) {
+  if (!series?.length || series.length < 2) return 0;
+  return (series[series.length - 1].timestamp - series[0].timestamp) / (365.25 * 86400);
+}
+
+export function computeCAGR(series, years) {
+  if (!series?.length || years < 0.5) return null;
+  const endValue = series[series.length - 1].value;
+  if (endValue <= 0) return null;
+  return Math.pow(endValue / 100, 1 / years) - 1;
+}

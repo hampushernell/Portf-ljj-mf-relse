@@ -5,6 +5,8 @@ import {
   portfolioKrTotal,
   getLatestNavTs,
   computeReturnBundle,
+  seriesYears,
+  computeCAGR,
 } from "./lib/calculations";
 import useFundData from "./hooks/useFundData";
 import usePortfolio from "./hooks/usePortfolio";
@@ -18,6 +20,7 @@ import PortfolioPanel from "./components/PortfolioPanel";
 import ComparePlaceholder from "./components/ComparePlaceholder";
 import ReturnChart from "./components/ReturnChart";
 import FundReturnChart from "./components/FundReturnChart";
+import CAGRTable from "./components/CAGRTable";
 
 export default function App() {
   const { allFunds, failedFunds, loading, error } = useFundData();
@@ -44,6 +47,40 @@ export default function App() {
   const bundleB = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths, spanLabel: span, colors: FUND_COLORS }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span]);
   const { portfolioSeries: seriesA, fundLines: fundSeriesA, portfolioReturn: retA, oldestTs: oldestTsA } = bundleA;
   const { portfolioSeries: seriesB, portfolioReturn: retB, oldestTs: oldestTsB } = bundleB;
+
+  const cagr3yA  = useMemo(() => computeReturnBundle({ funds: portfolioA.funds, allocs: portfolioA.allocs, inputMode: portfolioA.inputMode, portfolioTotal: totalA, spanMonths: 36,   spanLabel: "3 år", colors: FUND_COLORS }), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA]);
+  const cagrMaxA = useMemo(() => computeReturnBundle({ funds: portfolioA.funds, allocs: portfolioA.allocs, inputMode: portfolioA.inputMode, portfolioTotal: totalA, spanMonths: null, spanLabel: "Max",  colors: FUND_COLORS }), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA]);
+  const cagr3yB  = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths: 36,   spanLabel: "3 år", colors: FUND_COLORS }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB]);
+  const cagrMaxB = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths: null, spanLabel: "Max",  colors: FUND_COLORS }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB]);
+
+  const cagrPortfolios = useMemo(() => {
+    const make = (name, color, b3y, bMax) => {
+      const pY3 = seriesYears(b3y.portfolioSeries);
+      const pYM = seriesYears(bMax.portfolioSeries);
+      const maxByName = Object.fromEntries(bMax.fundLines.map(f => [f.name, f]));
+      return {
+        name, color,
+        cagr3y:  pY3 >= 2.9 ? computeCAGR(b3y.portfolioSeries, 3) : null,
+        cagrMax: pYM >= 0.5 ? computeCAGR(bMax.portfolioSeries, pYM) : null,
+        funds: b3y.fundLines.map(fl3 => {
+          const flM = maxByName[fl3.name];
+          const y3 = seriesYears(fl3.series);
+          const yM = flM ? seriesYears(flM.series) : 0;
+          return {
+            name: fl3.name, color: fl3.color,
+            cagr3y:  y3 >= 2.9 ? computeCAGR(fl3.series, 3) : null,
+            cagrMax: flM && yM >= 0.5 ? computeCAGR(flM.series, yM) : null,
+          };
+        }),
+      };
+    };
+    const result = [];
+    if (portfolioA.funds.length > 0)
+      result.push(make(compareMode ? "Portfölj A" : "Portfölj", ACCENT_A, cagr3yA, cagrMaxA));
+    if (compareMode && portfolioB.funds.length > 0)
+      result.push(make("Portfölj B", ACCENT_B, cagr3yB, cagrMaxB));
+    return result;
+  }, [compareMode, cagr3yA, cagrMaxA, cagr3yB, cagrMaxB, portfolioA.funds.length, portfolioB.funds.length]);
 
   const fee1 = getWeightedFee(portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA);
 
@@ -160,6 +197,10 @@ export default function App() {
                 oldestTsA={oldestTsA} oldestTsB={oldestTsB}
                 latestNavTs={latestNavTs}
               />
+            )}
+
+            {cagrPortfolios.length > 0 && (
+              <CAGRTable compareMode={compareMode} portfolios={cagrPortfolios} />
             )}
 
           </>
