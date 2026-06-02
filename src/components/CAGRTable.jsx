@@ -174,8 +174,7 @@ export default function CAGRTable({ compareMode, portfolios }) {
               borderBottom: `1px solid ${COLOR.border.subtle}`,
               background: COLOR.surface.faint,
             }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", paddingLeft: "24px", minWidth: 0 }}>
-                <DotFund color={f.color} />
+              <div style={{ display: "flex", alignItems: "center", paddingLeft: "24px", minWidth: 0 }}>
                 <span style={{
                   fontFamily: FONT.family.display, fontSize: "12px", fontWeight: 400,
                   color: COLOR.text.secondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
