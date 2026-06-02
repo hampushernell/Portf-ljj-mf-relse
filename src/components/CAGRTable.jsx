@@ -26,6 +26,7 @@ function Chevron({ open }) {
 export default function CAGRTable({ compareMode, portfolios }) {
   const [openSet, setOpenSet] = useState({});
   const toggle = i => setOpenSet(prev => ({ ...prev, [i]: !prev[i] }));
+  const [showInfo, setShowInfo] = useState(false);
   const { isMobile } = useBreakpoint();
 
   if (!portfolios?.length) return null;
@@ -62,20 +63,61 @@ export default function CAGRTable({ compareMode, portfolios }) {
       animation: "scaleIn 0.3s ease",
     }}>
       {/* Header */}
-      <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px" }}>
-        <h3 style={{
-          fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700,
-          color: COLOR.text.primary, margin: "0 0 4px",
-        }}>
-          Historisk snittavkastning (CAGR)
-        </h3>
-        <p style={{
-          fontFamily: FONT.family.body, fontSize: "11px",
-          color: COLOR.text.secondary, margin: 0,
-        }}>
-          Annualiserad avkastning per period
-        </p>
+      <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+        <div>
+          <h3 style={{
+            fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700,
+            color: COLOR.text.primary, margin: "0 0 4px",
+          }}>
+            Historisk snittavkastning (CAGR)
+          </h3>
+          <p style={{
+            fontFamily: FONT.family.body, fontSize: "11px",
+            color: COLOR.text.secondary, margin: 0,
+          }}>
+            Annualiserad avkastning per period
+          </p>
+        </div>
+        <button
+          onClick={() => setShowInfo(true)}
+          style={{
+            display: "inline-flex", alignItems: "center", justifyContent: "center",
+            width: "15px", height: "15px", borderRadius: "50%",
+            border: `1px solid ${COLOR.border.circle}`, background: "none",
+            color: COLOR.text.secondary, fontSize: "9px", cursor: "pointer", lineHeight: 1,
+            fontFamily: FONT.family.display, flexShrink: 0, padding: 0,
+          }}
+        >?</button>
       </div>
+
+      {showInfo && (
+        <div
+          onClick={() => setShowInfo(false)}
+          style={{
+            position: "fixed", inset: 0, background: COLOR.bg.overlay, backdropFilter: "blur(4px)",
+            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "20px",
+            animation: "fadeIn 0.2s ease",
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.default}`,
+              borderRadius: "16px", padding: "24px", maxWidth: "420px", width: "100%",
+              fontFamily: FONT.family.display,
+            }}
+          >
+            <div style={{ fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, marginBottom: "12px" }}>Vad är CAGR?</div>
+            <p style={{ fontSize: "13px", fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: "0 0 16px 0" }}>
+              CAGR visar den genomsnittliga årliga avkastningen under en vald period. Beräkningen baseras på dagliga kurser med 100 som startvärde vid periodens början. Om en investering vuxit från 100 kr till 150 kr på 5 år motsvarar det ~8,4% per år i genomsnitt.
+            </p>
+            <div style={{ height: "1px", background: COLOR.border.muted, margin: "0 0 12px 0" }} />
+            <div style={{ fontSize: "12px", fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6 }}>
+              Formel: (slutvärde / startvärde)^(1 / antal år) − 1
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Column labels */}
       <div style={{
