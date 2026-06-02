@@ -200,7 +200,11 @@ export default function App() {
             )}
 
             {cagrPortfolios.length > 0 && (
-              <CAGRTable compareMode={compareMode} portfolios={cagrPortfolios} />
+              <div style={{ display: "flex" }}>
+                <div style={{ width: isMobile ? "100%" : "50%", maxWidth: isMobile ? undefined : "50%" }}>
+                  <CAGRTable compareMode={compareMode} portfolios={cagrPortfolios} />
+                </div>
+              </div>
             )}
 
           </>
