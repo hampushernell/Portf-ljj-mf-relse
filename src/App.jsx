@@ -105,7 +105,7 @@ export default function App() {
       {/* ── Header ── */}
       <div style={{ padding: isMobile ? "12px 16px 10px" : "26px 36px 18px", borderBottom: `1px solid ${COLOR.border.subtle}`, display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-          <svg width="17" height="36" viewBox="0 0 44 48" fill="none">
+          <svg width="37" height="40" viewBox="0 0 44 48" fill="none">
             <rect x="0" y="0" width="16" height="48" rx="5" fill="white"/>
             <rect x="20" y="0" width="24" height="48" rx="6" fill="white"/>
           </svg>

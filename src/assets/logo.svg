@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 48">
+  <rect x="0" y="4" width="16" height="40" rx="5" fill="#0018F5"/>
+  <rect x="20" y="4" width="24" height="40" rx="6" fill="#38bdf8"/>
+  <text x="56" y="20" font-family="'DM Sans', sans-serif" font-size="14" font-weight="400" fill="#6b7280">min</text>
+  <text x="56" y="38" font-family="'Syne', sans-serif" font-size="20" font-weight="700" fill="#111827">portfölj</text>
+</svg>
