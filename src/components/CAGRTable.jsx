@@ -24,7 +24,8 @@ function Chevron({ open }) {
 }
 
 export default function CAGRTable({ compareMode, portfolios }) {
-  const [openIdx, setOpenIdx] = useState(null);
+  const [openSet, setOpenSet] = useState({});
+  const toggle = i => setOpenSet(prev => ({ ...prev, [i]: !prev[i] }));
   const { isMobile } = useBreakpoint();
 
   if (!portfolios?.length) return null;
@@ -139,8 +140,8 @@ export default function CAGRTable({ compareMode, portfolios }) {
           <div
             role="button"
             tabIndex={0}
-            onClick={() => setOpenIdx(openIdx === i ? null : i)}
-            onKeyDown={e => e.key === "Enter" && setOpenIdx(openIdx === i ? null : i)}
+            onClick={() => toggle(i)}
+            onKeyDown={e => e.key === "Enter" && toggle(i)}
             style={{
               display: "grid", gridTemplateColumns: grid,
               padding: `11px ${pH}`, alignItems: "center",
@@ -154,7 +155,7 @@ export default function CAGRTable({ compareMode, portfolios }) {
                 fontFamily: FONT.family.display, fontSize: "13px", fontWeight: 700,
                 color: COLOR.text.primary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
               }}>{p.name}</span>
-              <Chevron open={openIdx === i} />
+              <Chevron open={!!openSet[i]} />
             </div>
             <span style={{
               fontFamily: FONT.family.display, fontSize: "13px",
@@ -167,7 +168,7 @@ export default function CAGRTable({ compareMode, portfolios }) {
               color: cagrColor(p.cagrMax), textAlign: "right",
             }}>{fmtCAGR(p.cagrMax)}</span>
           </div>
-          {openIdx === i && p.funds.map(f => (
+          {!!openSet[i] && p.funds.map(f => (
             <div key={f.name} style={{
               display: "grid", gridTemplateColumns: grid,
               padding: `8px ${pH}`, alignItems: "center",
