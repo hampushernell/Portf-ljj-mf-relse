@@ -9,6 +9,16 @@ const getSVGX = (e, svgEl) => {
   return clientX - rect.left;
 };
 
+function downsampleForRender(series) {
+  const n = series.length;
+  const step = n <= 252 ? 1 : n <= 504 ? 2 : n <= 1008 ? 5 : 10;
+  if (step === 1) return series;
+  const out = [];
+  for (let i = 0; i < n; i += step) out.push(series[i]);
+  if (out[out.length - 1] !== series[n - 1]) out.push(series[n - 1]);
+  return out;
+}
+
 export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
   const { isMobile } = useBreakpoint();
   const W = 800, H = isMobile ? 400 : 330, PL = 0, PR = 0, PT = 10, PB = 28;
@@ -29,8 +39,8 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
 
   const makePath = series => series.map((d, i) => `${i === 0 ? "M" : "L"}${toX(i, series.length).toFixed(1)},${toY(d.value).toFixed(1)}`).join(" ");
 
-  const pathA = seriesA.length > 1 ? makePath(seriesA) : null;
-  const pathB = showB && seriesB.length > 1 ? makePath(seriesB) : null;
+  const pathA = seriesA.length > 1 ? makePath(downsampleForRender(seriesA)) : null;
+  const pathB = showB && seriesB.length > 1 ? makePath(downsampleForRender(seriesB)) : null;
 
   const yTicks = Array.from({ length: 5 }, (_, i) => {
     const v = yMin + (i / 4) * (yMax - yMin);

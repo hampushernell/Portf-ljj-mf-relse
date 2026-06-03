@@ -9,6 +9,16 @@ const getSVGX = (e, svgEl) => {
   return clientX - rect.left;
 };
 
+function downsampleForRender(series) {
+  const n = series.length;
+  const step = n <= 252 ? 1 : n <= 504 ? 2 : n <= 1008 ? 5 : 10;
+  if (step === 1) return series;
+  const out = [];
+  for (let i = 0; i < n; i += step) out.push(series[i]);
+  if (out[out.length - 1] !== series[n - 1]) out.push(series[n - 1]);
+  return out;
+}
+
 export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true }) {
   const { isMobile } = useBreakpoint();
   const W = 800, H = isMobile ? 400 : 330, PL = 0, PR = 0, PT = 10, PB = 28;
@@ -117,14 +127,14 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
           if (l.series.length <= 1) return null;
           return (
             <path key={l.color + l.name}
-              d={makePath(l.series)} fill="none" stroke={l.color}
+              d={makePath(downsampleForRender(l.series))} fill="none" stroke={l.color}
               strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
               opacity="0.80"
             />
           );
         })}
         {showPortfolioLine && portfolioSeries.length > 1 && (
-          <path d={makePath(portfolioSeries)} fill="none" stroke="rgba(255,255,255,0.88)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+          <path d={makePath(downsampleForRender(portfolioSeries))} fill="none" stroke="rgba(255,255,255,0.88)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
             opacity="1"
           />
         )}
