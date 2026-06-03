@@ -18,7 +18,7 @@ function BriefcaseIcon({ color }) {
   );
 }
 
-export default function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onInputModeChange, onManualAmountChange, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode, span, onSaveManualFund, onDeleteManualFund, onUpdateFundData, failedFunds = [] }) {
+export default function PortfolioPanel({ label, accent, accentRgb, accentText, funds, allocations, inputMode, manualAmount, onInputModeChange, onManualAmountChange, allFunds, loading, onAddFund, onUpdateAlloc, onRemoveFund, viewMode, span, onSaveManualFund, onDeleteManualFund, onUpdateFundData, failedFunds = [], isB, onHide }) {
   const [showDetails, setShowDetails] = useState(false);
   const [editingFund, setEditingFund] = useState(null);
   const [showFeeInfo, setShowFeeInfo] = useState(false);
@@ -47,13 +47,19 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
         )}
         <BriefcaseIcon color={accent} />
         <h2 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>{label}</h2>
-        {funds.length > 0 && inputMode === "pct" && (
-          <span style={{
-            marginLeft: "auto", fontSize: "10px",
-            color: pctOk ? COLOR.positive : COLOR.negative,
-            background: pctOk ? COLOR.tint.positive : COLOR.tint.negativeStrong,
-            padding: "2px 8px", borderRadius: "20px", fontFamily: FONT.family.display, fontWeight: 600,
-          }}>{totalPct.toFixed(1)}% fördelat</span>
+        {isB && onHide && (
+          <button onClick={onHide} style={{
+            marginLeft: "auto", display: "flex", alignItems: "center", gap: "4px",
+            fontSize: "11px", color: COLOR.text.secondary,
+            background: "rgba(255,255,255,0.06)", border: `1px solid ${COLOR.border.subtle}`,
+            borderRadius: "6px", padding: "4px 9px", cursor: "pointer",
+          }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+            </svg>
+            Dölj
+          </button>
         )}
       </div>
 
@@ -105,6 +111,43 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           </div>
         )}
       </div>
+
+      {funds.length > 0 && inputMode === "pct" && (
+        <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+            <div style={{ fontSize: "9px", color: COLOR.text.secondary, fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.06em" }}>Fördelning</div>
+            <span style={{
+              fontSize: "10px",
+              color: pctOk ? COLOR.positive : COLOR.negative,
+              background: pctOk ? COLOR.tint.positive : COLOR.tint.negativeStrong,
+              padding: "2px 8px", borderRadius: "20px", fontFamily: FONT.family.display, fontWeight: 600,
+            }}>{totalPct.toFixed(1)}% fördelat</span>
+          </div>
+          <div style={{ display: "flex", height: "6px", borderRadius: "20px", overflow: "hidden", marginBottom: "10px" }}>
+            {funds.map((f, i) => {
+              const pct = allocations[f.id]?.pct || 0;
+              const color = viewMode === "compare" ? accent : FUND_COLORS[i % FUND_COLORS.length];
+              return pct > 0 ? (
+                <div key={f.id} style={{ width: `${pct}%`, background: color, transition: "width 0.3s ease" }} />
+              ) : null;
+            })}
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 12px" }}>
+            {funds.map((f, i) => {
+              const pct = allocations[f.id]?.pct || 0;
+              const color = viewMode === "compare" ? accent : FUND_COLORS[i % FUND_COLORS.length];
+              const shortName = f.name.length > 20 ? f.name.slice(0, 19) + "…" : f.name;
+              return (
+                <div key={f.id} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: color, flexShrink: 0 }} />
+                  <span style={{ fontSize: "10px", color: COLOR.text.secondary, fontFamily: FONT.family.display }}>{shortName}</span>
+                  <span style={{ fontSize: "10px", color: COLOR.text.primary, fontFamily: FONT.family.display, fontWeight: 600 }}>{pct.toFixed(1)}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {funds.length > 0 && (
         <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>

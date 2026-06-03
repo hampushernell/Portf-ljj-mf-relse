@@ -176,6 +176,7 @@ export default function App() {
                     span={span} onSaveManualFund={saveManualFund}
                     onDeleteManualFund={deleteManualFund} onUpdateFundData={portfolioB.updateFundData}
                     failedFunds={failedFunds}
+                    isB={true} onHide={() => setViewMode("fund")}
                   />
                 </div>
               )}
