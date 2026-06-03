@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getWeightedFee, portfolioKrTotal } from "../lib/calculations";
-import { FUND_COLORS, formatKr, fmtFee } from "../lib/utils";
+import { FUND_COLORS, ALLOC_SHADES_A, ALLOC_SHADES_B, formatKr, fmtFee } from "../lib/utils";
 import { COLOR, FONT, SHADOW } from "../lib/tokens";
 import useBreakpoint from "../hooks/useBreakpoint";
 import FundRow from "./FundRow";
@@ -126,7 +126,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           <div style={{ display: "flex", height: "6px", borderRadius: "20px", overflow: "hidden", marginBottom: "10px" }}>
             {funds.map((f, i) => {
               const pct = allocations[f.id]?.pct || 0;
-              const color = viewMode === "compare" ? accent : FUND_COLORS[i % FUND_COLORS.length];
+              const color = viewMode === "compare" ? (isB ? ALLOC_SHADES_B : ALLOC_SHADES_A)[i % 10] : FUND_COLORS[i % FUND_COLORS.length];
               return pct > 0 ? (
                 <div key={f.id} style={{ width: `${pct}%`, background: color, transition: "width 0.3s ease" }} />
               ) : null;
@@ -135,7 +135,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 12px" }}>
             {funds.map((f, i) => {
               const pct = allocations[f.id]?.pct || 0;
-              const color = viewMode === "compare" ? accent : FUND_COLORS[i % FUND_COLORS.length];
+              const color = viewMode === "compare" ? (isB ? ALLOC_SHADES_B : ALLOC_SHADES_A)[i % 10] : FUND_COLORS[i % FUND_COLORS.length];
               const shortName = f.name.length > 20 ? f.name.slice(0, 19) + "…" : f.name;
               return (
                 <div key={f.id} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
