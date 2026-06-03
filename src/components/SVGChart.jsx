@@ -108,17 +108,17 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
         onMouseMove={handleMouseMove} onMouseLeave={isMobile ? () => setTooltip(null) : undefined}
         onTouchMove={e => { e.preventDefault(); handleMouseMove(e); }}
         onTouchEnd={() => setTooltip(null)}>
-        {yTicks.map(({ v, y }, i) => (
-          <g key={i}>
-            <line x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
-            <text x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.muted} fontSize={isMobile ? 16 : 10} fontFamily={FONT.family.body}>
-              {`${(v - 100).toFixed(0)}%`}
-            </text>
-          </g>
+        {yTicks.map(({ y }, i) => (
+          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
         ))}
         <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
         {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>}
         {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>}
+        {yTicks.map(({ v, y }, i) => (
+          <text key={i} x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.muted} fontSize={isMobile ? 16 : 10} fontFamily={FONT.family.body}>
+            {`${(v - 100).toFixed(0)}%`}
+          </text>
+        ))}
         {tooltip && (
           <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
         )}
