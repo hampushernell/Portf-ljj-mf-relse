@@ -5,7 +5,18 @@ export const ACCENT_A_LIGHT = "#7b93ff";
 export const ACCENT_B       = "#38bdf8";
 export const BG             = "#080e15";
 
-export const FUND_COLORS = ["#0018F5","#38bdf8","#6ee7b7","#f59e0b","#f87171","#a78bfa","#84cc16","#facc15","#f472b6","#e879f9"];
+export const FUND_COLORS = [
+  "#0018F5", // Cobalt
+  "#38bdf8", // Arctic
+  "#2dd4bf", // Ink cyan
+  "#f472b6", // Ink rosa
+  "#e2c96e", // Ink guld
+  "#a3a3a3", // Ink grå
+  "#fb923c", // Ink orange
+  "#a78bfa", // Ink lila
+  "#86efac", // Ink mint
+  "#fda4af", // Ink blush
+];
 
 export const ALLOC_SHADES_A = [
   "#dce4ff","#b9c7ff","#96aaff","#7b93ff","#6070e0",
