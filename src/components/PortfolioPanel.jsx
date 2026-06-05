@@ -35,8 +35,8 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
       onMouseEnter={e => e.currentTarget.style.boxShadow = SHADOW.cardHover}
       onMouseLeave={e => e.currentTarget.style.boxShadow = SHADOW.card}
       style={{
-        flex: 1, minWidth: 0, background: `rgba(${accentRgb},0.045)`,
-        border: `1px solid ${accent}33`, borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px" : "20px",
+        flex: 1, minWidth: 0, background: "transparent",
+        border: `1px solid ${accent}73`, borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px" : "20px",
         display: "flex", flexDirection: "column", gap: "12px",
         animation: "fadeSlideUp 0.35s ease",
         boxShadow: SHADOW.card,
