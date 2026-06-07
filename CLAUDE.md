@@ -214,3 +214,15 @@ npm run lint             # ESLint
 npm run preview          # Förhandsgranska dist
 npm run add-fund <ISIN>  # Slå upp Yahoo-ticker och validera ny fond
 ```
+
+---
+
+## Manuell fondvalidering (när add-fund.mjs inte kan nå Yahoo)
+
+Om `npm run add-fund` misslyckas med nätverksfel, verifiera **enbart** dessa tre källor — i den ordningen:
+
+1. **Yahoo Finance** — `https://finance.yahoo.com/quote/<ticker>.ST/` — bekräfta ticker och prishistorik
+2. **Morningstar** — `https://www.fondinfo.se/fonder/<fondnamn>` eller `global.morningstar.com` — bekräfta ISIN och avgift
+3. **Fondbolagets egen sida** — Avanza, Nordnet, Nordea, Handelsbanken etc. — bekräfta fondnamn, avgift och domicil (SE vs IE)
+
+Sök inte på borskollen, placera, privata bloggar, Bloomberg eller andra aggregatorer. Tre källor räcker.
