@@ -86,7 +86,7 @@ export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, 
     }
 
     if (!f.prices?.length) return null;
-    const fundStart = rangeStart ?? f.prices[0].timestamp;
+    const fundStart = rangeStart ?? oldestTs ?? f.prices[0].timestamp;
     const normalized = normalizeToCalendar(f.prices, fundStart, endTs);
     if (!normalized.length) return null;
     const series = rebaseSeries(normalized);
