@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { fmtFee } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
 import ManualFundModal from "./ManualFundModal";
@@ -7,6 +7,18 @@ export default function FundSearch({ onAdd, excluded, allFunds, loading, onSaveM
   const [q, setQ] = useState("");
   const [activeIdx, setActiveIdx] = useState(-1);
   const [showManualModal, setShowManualModal] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = e => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setQ("");
+        setActiveIdx(-1);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
 
   const results = q.length > 1
     ? allFunds.filter(f => !excluded.includes(f.id) && (
@@ -37,7 +49,7 @@ export default function FundSearch({ onAdd, excluded, allFunds, loading, onSaveM
   };
 
   return (
-    <div style={{ position: "relative", marginBottom: "12px" }}>
+    <div ref={containerRef} style={{ position: "relative", marginBottom: "12px" }}>
       <input type="text"
         placeholder={loading ? "Laddar fonddata…" : "Sök fond, kategori eller ticker…"}
         value={q}
