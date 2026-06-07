@@ -25,4 +25,11 @@ export const FUNDS_REGISTRY = [
   { id: 19, ticker: "0P00000LCG.ST", isin: "SE0000538944", name: "Swedbank Robur Technology A",         category: "Temafond",          fallbackFee: 1.40 },
   { id: 20, ticker: "0P00000K48.ST", isin: "SE0000709123", name: "Swedbank Robur Ny Teknik A",           category: "Temafond",          fallbackFee: 1.40 },
   { id: 21, ticker: "0P00013668.ST", isin: "SE0005796331", name: "LF Tillväxtmarknad Index A",           category: "Tillväxtmarknadsfond", fallbackFee: 0.40 },
+  // Nordnet-fonder
+  { id: 22, ticker: "0P0000J24W.ST", isin: "SE0002756973", name: "Nordnet Sverige Index",               category: "Sverigefond",       fallbackFee: 0.00 },
+  { id: 23, ticker: "0P0001K6NH.ST", isin: "IE00BMTD2G30", name: "Nordnet Global Index",               category: "Globalfond",        fallbackFee: 0.20 }, // IE-fond, ej FI-täckning
+  { id: 24, ticker: "0P0001K6NL.ST", isin: "IE00BMTD2V80", name: "Nordnet USA Index",                  category: "USA-fond",          fallbackFee: 0.20 }, // IE-fond, ej FI-täckning
+  // Avanza-fonder
+  { id: 25, ticker: "0P0001J6WY.ST", isin: "SE0013718699", name: "Avanza Europa",                      category: "Europafond",        fallbackFee: 0.17 },
+  { id: 26, ticker: "0P0001H4TL.ST", isin: "SE0012454338", name: "Avanza Emerging Markets",            category: "Tillväxtmarknadsfond", fallbackFee: 0.15 },
 ];

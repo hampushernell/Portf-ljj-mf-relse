@@ -6,8 +6,8 @@ Användaren bygger en eller två portföljer, väljer tidsspan och ser utvecklin
 Målgrupp: privatpersoner som vill fatta bättre fondbeslut och ha möjlighet till enkel men kraftfull jämförelse.
 
 ## Nuläge
-Datapipelinen (normalize → dateRange → blend → calculations) är stabil och vältestad manuellt.
-Appen saknar mobilstöd, automatiska tester och har ett antal kända tekniska skulder som ska åtgärdas innan vidare utveckling.
+Datapipelinen är stabil och vältestad. Mobilstöd, designsystem och avgiftstransparens är klart.
+Fondutbudet utökas aktivt (Fas 5). Registret innehåller 21 fonder across 5 kategorier.
 
 ---
 
@@ -58,8 +58,13 @@ Mål: konsekvent och skalbart designsystem.
 
 Mål: bredare fondutbud med bibehållen datakvalitet.
 
-- [ ] Lägg till fler fonder – räntefonder, blandfonder, råvarufonder
-- [ ] Kategorifilter i FundSearch
+- [x] Halvautomatiserat flöde för fondläggning — `scripts/add-fund.mjs` tar ISIN, slår upp Yahoo-ticker, validerar prisdata och kollar FI-täckning
+- [x] Räntefonder: Spiltan Räntefond Sverige, AMF Räntefond Lång
+- [x] USA-fonder: LF USA Index, Handelsbanken USA Index Criteria, Avanza USA
+- [x] Temafonder: Swedbank Robur Technology A, Swedbank Robur Ny Teknik A, LF Tillväxtmarknad Index A
+- [x] FundSearch stängs vid klick utanför — ingen Esc-kunskap krävs
+- [ ] Blandfonder — en balanserad per storbank (Nordea, Handelsbanken, LF, Swedbank, SEB)
+- [ ] Kategorifilter i FundSearch — avskrivet tills fondlistan är tillräckligt stor för att motivera det
 - [ ] Utvärdera ETF-stöd (annan prisdata och avgiftsstruktur)
 
 ---
@@ -67,6 +72,7 @@ Mål: bredare fondutbud med bibehållen datakvalitet.
 ## Teknisk skuld
 
 ~~- CompareBar.jsx i components/ är oanvänd sedan Snabb jämförelse togs bort — kan raderas~~ (raderad)
+- AMF Räntefond Kort saknar Yahoo-ticker — lägg till när ticker blir tillgänglig (`npm run add-fund SE0001184961`)
 
 ---
 

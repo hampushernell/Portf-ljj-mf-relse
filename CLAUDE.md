@@ -66,6 +66,7 @@ api/
 
 scripts/
   fetch-fi-fees.mjs   Skrapar fi.se och uppdaterar fi-fees.json
+  add-fund.mjs        Halvautomatiserat fondläggningsflöde — tar ISIN, slår upp Yahoo-ticker, validerar prisdata, kollar FI-täckning och skriver ut färdigt registry-objekt
 
 project-docs/
   ARCHITECTURE.md      Detaljerad arkitektur och datapipeline
@@ -139,9 +140,10 @@ Yahoo råpriser
 **Automatisk uppdatering:** `.github/workflows/update-fi-fees.yml` — körs 1:a varje månad 06:00 UTC.
 **Format:** `src/data/fi-fees.json` med `_meta`-objekt (source, period, published, retrievedAt).
 
-**Fondsupport (13 fonder):**
-- 8 fonder täcks av FI (svenska fonder)
-- 5 fonder använder fallback (Spiltan, Nordea FI/Global, DNB, Nordea Lux)
+**Fondsupport (21 fonder, 5 kategorier):**
+- 16 fonder täcks av FI (alla svenska SE-ISIN)
+- 5 fonder använder fallback (Spiltan Aktiefond, Nordea FI/Global, DNB, Nordea Lux)
+- Kategorier: Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond
 
 Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 
@@ -188,20 +190,27 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 - [x] Grafkort transparent — `background: transparent`, border `1px solid rgba(255,255,255,0.10)`
 - [ ] Animationskonsistens, tydligare skillnad Jämför/Fondläge
 
-### Fas 5 – Fondutbud
-- Fler fonder, kategorifilter, ETF-stöd
+### Fas 5 – Fondutbud (aktiv)
+- [x] `scripts/add-fund.mjs` — halvautomatiserat flöde för nya fonder via ISIN
+- [x] 8 nya fonder: räntefonder, USA-fonder, temafonder (totalt 21)
+- [x] FundSearch stängs vid klick utanför
+- [ ] Blandfonder — en balanserad per storbank (Nordea, Handelsbanken, LF, Swedbank, SEB)
+- [ ] Kategorifilter — avskrivet tills fondlistan motiverar det
+- [ ] ETF-stöd
 
 ### Teknisk skuld
-- `CompareBar.jsx` är oanvänd — kan raderas
+~~- `CompareBar.jsx` är oanvänd — kan raderas~~ (raderad)
+- AMF Räntefond Kort saknar Yahoo-ticker — kör `npm run add-fund SE0001184961` för att dubbelkolla
 
 ---
 
 ## Kommandon
 
 ```bash
-npm run dev       # Dev-server (Vite)
-npm run build     # Produktionsbygg
-npm run test      # Vitest
-npm run lint      # ESLint
-npm run preview   # Förhandsgranska dist
+npm run dev              # Dev-server (Vite)
+npm run build            # Produktionsbygg
+npm run test             # Vitest
+npm run lint             # ESLint
+npm run preview          # Förhandsgranska dist
+npm run add-fund <ISIN>  # Slå upp Yahoo-ticker och validera ny fond
 ```
