@@ -43,15 +43,28 @@ export default function App() {
       : portfolioA.funds;
     return getLatestNavTs(funds);
   }, [compareMode, portfolioA.funds, portfolioB.funds]);
-  const bundleA = useMemo(() => computeReturnBundle({ funds: portfolioA.funds, allocs: portfolioA.allocs, inputMode: portfolioA.inputMode, portfolioTotal: totalA, spanMonths, spanLabel: span, colors: FUND_COLORS }), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span]);
-  const bundleB = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths, spanLabel: span, colors: FUND_COLORS }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span]);
+  // I jämförläge på Max: synka startdatum till den kortaste gemensamma historiken
+  const sharedStartTs = useMemo(() => {
+    if (!compareMode || spanMonths !== null) return null;
+    const getFirst = fs => {
+      const tss = fs.flatMap(f => f.prices?.length ? [f.prices[0].timestamp] : []);
+      return tss.length ? Math.max(...tss) : null;
+    };
+    const a = getFirst(portfolioA.funds);
+    const b = getFirst(portfolioB.funds);
+    if (a == null && b == null) return null;
+    return Math.max(a ?? b, b ?? a);
+  }, [compareMode, spanMonths, portfolioA.funds, portfolioB.funds]);
+
+  const bundleA = useMemo(() => computeReturnBundle({ funds: portfolioA.funds, allocs: portfolioA.allocs, inputMode: portfolioA.inputMode, portfolioTotal: totalA, spanMonths, spanLabel: span, colors: FUND_COLORS, sharedStartTs }), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, spanMonths, span, sharedStartTs]);
+  const bundleB = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths, spanLabel: span, colors: FUND_COLORS, sharedStartTs }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, spanMonths, span, sharedStartTs]);
   const { portfolioSeries: seriesA, fundLines: fundSeriesA, portfolioReturn: retA, oldestTs: oldestTsA } = bundleA;
   const { portfolioSeries: seriesB, portfolioReturn: retB, oldestTs: oldestTsB } = bundleB;
 
   const cagr3yA  = useMemo(() => computeReturnBundle({ funds: portfolioA.funds, allocs: portfolioA.allocs, inputMode: portfolioA.inputMode, portfolioTotal: totalA, spanMonths: 36,   spanLabel: "3 år", colors: FUND_COLORS }), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA]);
-  const cagrMaxA = useMemo(() => computeReturnBundle({ funds: portfolioA.funds, allocs: portfolioA.allocs, inputMode: portfolioA.inputMode, portfolioTotal: totalA, spanMonths: null, spanLabel: "Max",  colors: FUND_COLORS }), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA]);
+  const cagrMaxA = useMemo(() => computeReturnBundle({ funds: portfolioA.funds, allocs: portfolioA.allocs, inputMode: portfolioA.inputMode, portfolioTotal: totalA, spanMonths: null, spanLabel: "Max",  colors: FUND_COLORS, sharedStartTs }), [portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA, sharedStartTs]);
   const cagr3yB  = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths: 36,   spanLabel: "3 år", colors: FUND_COLORS }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB]);
-  const cagrMaxB = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths: null, spanLabel: "Max",  colors: FUND_COLORS }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB]);
+  const cagrMaxB = useMemo(() => computeReturnBundle({ funds: portfolioB.funds, allocs: portfolioB.allocs, inputMode: portfolioB.inputMode, portfolioTotal: totalB, spanMonths: null, spanLabel: "Max",  colors: FUND_COLORS, sharedStartTs }), [portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB, sharedStartTs]);
 
   const cagrPortfolios = useMemo(() => {
     const make = (name, color, b3y, bMax) => {

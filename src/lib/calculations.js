@@ -62,12 +62,15 @@ export function getWeightedFee(funds, allocs, inputMode, portfolioTotal) {
 }
 
 
-export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, spanMonths, spanLabel, colors }) {
+export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, spanMonths, spanLabel, colors, sharedStartTs = null }) {
   const latestNavTs = getLatestNavTs(funds);
   const { startTs: rangeStart, endTs } = getDisplayRange(spanLabel, latestNavTs);
 
   const tss = funds.flatMap(f => f.prices?.length ? [f.prices[0].timestamp] : []);
-  const oldestTs = tss.length ? Math.max(...tss) : null;
+  const internalOldestTs = tss.length ? Math.max(...tss) : null;
+  const oldestTs = sharedStartTs != null
+    ? (internalOldestTs != null ? Math.max(internalOldestTs, sharedStartTs) : sharedStartTs)
+    : internalOldestTs;
 
   const fundData = funds.map((f, i) => {
     const pct = getFundPct(f, allocs, inputMode, portfolioTotal);
