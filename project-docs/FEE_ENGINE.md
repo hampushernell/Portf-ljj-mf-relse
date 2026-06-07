@@ -70,6 +70,14 @@ Vid nätverksfel: befintlig fi-fees.json bevaras, varning loggas, exit 0.
 | Handelsbanken Global Index | SE0011309707 | fi | |
 | Handelsbanken Sverige Index | SE0001466368 | fi | |
 | Avanza Zero | SE0001718388 | fi | |
+| Spiltan Räntefond Sverige | SE0002152140 | fi | |
+| AMF Räntefond Lång | SE0000739187 | fi | |
+| Länsförsäkringar USA Index | SE0002793943 | fi | |
+| Handelsbanken USA Index Criteria | SE0004139780 | fi | |
+| Avanza USA | SE0012741163 | fi | |
+| Swedbank Robur Technology A | SE0000538944 | fi | |
+| Swedbank Robur Ny Teknik A | SE0000709123 | fi | |
+| LF Tillväxtmarknad Index A | SE0005796331 | fi | |
 | Spiltan Aktiefond Investmentbolag | SE0004297927 | fallback | Rapporterar sporadiskt till FI |
 | Nordea Global Enhanced Growth | FI4000261326 | fallback | Finländsk fond |
 | Nordea Global Index Select | FI4000046685 | fallback | Finländsk fond |

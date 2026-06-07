@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "add-fund": "node scripts/add-fund.mjs"
   },
   "dependencies": {
     "avanza": "^3.0.0",
