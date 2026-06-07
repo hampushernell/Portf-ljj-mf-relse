@@ -43,4 +43,12 @@ export const FUNDS_REGISTRY = [
   { id: 32, ticker: "0P00017M15.ST", isin: "SE0008585459", name: "LF Småbolag Sverige",                category: "Småbolagsfond",     fallbackFee: 1.40 },
   { id: 33, ticker: "0P00000LEY.ST", isin: "SE0000602302", name: "Swedbank Robur Småbolagsfond Sverige", category: "Småbolagsfond",   fallbackFee: 1.40 },
   { id: 34, ticker: "0P00000L4S.ST", isin: "FI0008813365", name: "Nordea Småbolagsfond Norden",         category: "Småbolagsfond",     fallbackFee: 1.60 }, // FI-fond, ej FI-täckning
+  { id: 35, ticker: "0P0000V49E.ST", isin: "SE0004392025", name: "Carnegie Småbolagsfond",              category: "Småbolagsfond",     fallbackFee: 1.60 },
+  // Blandfonder
+  { id: 36, ticker: "0P00000H3S.ST", isin: "SE0001114976", name: "Nordea Stratega 50",                  category: "Blandfond",         fallbackFee: 1.37 },
+  { id: 37, ticker: "0P00000LDX.ST", isin: "SE0000434359", name: "Swedbank Robur Access Mix",            category: "Blandfond",         fallbackFee: 0.20 },
+  { id: 38, ticker: "0P00000LU5.ST", isin: "SE0000500407", name: "SEB Blandfond Sverige",               category: "Blandfond",         fallbackFee: 1.00 },
+  { id: 39, ticker: "0P00000T3C.ST", isin: "SE0001192618", name: "Handelsbanken Multi Asset 50",        category: "Blandfond",         fallbackFee: 1.25 },
+  { id: 40, ticker: "0P00000EXD.ST", isin: "SE0000739179", name: "AMF Balansfond",                      category: "Blandfond",         fallbackFee: 0.40 },
+  { id: 41, ticker: "0P00015KOT.ST", isin: "SE0006963518", name: "LF Bekväm Fond Balans",               category: "Blandfond",         fallbackFee: 1.30 },
 ];
