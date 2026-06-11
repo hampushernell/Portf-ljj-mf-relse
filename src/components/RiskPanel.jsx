@@ -143,7 +143,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
           >
             <div style={{ fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, marginBottom: "12px" }}>Riskanalys</div>
             <p style={{ fontSize: "13px", fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: "0 0 16px 0" }}>
-              <strong style={{ color: COLOR.text.primary }}>Max nedgång</strong> är den största förlusten från en topp till en botten under perioden. Datum anger när botten nåddes. En portfölj som tappade som mest −33% under mars 2020 (covid-kraschen) hade det som sin max nedgång.
+              <strong style={{ color: COLOR.text.primary }}>Max nedgång</strong> är den största förlusten från en topp till en botten under portföljen/fondens maximala tidsperiod. Datum anger när botten nåddes.
             </p>
             <div style={{ height: "1px", background: COLOR.border.muted, margin: "0 0 12px 0" }} />
             <p style={{ fontSize: "13px", fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: 0 }}>
