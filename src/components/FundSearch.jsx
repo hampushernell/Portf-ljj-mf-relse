@@ -2,7 +2,7 @@ import { useState } from "react";
 import { COLOR, FONT } from "../lib/tokens";
 import FundSearchModal from "./FundSearchModal";
 
-export default function FundSearch({ onAdd, excluded, allFunds, loading, onSaveManualFund, failedFunds = [], label, accent }) {
+export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loading, onSaveManualFund, failedFunds = [], label, accent }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -45,6 +45,7 @@ export default function FundSearch({ onAdd, excluded, allFunds, loading, onSaveM
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           onAdd={onAdd}
+          onRemove={onRemove}
           excluded={excluded}
           allFunds={allFunds}
           loading={loading}

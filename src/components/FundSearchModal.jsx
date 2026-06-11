@@ -44,11 +44,12 @@ function CategoryRow({ cat, isSelected, onToggle }) {
 }
 
 // eslint-disable-next-line no-unused-vars
-export default function FundSearchModal({ isOpen, onClose, onAdd, excluded, allFunds, loading, onSaveManualFund, failedFunds: _failedFunds, label, accent: _accent, accentRgb: _accentRgb }) {
+export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excluded, allFunds, loading, onSaveManualFund, failedFunds: _failedFunds, label, accent: _accent, accentRgb: _accentRgb }) {
   const [q, setQ] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
+  const [hoveredId, setHoveredId] = useState(null);
   const searchRef = useRef(null);
   const filterRef = useRef(null);
 
@@ -253,12 +254,20 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, excluded, allF
               return (
                 <div
                   key={f.id}
-                  onClick={added ? undefined : () => onAdd(f)}
-                  onMouseEnter={added ? undefined : e => {
+                  onClick={added ? () => onRemove(f.id) : () => onAdd(f)}
+                  onMouseEnter={added ? e => {
+                    setHoveredId(f.id);
+                    e.currentTarget.style.background = "rgba(248,113,113,0.07)";
+                    e.currentTarget.style.borderColor = "rgba(248,113,113,0.15)";
+                  } : e => {
                     e.currentTarget.style.background = "rgba(255,255,255,0.055)";
                     e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
                   }}
-                  onMouseLeave={added ? undefined : e => {
+                  onMouseLeave={added ? e => {
+                    setHoveredId(null);
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.borderColor = "transparent";
+                  } : e => {
                     e.currentTarget.style.background = "transparent";
                     e.currentTarget.style.borderColor = "transparent";
                   }}
@@ -266,7 +275,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, excluded, allF
                     padding: "8px 10px", borderRadius: "9px",
                     display: "flex", alignItems: "center", gap: "8px",
                     border: "1px solid transparent",
-                    cursor: added ? "default" : "pointer",
+                    cursor: "pointer",
                     opacity: added ? 0.45 : 1,
                     transition: "background 0.1s, border-color 0.1s",
                   }}
@@ -300,9 +309,11 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, excluded, allF
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
                     {added && (
-                      <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                        <polyline points="1,3.5 3.5,6 8,1" stroke="#6ee7b7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                      hoveredId === f.id
+                        ? <span style={{ fontSize: "10px", color: "#f87171", lineHeight: 1 }}>×</span>
+                        : <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                            <polyline points="1,3.5 3.5,6 8,1" stroke="#6ee7b7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
                     )}
                   </div>
                 </div>
