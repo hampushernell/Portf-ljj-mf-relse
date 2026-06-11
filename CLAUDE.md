@@ -20,6 +20,7 @@ Målgrupp: privatpersoner som vill fatta bättre fondbeslut.
 
 **Live:** https://minportfolj.se (Vercel)
 **Repo:** fondportfolj (GitHub → Vercel CI/CD)
+**Fondregister:** 52 fonder, 9 kategorier (Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond, Europafond, Småbolagsfond, Blandfond)
 
 ---
 
@@ -125,9 +126,12 @@ Yahoo råpriser
 | `SVGChart.jsx` | SVG-baserad grafkomponent (portfölj) |
 | `FundSVGChart.jsx` | SVG-baserad grafkomponent (fonder) |
 | `FundRow.jsx` | En fondrad med badge, avgift och allokeringsslider |
-| `FundSearch.jsx` | Sökfunktion för fonder |
+| `FundSearch.jsx` | Enkel inline-sökkomponent (används inuti FundSearchModal) |
+| `FundSearchModal.jsx` | Sökmodal med kategorifilter (multi-select dropdown) — primär ingång till fondsökning |
 | `FundDetailsModal.jsx` | Detaljvy per fond |
 | `ManualFundModal.jsx` | Skapa/redigera manuell fond |
+| `CAGRTable.jsx` | CAGR-tabell per portfölj med per-fond breakdown och expand/collapse |
+| `FeeBadge.jsx` | Badge för avgiftskälla (FI/Manuell) |
 
 ---
 
@@ -142,7 +146,8 @@ Yahoo råpriser
 
 **Fondsupport:**
 - Fonder med SE-ISIN täcks av FI, övriga använder fallback (hårdkodat i `funds-registry.js`)
-- Kategorier: Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond
+- Kategorier: Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond, Europafond, Småbolagsfond, Blandfond
+- IE/FI-fonder (ej SE-ISIN) täcks inte av FI — använder alltid fallback
 
 Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 
@@ -189,17 +194,16 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 - [x] Grafkort transparent — `background: transparent`, border `1px solid rgba(255,255,255,0.10)`
 - [ ] Animationskonsistens, tydligare skillnad Jämför/Fondläge
 
-### Fas 5 – Fondutbud (aktiv)
+### Fas 5 – Fondutbud ✓
 - [x] `scripts/add-fund.mjs` — halvautomatiserat flöde för nya fonder via ISIN
-- [x] 8 nya fonder: räntefonder, USA-fonder, temafonder
-- [x] FundSearch stängs vid klick utanför
-- [ ] Blandfonder — en balanserad per storbank (Nordea, Handelsbanken, LF, Swedbank, SEB)
-- [ ] Kategorifilter — avskrivet tills fondlistan motiverar det
-- [ ] ETF-stöd
+- [x] 41 fonder, 9 kategorier inkl. blandfonder, småbolagsfonder, Europafond
+- [x] FundSearchModal med kategorifilter
+- [x] CAGRTable-komponent
+- [ ] ETF-stöd (utvärderas)
 
 ### Teknisk skuld
 ~~- `CompareBar.jsx` är oanvänd — kan raderas~~ (raderad)
-- AMF Räntefond Kort saknar Yahoo-ticker — kör `npm run add-fund SE0001184961` för att dubbelkolla
+~~- AMF Räntefond Kort saknar Yahoo-ticker~~ — fortfarande ej löst
 
 ---
 

@@ -6,8 +6,10 @@ Användaren bygger en eller två portföljer, väljer tidsspan och ser utvecklin
 Målgrupp: privatpersoner som vill fatta bättre fondbeslut och ha möjlighet till enkel men kraftfull jämförelse.
 
 ## Nuläge
-Datapipelinen är stabil och vältestad. Mobilstöd, designsystem och avgiftstransparens är klart.
-Fondutbudet utökas aktivt (Fas 5). Registret innehåller 21 fonder across 5 kategorier.
+Fas 1–5 är klara. Datapipelinen är stabil och vältestad. Mobilstöd, designsystem, avgiftstransparens och fondutbud är på plats.
+Registret innehåller 41 fonder, 9 kategorier. FundSearchModal med kategorifilter och CAGRTable är implementerade.
+
+Nästa fas fokuserar på beslutskvalitet (risk, tydligare utfall), delbarhet (URL-serialisering) och distribution (SEO/prerendering).
 
 ---
 
@@ -18,7 +20,7 @@ Mål: trygg grund innan ny funktionalitet byggs.
 - [x] Fyll i STACK.md med teknikstack och projektstruktur
 - [x] Lägg till schemaVersion i localStorage för manualFunds med migrationsfunktion — hanterar tre äldre format: rå array, { version/funds }, samt saknad schemaVersion
 - [x] Visa tydligt i UI vilka fonder som misslyckades att ladda från Yahoo Finance — visas som notis i FundSearch när sökfältet är tomt
-- [x] Unit tests för dateRange.js och blend.js — 44 tester gröna (19 dateRange, 25 blend)
+- [x] Unit tests för dateRange.js och blend.js — tester i både src/lib/ och src/lib/__tests__/
 
 ## Fas 2 – Avgifter och datakvalitet
 
@@ -60,19 +62,63 @@ Mål: bredare fondutbud med bibehållen datakvalitet.
 
 - [x] Halvautomatiserat flöde för fondläggning — `scripts/add-fund.mjs` tar ISIN, slår upp Yahoo-ticker, validerar prisdata och kollar FI-täckning
 - [x] Räntefonder: Spiltan Räntefond Sverige, AMF Räntefond Lång
-- [x] USA-fonder: LF USA Index, Handelsbanken USA Index Criteria, Avanza USA
-- [x] Temafonder: Swedbank Robur Technology A, Swedbank Robur Ny Teknik A, LF Tillväxtmarknad Index A
+- [x] USA-fonder: LF USA Index, Handelsbanken USA Index Criteria, Avanza USA, Nordnet USA Index, Swedbank Robur Access USA
+- [x] Temafonder: Swedbank Robur Technology A, Swedbank Robur Ny Teknik A
+- [x] Tillväxtmarknadsfonder: LF Tillväxtmarknad Index A, Avanza Emerging Markets
+- [x] Europafonder: Avanza Europa
+- [x] Småbolagsfonder: AMF Aktiefond Småbolag, LF Småbolag Sverige, Swedbank Robur Småbolagsfond Sverige, Nordea Småbolagsfond Norden, Carnegie Småbolagsfond
+- [x] Blandfonder: Nordea Stratega 50, Swedbank Robur Access Mix, SEB Blandfond Sverige, Handelsbanken Multi Asset 50, AMF Balansfond, LF Bekväm Fond Balans
+- [x] Globalfonder: Nordnet Global Index, Swedbank Robur Access Global, DNB Global Indeks S (totalt 9 globalfonder)
+- [x] Sverigefonder: Nordnet Sverige Index, SEB Hållbarhetsfond Sverige Index, Swedbank Robur Access Sverige (totalt 9 sverigefonder)
 - [x] FundSearch stängs vid klick utanför — ingen Esc-kunskap krävs
-- [ ] Blandfonder — en balanserad per storbank (Nordea, Handelsbanken, LF, Swedbank, SEB)
-- [ ] Kategorifilter i FundSearch — avskrivet tills fondlistan är tillräckligt stor för att motivera det
+- [x] Kategorifilter i FundSearchModal — dropdown med multi-select per kategori, tillgängliga kategorier filtreras dynamiskt
+- [x] FundSearchModal — ny sökmodal med kategorifilter ersätter enklare FundSearch
+- [x] CAGRTable — CAGR-tabell per portfölj med per-fond breakdown och expand/collapse
 - [ ] Utvärdera ETF-stöd (annan prisdata och avgiftsstruktur)
+- [ ] AMF Räntefond Kort — ticker saknas, kör `npm run add-fund SE0001184961` när tillgänglig
+
+---
+
+## Fas 6 – Beslutskvalitet (aktiv)
+
+Mål: produkten ska namnge vinnaren och ge risk-kontext — inte bara visa grafen.
+
+- [ ] **Sammanfattningsrad ovanför grafen** — tydlig klartext i jämförelseläge: "Portfölj A +114% · Portfölj B +67% · Skillnad +47 pp" med mint/coral-färgning. Ingen tolkning krävs av användaren
+- [ ] **Max drawdown** — det viktigaste riskmåttet för privatpersoner. Beräknas ur befintlig prisdata i `calculations.js`. Visas per portfölj och per fond i CAGRTable eller ny riskrad under grafen: "Portfölj A tappade som mest −38% (mars 2020)"
+- [ ] **Volatilitet (standardavvikelse årsvis)** — komplement till max drawdown. Ger användaren ett mått på hur ryckig resan var, inte bara slutresultatet
+- [ ] **Benchmark-linje i grafen** — OMXS30 eller MSCI World som valfri referenslinje. Möjliggör frågan "slog din portfölj index?". Kräver ny fond i registret eller separat benchmarkdata
+
+## Fas 7 – Delning och reach
+
+Mål: varje jämförelse ska kunna delas med en URL. Produkten ska hittas via Google.
+
+- [ ] **URL-serialisering** — portföljens fonder, allokeringar och valt span kodas i URL-parametrar (`?a=id:pct,id:pct&b=...&span=3y`). Ren frontend, ingen backend. Gör varje jämförelse delbar och bokmärkbar. Implementeras i `usePortfolio.js` + `App.jsx`
+- [ ] **Kopiera länk-knapp** — enkelt UI-element i grafkortet som kopierar aktuell URL till clipboard
+- [ ] **SSR/prerendering** — Vite SSG eller `vite-plugin-ssr` för statiska sidor per fondkategori. Ger Google något att indexera på termer som "jämför globalfonder avgift", "bästa sverigefond historik". Kräver arkitekturellt beslut — utvärderas separat
+
+## Fas 8 – Onboarding och startläge
+
+Mål: en ny användare ska förstå produkten och nå ett aha-moment utan friktion.
+
+- [ ] **Förifyllda startexempel** — tre snabbvalsknappar på tom startskärm: "Jämför indexfonder", "Hög vs låg avgift", "Sverige vs Global". Klick fyller portföljerna direkt med relevanta fonder
+- [ ] **Tom-portfölj-state** — tydligare visuell guide i tomma PortfolioPanel: "Lägg till fonder för att se avkastning" med pil mot sökknappen, inte bara en tom yta
+- [ ] **Laddningshint** — medan fonddata hämtas: visa en kort hint om vad man kan göra, inte bara spinner
+
+## Fas 9 – Breddat fonduniversum
+
+Mål: täcka de fondtyper som saknas för en komplett bild av den svenska fondmarknaden.
+
+- [ ] **ETF-stöd** — annan prisstruktur (realtid vs NAV), annan avgiftsmodell (TER). Kräver ny datakälla eller anpassad Yahoo-hämtning. Öppnar för iShares, Vanguard och Avanza-ETF:er
+- [ ] **Nordiska fonder** — danska och finska indexfonder med Yahoo-täckning (t.ex. Storebrand, Sparinvest)
+- [ ] **AMF Räntefond Kort** — ticker saknas, kör `npm run add-fund SE0001184961` när tillgänglig
 
 ---
 
 ## Teknisk skuld
 
 ~~- CompareBar.jsx i components/ är oanvänd sedan Snabb jämförelse togs bort — kan raderas~~ (raderad)
-- AMF Räntefond Kort saknar Yahoo-ticker — lägg till när ticker blir tillgänglig (`npm run add-fund SE0001184961`)
+~~- AMF Räntefond Kort saknar Yahoo-ticker~~ — fortfarande ej löst, se Fas 9 ovan
+- ARCHITECTURE.md refererar fortfarande CompareBar.jsx — uppdatera vid nästa genomgång
 
 ---
 

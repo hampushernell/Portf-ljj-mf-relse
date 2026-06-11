@@ -51,4 +51,23 @@ export const FUNDS_REGISTRY = [
   { id: 39, ticker: "0P00000T3C.ST", isin: "SE0001192618", name: "Handelsbanken Multi Asset 50",        category: "Blandfond",         fallbackFee: 1.25 },
   { id: 40, ticker: "0P00000EXD.ST", isin: "SE0000739179", name: "AMF Balansfond",                      category: "Blandfond",         fallbackFee: 0.40 },
   { id: 41, ticker: "0P00015KOT.ST", isin: "SE0006963518", name: "LF Bekväm Fond Balans",               category: "Blandfond",         fallbackFee: 1.30 },
+  // Avanza Auto (fond-i-fond)
+  { id: 51, ticker: "0P0001BM0V.ST", isin: "SE0009779671", name: "Avanza Auto 3",                       category: "Blandfond",         fallbackFee: 0.34 },
+  { id: 52, ticker: "0P0001BM0Y.ST", isin: "SE0009779705", name: "Avanza Auto 6",                       category: "Blandfond",         fallbackFee: 0.34 },
+  // Globalfonder (tillägg)
+  { id: 42, ticker: "0P00000L33.ST", isin: "SE0000862278", name: "AMF Aktiefond Global",                category: "Globalfond",        fallbackFee: 0.40 },
+  { id: 43, ticker: "0P00000LDD.ST", isin: "SE0000542979", name: "Swedbank Robur Globalfond A",         category: "Globalfond",        fallbackFee: 1.29 },
+  { id: 44, ticker: "0P0000YYOP.ST", isin: "FI4000064076", name: "Nordea Global Dividend A",            category: "Globalfond",        fallbackFee: 0.80 }, // FI-fond, ej FI-täckning
+  // Sverigefonder (tillägg)
+  { id: 45, ticker: "0P0000HNUF.ST", isin: "SE0002591016", name: "Nordea Sverige Passiv",               category: "Sverigefond",       fallbackFee: 0.20 },
+  // USA-fonder (tillägg)
+  { id: 46, ticker: "0P00000FYR.ST", isin: "SE0000594111", name: "SPP Aktiefond USA",                   category: "USA-fond",          fallbackFee: 0.20 },
+  // Europafonder (tillägg)
+  { id: 47, ticker: "0P00000FYN.ST", isin: "SE0000531881", name: "Storebrand Europa A SEK",             category: "Europafond",        fallbackFee: 0.20 },
+  // Temafonder (tillägg)
+  { id: 48, ticker: "0P00014CZ3.ST", isin: "SE0005965662", name: "Handelsbanken Hållbar Energi A1",     category: "Temafond",          fallbackFee: 1.50 },
+  // Tillväxtmarknadsfonder (tillägg)
+  { id: 49, ticker: "0P0001E1JQ.ST", isin: "LU1648400262", name: "Nordea 2 BetaPlus Emerging Markets",  category: "Tillväxtmarknadsfond", fallbackFee: 0.75 }, // LU-fond, ej FI-täckning
+  // Räntefonder (tillägg)
+  { id: 50, ticker: "0P0000NRW6.ST", isin: "FI4000010525", name: "Nordea Stratega Ränta",               category: "Räntefond",         fallbackFee: 0.65 }, // FI-fond, ej FI-täckning
 ];
