@@ -40,6 +40,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
         display: "flex", flexDirection: "column", gap: "12px",
         animation: "fadeSlideUp 0.35s ease",
         boxShadow: SHADOW.card,
+        minHeight: funds.length === 0 && !isMobile ? "220px" : "auto",
       }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         {isMobile && (
