@@ -2,7 +2,7 @@ import { useState } from "react";
 import { COLOR, FONT } from "../lib/tokens";
 import FundSearchModal from "./FundSearchModal";
 
-export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loading, onSaveManualFund, failedFunds = [], label, accent, accentRgb, accentText, hasFunds }) {
+export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loading, onSaveManualFund, failedFunds = [], label, accent, accentRgb, hasFunds }) {
   const [isOpen, setIsOpen] = useState(false);
   const [triggerHovered, setTriggerHovered] = useState(false);
 
@@ -12,7 +12,7 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
         <div
           onClick={() => setIsOpen(true)}
           style={{
-            border: `1.5px dashed rgba(${accentRgb}, 0.35)`,
+            border: "1px solid rgba(255,255,255,0.12)",
             borderRadius: "9px", padding: "16px 14px", background: "transparent",
             display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
             cursor: "pointer",
@@ -26,7 +26,7 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
           }}>+</div>
           <span style={{
             fontSize: "12px", fontFamily: FONT.family.display,
-            fontWeight: 600, color: accentText,
+            fontWeight: 600, color: COLOR.text.secondary,
           }}>Lägg till fond</span>
         </div>
       ) : (

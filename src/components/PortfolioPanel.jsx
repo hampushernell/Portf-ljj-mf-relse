@@ -91,8 +91,6 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
         )}
       </div>
 
-      <FundSearch onAdd={onAddFund} onRemove={onRemoveFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} failedFunds={failedFunds} label={label} accent={accent} accentRgb={accentRgb} accentText={accentText} hasFunds={funds.length > 0} />
-
       <div style={{ flex: 1 }}>
         {funds.map((f, i) => (
           <FundRow key={f.id} fund={f}
@@ -105,12 +103,9 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
             spanHasData={!f.isManual || f.returns?.[span] != null}
           />
         ))}
-        {funds.length === 0 && (
-          <div style={{ textAlign: "center", padding: "28px 0", color: COLOR.text.subtle, fontSize: "13px", fontFamily: FONT.family.display }}>
-            {loading ? "Laddar fonddata…" : "Sök och lägg till fonder ovan"}
-          </div>
-        )}
       </div>
+
+      <FundSearch onAdd={onAddFund} onRemove={onRemoveFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} failedFunds={failedFunds} label={label} accent={accent} accentRgb={accentRgb} accentText={accentText} hasFunds={funds.length > 0} />
 
       {funds.length > 0 && inputMode === "pct" && (
         <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
