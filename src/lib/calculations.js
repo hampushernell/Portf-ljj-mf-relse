@@ -149,3 +149,29 @@ export function computeCAGR(series, years) {
   if (endValue <= 0) return null;
   return Math.pow(endValue / 100, 1 / years) - 1;
 }
+
+export function computeMaxDrawdown(series) {
+  if (!series?.length) return { drawdown: null, timestamp: null };
+  let peak = series[0].value;
+  let maxDd = 0;
+  let ddTs = null;
+  for (const pt of series) {
+    if (pt.value > peak) peak = pt.value;
+    const dd = (pt.value - peak) / peak;
+    if (dd < maxDd) { maxDd = dd; ddTs = pt.timestamp; }
+  }
+  return maxDd < 0 ? { drawdown: maxDd, timestamp: ddTs } : { drawdown: null, timestamp: null };
+}
+
+export function computeAnnualizedVolatility(series) {
+  if (!series?.length || series.length < 30) return null;
+  const logReturns = [];
+  for (let i = 1; i < series.length; i++) {
+    if (series[i - 1].value > 0 && series[i].value > 0)
+      logReturns.push(Math.log(series[i].value / series[i - 1].value));
+  }
+  if (logReturns.length < 29) return null;
+  const mean = logReturns.reduce((s, v) => s + v, 0) / logReturns.length;
+  const variance = logReturns.reduce((s, v) => s + (v - mean) ** 2, 0) / (logReturns.length - 1);
+  return Math.sqrt(variance) * Math.sqrt(252);
+}

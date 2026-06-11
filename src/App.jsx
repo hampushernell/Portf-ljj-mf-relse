@@ -7,6 +7,8 @@ import {
   computeReturnBundle,
   seriesYears,
   computeCAGR,
+  computeMaxDrawdown,
+  computeAnnualizedVolatility,
 } from "./lib/calculations";
 import useFundData from "./hooks/useFundData";
 import usePortfolio from "./hooks/usePortfolio";
@@ -21,6 +23,7 @@ import ComparePlaceholder from "./components/ComparePlaceholder";
 import ReturnChart from "./components/ReturnChart";
 import FundReturnChart from "./components/FundReturnChart";
 import CAGRTable from "./components/CAGRTable";
+import RiskPanel from "./components/RiskPanel";
 
 export default function App() {
   const { allFunds, failedFunds, loading, error } = useFundData();
@@ -94,6 +97,25 @@ export default function App() {
       result.push(make("Portfölj B", ACCENT_B, cagr3yB, cagrMaxB));
     return result;
   }, [compareMode, cagr3yA, cagrMaxA, cagr3yB, cagrMaxB, portfolioA.funds.length, portfolioB.funds.length]);
+
+  const riskPortfolios = useMemo(() => {
+    const make = (name, color, bMax) => ({
+      name, color,
+      maxDrawdown: computeMaxDrawdown(bMax.portfolioSeries),
+      volatility:  computeAnnualizedVolatility(bMax.portfolioSeries),
+      funds: bMax.fundLines.map(fl => ({
+        name: fl.name, color: fl.color,
+        maxDrawdown: computeMaxDrawdown(fl.series),
+        volatility:  computeAnnualizedVolatility(fl.series),
+      })),
+    });
+    const result = [];
+    if (portfolioA.funds.length > 0)
+      result.push(make(compareMode ? "Portfölj A" : "Portfölj", ACCENT_A, cagrMaxA));
+    if (compareMode && portfolioB.funds.length > 0)
+      result.push(make("Portfölj B", ACCENT_B, cagrMaxB));
+    return result;
+  }, [compareMode, cagrMaxA, cagrMaxB, portfolioA.funds.length, portfolioB.funds.length]);
 
   const fee1 = getWeightedFee(portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA);
 
@@ -216,9 +238,16 @@ export default function App() {
             )}
 
             {cagrPortfolios.length > 0 && (
-              <div style={{ display: "flex" }}>
-                <div style={{ width: isMobile ? "100%" : "50%", maxWidth: isMobile ? undefined : "50%" }}>
+              <div style={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                gap: "12px",
+              }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <CAGRTable compareMode={compareMode} portfolios={cagrPortfolios} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <RiskPanel compareMode={compareMode} portfolios={riskPortfolios} />
                 </div>
               </div>
             )}
