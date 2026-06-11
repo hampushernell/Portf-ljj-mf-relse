@@ -91,7 +91,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
         )}
       </div>
 
-      <FundSearch onAdd={onAddFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} failedFunds={failedFunds} />
+      <FundSearch onAdd={onAddFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} failedFunds={failedFunds} label={label} accent={accent} />
 
       <div style={{ flex: 1 }}>
         {funds.map((f, i) => (
