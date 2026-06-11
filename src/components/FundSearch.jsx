@@ -13,19 +13,19 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
           onClick={() => setIsOpen(true)}
           style={{
             border: "1px solid rgba(255,255,255,0.12)",
-            borderRadius: "9px", padding: "16px 14px", background: "transparent",
+            borderRadius: "9px", padding: "20px 14px", background: "transparent",
             display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
             cursor: "pointer",
           }}
         >
           <div style={{
-            width: "20px", height: "20px", borderRadius: "50%", flexShrink: 0,
+            width: "22px", height: "22px", borderRadius: "50%", flexShrink: 0,
             border: `1.5px solid rgba(${accentRgb}, 0.5)`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "14px", color: accent, lineHeight: 1,
+            fontSize: "15px", color: accent, lineHeight: 1,
           }}>+</div>
           <span style={{
-            fontSize: "12px", fontFamily: FONT.family.display,
+            fontSize: "13px", fontFamily: FONT.family.display,
             fontWeight: 600, color: COLOR.text.secondary,
           }}>Lägg till fond</span>
         </div>
