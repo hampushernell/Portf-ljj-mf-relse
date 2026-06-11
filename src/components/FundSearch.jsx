@@ -2,32 +2,57 @@ import { useState } from "react";
 import { COLOR, FONT } from "../lib/tokens";
 import FundSearchModal from "./FundSearchModal";
 
-export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loading, onSaveManualFund, failedFunds = [], label, accent }) {
+export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loading, onSaveManualFund, failedFunds = [], label, accent, accentRgb, accentText, hasFunds }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [triggerHovered, setTriggerHovered] = useState(false);
 
   return (
     <div style={{ position: "relative", marginBottom: "12px" }}>
-      <button
-        onClick={() => setIsOpen(true)}
-        disabled={loading}
-        style={{
-          width: "100%", boxSizing: "border-box", textAlign: "left",
-          background: "rgba(255,255,255,0.06)", border: `1px solid ${COLOR.border.strong}`,
-          borderRadius: "8px", padding: "9px 14px 9px 36px",
-          color: COLOR.text.secondary, fontSize: "13px",
-          fontFamily: FONT.family.display, cursor: loading ? "default" : "pointer",
-          position: "relative", display: "flex", alignItems: "center",
-        }}
-      >
-        <svg
-          width="13" height="13" viewBox="0 0 24 24" fill="none"
-          style={{ position: "absolute", left: "12px", flexShrink: 0, opacity: 0.5 }}
+      {!hasFunds ? (
+        <div
+          onClick={() => setIsOpen(true)}
+          style={{
+            border: `1.5px dashed rgba(${accentRgb}, 0.35)`,
+            borderRadius: "9px", padding: "16px 14px", background: "transparent",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+            cursor: "pointer",
+          }}
         >
-          <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-        {loading ? "Laddar fonddata…" : "Sök och lägg till fonder…"}
-      </button>
+          <div style={{
+            width: "20px", height: "20px", borderRadius: "50%", flexShrink: 0,
+            border: `1.5px solid rgba(${accentRgb}, 0.5)`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "14px", color: accent, lineHeight: 1,
+          }}>+</div>
+          <span style={{
+            fontSize: "12px", fontFamily: FONT.family.display,
+            fontWeight: 600, color: accentText,
+          }}>Lägg till fond</span>
+        </div>
+      ) : (
+        <div
+          onClick={() => setIsOpen(true)}
+          onMouseEnter={() => setTriggerHovered(true)}
+          onMouseLeave={() => setTriggerHovered(false)}
+          style={{
+            padding: "6px 2px", marginTop: "4px",
+            display: "flex", alignItems: "center", gap: "7px",
+            cursor: "pointer",
+          }}
+        >
+          <div style={{
+            width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
+            border: `1.5px solid rgba(${accentRgb}, 0.4)`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "13px", color: accent, lineHeight: 1,
+          }}>+</div>
+          <span style={{
+            fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
+            color: triggerHovered ? COLOR.text.primary : COLOR.text.secondary,
+            transition: "color 0.15s",
+          }}>Lägg till fond</span>
+        </div>
+      )}
 
       {failedFunds.length > 0 && (
         <div style={{
