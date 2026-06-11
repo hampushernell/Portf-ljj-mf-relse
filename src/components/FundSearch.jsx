@@ -35,8 +35,9 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
           onMouseEnter={() => setTriggerHovered(true)}
           onMouseLeave={() => setTriggerHovered(false)}
           style={{
-            padding: "6px 2px", marginTop: "4px",
-            display: "flex", alignItems: "center", gap: "7px",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: "9px", padding: "8px 10px",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
             cursor: "pointer",
           }}
         >
