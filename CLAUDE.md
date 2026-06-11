@@ -140,9 +140,8 @@ Yahoo råpriser
 **Automatisk uppdatering:** `.github/workflows/update-fi-fees.yml` — körs 1:a varje månad 06:00 UTC.
 **Format:** `src/data/fi-fees.json` med `_meta`-objekt (source, period, published, retrievedAt).
 
-**Fondsupport (21 fonder, 5 kategorier):**
-- 16 fonder täcks av FI (alla svenska SE-ISIN)
-- 5 fonder använder fallback (Spiltan Aktiefond, Nordea FI/Global, DNB, Nordea Lux)
+**Fondsupport:**
+- Fonder med SE-ISIN täcks av FI, övriga använder fallback (hårdkodat i `funds-registry.js`)
 - Kategorier: Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond
 
 Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
@@ -192,7 +191,7 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 
 ### Fas 5 – Fondutbud (aktiv)
 - [x] `scripts/add-fund.mjs` — halvautomatiserat flöde för nya fonder via ISIN
-- [x] 8 nya fonder: räntefonder, USA-fonder, temafonder (totalt 21)
+- [x] 8 nya fonder: räntefonder, USA-fonder, temafonder
 - [x] FundSearch stängs vid klick utanför
 - [ ] Blandfonder — en balanserad per storbank (Nordea, Handelsbanken, LF, Swedbank, SEB)
 - [ ] Kategorifilter — avskrivet tills fondlistan motiverar det

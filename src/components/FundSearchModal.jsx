@@ -87,7 +87,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
       (f.category || "").toLowerCase().includes(q.toLowerCase())
     );
     return matchesCat && matchesQ;
-  }).slice(0, 20);
+  });
 
   const toggleCategory = cat =>
     setSelectedCategories(prev =>
@@ -241,7 +241,9 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
             fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em",
             marginBottom: "6px",
           }}>
-            {filtered.length} fonder
+            {(q || selectedCategories.length > 0)
+              ? `${filtered.length} av ${allFunds.length} fonder`
+              : `${allFunds.length} fonder`}
           </div>
 
           {/* Fund list */}
