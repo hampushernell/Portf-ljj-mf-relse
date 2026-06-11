@@ -251,6 +251,27 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
             maxHeight: "300px", overflowY: "auto",
             scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.15) transparent",
           }}>
+            <div
+              onClick={() => setShowManualModal(true)}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.055)"}
+              onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+              style={{
+                padding: "8px 10px", borderRadius: "9px",
+                display: "flex", alignItems: "center", gap: "8px",
+                cursor: "pointer", transition: "background 0.1s",
+              }}
+            >
+              <div style={{
+                width: "16px", height: "16px", borderRadius: "50%", flexShrink: 0,
+                background: COLOR.border.subtle, border: `1px solid ${COLOR.border.circle}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "13px", color: COLOR.text.subtle, lineHeight: 1,
+              }}>+</div>
+              <span style={{ fontSize: "12px", color: COLOR.text.subtle, fontFamily: FONT.family.display }}>
+                Lägg till fond manuellt
+              </span>
+            </div>
+
             {filtered.map(f => {
               const added = excluded.includes(f.id);
               return (
@@ -322,26 +343,6 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
               );
             })}
 
-            <div
-              onClick={() => setShowManualModal(true)}
-              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.055)"}
-              onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-              style={{
-                padding: "8px 10px", borderRadius: "9px",
-                display: "flex", alignItems: "center", gap: "8px",
-                cursor: "pointer", transition: "background 0.1s",
-              }}
-            >
-              <div style={{
-                width: "16px", height: "16px", borderRadius: "50%", flexShrink: 0,
-                background: COLOR.border.subtle, border: `1px solid ${COLOR.border.circle}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "13px", color: COLOR.text.subtle, lineHeight: 1,
-              }}>+</div>
-              <span style={{ fontSize: "12px", color: COLOR.text.subtle, fontFamily: FONT.family.display }}>
-                Lägg till fond manuellt
-              </span>
-            </div>
           </div>
         </div>
 

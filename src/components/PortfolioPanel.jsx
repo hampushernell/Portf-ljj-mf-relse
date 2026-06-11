@@ -92,10 +92,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
         )}
       </div>
 
-      <div style={{
-        flex: 1,
-        ...(funds.length === 0 && { display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center" }),
-      }}>
+      <div style={{ flex: 1 }}>
         {funds.map((f, i) => (
           <FundRow key={f.id} fund={f}
             allocation={allocations[f.id] || { pct: 0, kr: 0 }}
@@ -107,14 +104,9 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
             spanHasData={!f.isManual || f.returns?.[span] != null}
           />
         ))}
-        {funds.length === 0 && (
-          <FundSearch onAdd={onAddFund} onRemove={onRemoveFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} failedFunds={failedFunds} label={label} accent={accent} accentRgb={accentRgb} accentText={accentText} hasFunds={false} />
-        )}
       </div>
 
-      {funds.length > 0 && (
-        <FundSearch onAdd={onAddFund} onRemove={onRemoveFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} failedFunds={failedFunds} label={label} accent={accent} accentRgb={accentRgb} accentText={accentText} hasFunds={true} />
-      )}
+      <FundSearch onAdd={onAddFund} onRemove={onRemoveFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} failedFunds={failedFunds} label={label} accent={accent} accentRgb={accentRgb} accentText={accentText} hasFunds={funds.length > 0} />
 
       {funds.length > 0 && inputMode === "pct" && (
         <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
