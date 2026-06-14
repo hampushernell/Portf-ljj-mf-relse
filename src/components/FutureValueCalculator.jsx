@@ -142,9 +142,9 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-        <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: COLOR.text.muted }}>
-          Framtidsvärde
-        </span>
+        <h3 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
+          Spar- och avgiftskalkylator
+        </h3>
         <div style={{ position: "relative" }} ref={tooltipRef}>
           <button
             onClick={() => setShowTooltip(v => !v)}
