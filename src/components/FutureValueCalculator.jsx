@@ -250,20 +250,17 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
 
       {/* Summary row */}
       <div style={{
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.04)",
-        borderRadius: "8px",
-        padding: "11px 14px",
-        fontFamily: FONT.family.body,
-        fontSize: "13px",
-        color: COLOR.text.muted,
-        lineHeight: 1.5,
+        background: `rgba(${winner === "A" ? "0,24,245" : "56,189,248"}, 0.07)`,
+        border: `1px solid rgba(${winner === "A" ? "0,24,245" : "56,189,248"}, 0.2)`,
+        borderRadius: "9px",
+        padding: "12px 16px",
+        display: "flex", alignItems: "center", gap: "10px",
       }}>
-        Portfölj{" "}
-        <span style={{ color: winnerCol, fontWeight: 700 }}>{winner}</span>
-        {" "}har gett{" "}
-        <span style={{ color: COLOR.positive, fontWeight: 700 }}>+{fmtKr(diff)}</span>
-        {" "}mer efter {years} år.
+        <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: winnerCol, flexShrink: 0 }} />
+        <span style={{ fontFamily: FONT.family.body, fontSize: "12px", color: COLOR.text.primary }}>
+          Portfölj <strong style={{ color: winnerCol }}>{winner}</strong> har gett{" "}
+          <strong style={{ color: winnerCol }}>+{fmtKr(diff)}</strong> mer efter {years} år.
+        </span>
       </div>
     </div>
   );
