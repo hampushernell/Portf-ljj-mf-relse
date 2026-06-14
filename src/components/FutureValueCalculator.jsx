@@ -28,7 +28,7 @@ const LABEL = {
 };
 
 function PortfolioCard({ label, accent, netCAGR, fee, netFV, grossFV, feeCost, isMobile }) {
-  const border = accent === COLOR.accentALight
+  const border = accent === COLOR.accentA
     ? "rgba(0,24,245,0.33)"
     : "rgba(56,189,248,0.33)";
   return (
