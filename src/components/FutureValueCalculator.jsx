@@ -119,14 +119,14 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
   const diff       = Math.abs(netFV_A - netFV_B);
 
   const inputStyle = {
-    background: COLOR.surface.input,
-    border: `1px solid ${COLOR.border.input}`,
-    borderRadius: RADIUS.md,
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.11)",
+    borderRadius: "8px",
     color: COLOR.text.primary,
     fontFamily: FONT.family.display,
     fontSize: "13px",
     fontWeight: 600,
-    padding: "8px 12px",
+    padding: "9px 14px",
     outline: "none",
     width: "100%",
     boxSizing: "border-box",
@@ -142,9 +142,9 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-        <h3 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
+        <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: COLOR.text.muted }}>
           Framtidsvärde
-        </h3>
+        </span>
         <div style={{ position: "relative" }} ref={tooltipRef}>
           <button
             onClick={() => setShowTooltip(v => !v)}
@@ -182,35 +182,45 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
       </div>
 
       {/* Inputs */}
+      <style>{`
+        .fvc-input::-webkit-inner-spin-button,
+        .fvc-input::-webkit-outer-spin-button { display: none; -webkit-appearance: none; }
+        .fvc-input { -moz-appearance: textfield; }
+      `}</style>
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "22px", alignItems: "flex-end" }}>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
-          <span style={LABEL}>Startbelopp (kr)</span>
           <input
             type="number"
+            className="fvc-input"
             value={startAmount}
             onChange={e => setStartAmount(e.target.value)}
+            placeholder="100 000 kr"
             style={inputStyle}
             min={0}
           />
         </div>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
-          <span style={LABEL}>Månadsinsättning (kr)</span>
           <input
             type="number"
+            className="fvc-input"
             value={monthlyAmount}
             onChange={e => setMonthlyAmount(e.target.value)}
+            placeholder="2 000 kr"
             style={inputStyle}
             min={0}
           />
         </div>
         <div style={{ flex: "2 1 180px", minWidth: "140px" }}>
-          <span style={LABEL}>Tidshorisont — {years} år</span>
+          <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "6px" }}>
+            <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary }}>Tidshorisont</span>
+            <span style={{ fontFamily: FONT.family.display, fontSize: "14px", fontWeight: 700, color: COLOR.text.primary }}>{years} år</span>
+          </div>
           <input
             type="range"
             min={5} max={30}
             value={years}
             onChange={e => setYears(Number(e.target.value))}
-            style={{ width: "100%", accentColor: COLOR.accentALight, cursor: "pointer", height: "4px", marginTop: "6px" }}
+            style={{ width: "100%", accentColor: COLOR.accentALight, cursor: "pointer", height: "4px" }}
           />
         </div>
       </div>
