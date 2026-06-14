@@ -115,7 +115,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
   const feeCost_B = grossFV_B - netFV_B;
 
   const winner     = netFV_A >= netFV_B ? "A" : "B";
-  const winnerCol  = winner === "A" ? COLOR.accentALight : COLOR.accentB;
+  const winnerCol  = winner === "A" ? COLOR.accentA : COLOR.accentB;
   const diff       = Math.abs(netFV_A - netFV_B);
 
   const inputStyle = {
@@ -220,7 +220,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
             min={5} max={30}
             value={years}
             onChange={e => setYears(Number(e.target.value))}
-            style={{ width: "100%", accentColor: COLOR.accentALight, cursor: "pointer", height: "4px" }}
+            style={{ width: "100%", accentColor: "rgba(255,255,255,0.3)", cursor: "pointer", height: "4px" }}
           />
         </div>
       </div>
@@ -228,7 +228,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
       {/* Portfolio cards */}
       <div style={{ display: "flex", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "14px" }}>
         <PortfolioCard
-          label="Portfölj A" accent={COLOR.accentALight}
+          label="Portfölj A" accent={COLOR.accentA}
           netCAGR={netCAGR_A} fee={feeA}
           netFV={netFV_A} grossFV={grossFV_A} feeCost={feeCost_A}
           isMobile={isMobile}
