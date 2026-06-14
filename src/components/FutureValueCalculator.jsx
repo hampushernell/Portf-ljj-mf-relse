@@ -54,7 +54,7 @@ function PortfolioCard({ label, accent, netCAGR, fee, netFV, grossFV, feeCost, i
         <span style={LABEL}>Slutvärde netto</span>
         <div style={{
           fontFamily: FONT.family.display, fontSize: "22px", fontWeight: 700,
-          color: accent, letterSpacing: "-0.01em",
+          color: COLOR.text.primary, letterSpacing: "-0.01em",
         }}>{fmtKr(netFV)}</div>
       </div>
 
@@ -142,9 +142,14 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-        <h3 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
-          Spar- och avgiftskalkylator
-        </h3>
+        <div>
+          <h3 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: "0 0 4px" }}>
+            Spar- och avgiftskalkylator
+          </h3>
+          <p style={{ fontFamily: FONT.family.body, fontSize: "11px", color: COLOR.text.secondary, margin: 0 }}>
+            Ränta på ränta- och avgiftskalkyl
+          </p>
+        </div>
         <div style={{ position: "relative" }} ref={tooltipRef}>
           <button
             onClick={() => setShowTooltip(v => !v)}
