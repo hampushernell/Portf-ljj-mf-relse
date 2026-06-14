@@ -37,7 +37,11 @@ export default async function handler(req, res) {
       }
     }));
 
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    const allowedOrigins = ["https://minportfolj.se", "http://localhost:5173"];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
     res.setHeader("Cache-Control", "s-maxage=3600");
     res.status(200).json({ funds: results });
   } catch (e) {

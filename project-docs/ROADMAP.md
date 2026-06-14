@@ -83,9 +83,9 @@ Mål: bredare fondutbud med bibehållen datakvalitet.
 
 Mål: produkten ska namnge vinnaren och ge risk-kontext — inte bara visa grafen.
 
-- [ ] **Sammanfattningsrad ovanför grafen** — tydlig klartext i jämförelseläge: "Portfölj A +114% · Portfölj B +67% · Skillnad +47 pp" med mint/coral-färgning. Ingen tolkning krävs av användaren
-- [ ] **Max drawdown** — det viktigaste riskmåttet för privatpersoner. Beräknas ur befintlig prisdata i `calculations.js`. Visas per portfölj och per fond i CAGRTable eller ny riskrad under grafen: "Portfölj A tappade som mest −38% (mars 2020)"
-- [ ] **Volatilitet (standardavvikelse årsvis)** — komplement till max drawdown. Ger användaren ett mått på hur ryckig resan var, inte bara slutresultatet
+- [x] **Sammanfattningsrad ovanför grafen** — tydlig klartext i jämförelseläge: "Portfölj A +114% · Portfölj B +67% · Skillnad +47 pp" med mint/coral-färgning. Ingen tolkning krävs av användaren
+- [x] **Max drawdown** — `RiskPanel.jsx` visar max nedgång per portfölj och per fond med datum (t.ex. "−38%, mars 2020"), färgkodad grön/gul/röd
+- [x] **Volatilitet (standardavvikelse årsvis)** — implementerad i `RiskPanel.jsx`, annualiserad, färgkodad (< 12% grön, < 20% gul, ≥ 20% röd)
 - [ ] **Benchmark-linje i grafen** — OMXS30 eller MSCI World som valfri referenslinje. Möjliggör frågan "slog din portfölj index?". Kräver ny fond i registret eller separat benchmarkdata
 
 ## Fas 7 – Delning och reach
