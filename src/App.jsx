@@ -25,6 +25,7 @@ import FundReturnChart from "./components/FundReturnChart";
 import CAGRTable from "./components/CAGRTable";
 import RiskPanel from "./components/RiskPanel";
 import AboutModal from "./components/AboutModal";
+import FutureValueCalculator from "./components/FutureValueCalculator";
 import { parseUrl, serializeUrl } from "./hooks/useUrlSync";
 
 export default function App() {
@@ -125,6 +126,7 @@ export default function App() {
   }, [compareMode, cagrMaxA, cagrMaxB, portfolioA.funds.length, portfolioB.funds.length]);
 
   const fee1 = getWeightedFee(portfolioA.funds, portfolioA.allocs, portfolioA.inputMode, totalA);
+  const fee2 = getWeightedFee(portfolioB.funds, portfolioB.allocs, portfolioB.inputMode, totalB);
 
   const saveManualFund = fund => {
     const updated = [...manualFundsDb.filter(f => f.id !== fund.id), fund];
@@ -282,6 +284,10 @@ export default function App() {
                 oldestTsA={oldestTsA} oldestTsB={oldestTsB}
                 latestNavTs={latestNavTs}
               />
+            )}
+
+            {compareMode && portfolioA.funds.length > 0 && portfolioB.funds.length > 0 && (
+              <FutureValueCalculator bundleA={bundleA} bundleB={bundleB} feeA={fee1} feeB={fee2} />
             )}
 
             {cagrPortfolios.length > 0 && (
