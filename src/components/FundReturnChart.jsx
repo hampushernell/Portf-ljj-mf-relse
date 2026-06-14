@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { portfolioReturn, computePortfolioContext } from "../lib/calculations";
 import { TIME_SPANS, formatKr, fmtFee, fmtPct } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
@@ -7,8 +8,16 @@ import useBreakpoint from "../hooks/useBreakpoint";
 export default function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths, oldestTsA, onSpanChange, totalA, fee1, latestNavTs }) {
   const retPortfolio = portfolioReturn(portfolioSeries);
   const { isMobile } = useBreakpoint();
+  const [copied, setCopied] = useState(false);
   const { refNow, startTs, endTs, spanHasFullData, isIncomplete, actualFromStr } =
     computePortfolioContext({ latestNavTs, spanMonths, oldestTs: oldestTsA, allSeries: [portfolioSeries] });
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
     <div style={{ background: "transparent", border: `1px solid ${COLOR.border.card}`, borderRadius: isMobile ? "10px" : "14px", overflow: "hidden", animation: "scaleIn 0.3s ease" }}>
@@ -26,25 +35,39 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
           )}
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
-          <div style={{ overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch" }}>
-            <div style={{ display: "flex", gap: "3px", background: COLOR.surface[1], borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
-              {TIME_SPANS.map(ts => {
-                const full = spanHasFullData(ts);
-                return (
-                  <button key={ts.label} onClick={() => onSpanChange(ts.label)}
-                    title={!full ? "Ofullständig data" : undefined}
-                    style={{
-                      background: selectedSpan === ts.label ? COLOR.surface.active : "transparent",
-                      border: "none", color: selectedSpan === ts.label ? COLOR.text.primary : full ? COLOR.text.secondary : COLOR.warning,
-                      padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
-                      fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
-                      transition: "all 0.18s", whiteSpace: "nowrap",
-                      boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
-                    }}
-                  >{ts.label}{!full ? " ⚠" : ""}</button>
-                );
-              })}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch" }}>
+              <div style={{ display: "flex", gap: "3px", background: COLOR.surface[1], borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
+                {TIME_SPANS.map(ts => {
+                  const full = spanHasFullData(ts);
+                  return (
+                    <button key={ts.label} onClick={() => onSpanChange(ts.label)}
+                      title={!full ? "Ofullständig data" : undefined}
+                      style={{
+                        background: selectedSpan === ts.label ? COLOR.surface.active : "transparent",
+                        border: "none", color: selectedSpan === ts.label ? COLOR.text.primary : full ? COLOR.text.secondary : COLOR.warning,
+                        padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
+                        fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
+                        transition: "all 0.18s", whiteSpace: "nowrap",
+                        boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
+                      }}
+                    >{ts.label}{!full ? " ⚠" : ""}</button>
+                  );
+                })}
+              </div>
             </div>
+            <button
+              onClick={handleCopy}
+              title="Kopiera länk"
+              style={{
+                background: copied ? "rgba(110,231,183,0.10)" : "rgba(255,255,255,0.04)",
+                border: `1px solid ${copied ? "rgba(110,231,183,0.25)" : "rgba(255,255,255,0.10)"}`,
+                borderRadius: "6px", padding: "5px 9px", cursor: "pointer",
+                fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
+                color: copied ? COLOR.positive : COLOR.text.secondary,
+                transition: "all 0.18s", whiteSpace: "nowrap",
+              }}
+            >{copied ? "Kopierat!" : "⎘ Dela"}</button>
           </div>
           {isIncomplete && actualFromStr && (
             <div style={{ fontSize: "10px", color: COLOR.warning, fontFamily: FONT.family.display }}>

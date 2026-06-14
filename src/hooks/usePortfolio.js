@@ -34,9 +34,18 @@ export default function usePortfolio(_manualFundsDb) {
 
   const updateFundData = fund => setFunds(fs => fs.map(f => f.id === fund.id ? fund : f));
 
+  // Atomically initialize portfolio from URL. fundsWithPcts: [{fund, pct}]
+  const bulkInit = fundsWithPcts => {
+    setFunds(fundsWithPcts.map(x => x.fund));
+    const newAllocs = {};
+    fundsWithPcts.forEach(({ fund, pct }) => { newAllocs[fund.id] = { pct }; });
+    setAllocs(newAllocs);
+    if (fundsWithPcts.length > 0) setHasManualEdit(true);
+  };
+
   return {
     funds, allocs, inputMode, manualAmount, hasManualEdit,
-    addFund, updateAlloc, removeFund,
+    addFund, updateAlloc, removeFund, bulkInit,
     setInputMode, setManualAmount,
     updateFundData,
   };

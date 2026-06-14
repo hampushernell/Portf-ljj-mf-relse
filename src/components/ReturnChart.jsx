@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { portfolioReturn, computePortfolioContext } from "../lib/calculations";
 import { ACCENT_A, ACCENT_B, TIME_SPANS, formatKr, fmtPct } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
@@ -8,6 +9,14 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
   const retA = portfolioReturn(seriesA);
   const retB = portfolioReturn(seriesB);
   const { isMobile } = useBreakpoint();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const oldestTs = [oldestTsA, oldestTsB].filter(Boolean).reduce((a, b) => Math.max(a, b), 0);
   const { refNow, startTs, endTs, spanHasFullData, isIncomplete, actualFromStr } =
@@ -41,26 +50,40 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
-          <div style={{ overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch" }}>
-            <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
-              {TIME_SPANS.map(ts => {
-                const full = spanHasFullData(ts);
-                return (
-                  <button key={ts.label} onClick={() => onSpanChange(ts.label)}
-                    title={!full ? "Ofullständig data – Yahoo Finance saknar historik för vald period" : undefined}
-                    style={{
-                      background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
-                      border: "none",
-                      color: selectedSpan === ts.label ? COLOR.text.primary : full ? COLOR.text.secondary : COLOR.warning,
-                      padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
-                      fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
-                      transition: "all 0.18s", whiteSpace: "nowrap",
-                      boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
-                    }}
-                  >{ts.label}{!full ? " ⚠" : ""}</button>
-                );
-              })}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch" }}>
+              <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
+                {TIME_SPANS.map(ts => {
+                  const full = spanHasFullData(ts);
+                  return (
+                    <button key={ts.label} onClick={() => onSpanChange(ts.label)}
+                      title={!full ? "Ofullständig data – Yahoo Finance saknar historik för vald period" : undefined}
+                      style={{
+                        background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
+                        border: "none",
+                        color: selectedSpan === ts.label ? COLOR.text.primary : full ? COLOR.text.secondary : COLOR.warning,
+                        padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
+                        fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
+                        transition: "all 0.18s", whiteSpace: "nowrap",
+                        boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
+                      }}
+                    >{ts.label}{!full ? " ⚠" : ""}</button>
+                  );
+                })}
+              </div>
             </div>
+            <button
+              onClick={handleCopy}
+              title="Kopiera länk"
+              style={{
+                background: copied ? "rgba(110,231,183,0.10)" : "rgba(255,255,255,0.04)",
+                border: `1px solid ${copied ? "rgba(110,231,183,0.25)" : "rgba(255,255,255,0.10)"}`,
+                borderRadius: "6px", padding: "5px 9px", cursor: "pointer",
+                fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
+                color: copied ? COLOR.positive : COLOR.text.secondary,
+                transition: "all 0.18s", whiteSpace: "nowrap",
+              }}
+            >{copied ? "Kopierat!" : "⎘ Dela"}</button>
           </div>
           {isIncomplete && actualFromStr && (
             <div style={{ fontSize: "10px", color: COLOR.warning, fontFamily: FONT.family.display }}>

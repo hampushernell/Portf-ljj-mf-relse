@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import useBreakpoint from "./hooks/useBreakpoint";
 import {
   getWeightedFee,
@@ -25,6 +25,7 @@ import FundReturnChart from "./components/FundReturnChart";
 import CAGRTable from "./components/CAGRTable";
 import RiskPanel from "./components/RiskPanel";
 import AboutModal from "./components/AboutModal";
+import { parseUrl, serializeUrl } from "./hooks/useUrlSync";
 
 export default function App() {
   const { allFunds, failedFunds, loading, error } = useFundData();
@@ -34,6 +35,10 @@ export default function App() {
   const [viewMode, setViewMode] = useState("fund");
   const [span, setSpan]         = useState("Max");
   const [showAbout, setShowAbout] = useState(false);
+
+  // URL sync — parsed once at mount; urlInitReady gates serialization until init is done.
+  const [urlInitState] = useState(() => parseUrl());
+  const [urlInitReady, setUrlInitReady] = useState(!urlInitState);
 
   const compareMode = viewMode === "compare";
   const { isMobile } = useBreakpoint();
@@ -136,6 +141,29 @@ export default function App() {
   };
 
   const searchableFunds = useMemo(() => [...allFunds, ...manualFundsDb], [allFunds, manualFundsDb]);
+
+  // Apply URL params once allFunds has loaded.
+  useEffect(() => {
+    if (urlInitReady || loading || !urlInitState) return;
+    const { fundsA, fundsB, span: urlSpan, mode } = urlInitState;
+    setSpan(urlSpan);
+    setViewMode(mode);
+    const match = (list) => list.flatMap(({ id, pct }) => {
+      const fund = allFunds.find(f => f.id === id);
+      return fund ? [{ fund, pct }] : [];
+    });
+    const matchedA = match(fundsA);
+    if (matchedA.length > 0) portfolioA.bulkInit(matchedA);
+    const matchedB = match(fundsB);
+    if (matchedB.length > 0) portfolioB.bulkInit(matchedB);
+    setUrlInitReady(true);
+  }, [loading, allFunds]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Serialize state to URL whenever it changes (but not before init is complete).
+  useEffect(() => {
+    if (!urlInitReady) return;
+    serializeUrl(portfolioA, portfolioB, span, viewMode);
+  }, [portfolioA.funds, portfolioA.allocs, portfolioB.funds, portfolioB.allocs, span, viewMode, urlInitReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ minHeight: "100vh", background: COLOR.bg.base, color: COLOR.text.primary, fontFamily: FONT.family.body }}>
