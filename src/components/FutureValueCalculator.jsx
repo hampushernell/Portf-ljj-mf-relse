@@ -189,6 +189,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
       `}</style>
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "22px", alignItems: "flex-end" }}>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
+          <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Engångsbelopp</span>
           <input
             type="number"
             className="fvc-input"
@@ -200,6 +201,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
           />
         </div>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
+          <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Månadssparande</span>
           <input
             type="number"
             className="fvc-input"
