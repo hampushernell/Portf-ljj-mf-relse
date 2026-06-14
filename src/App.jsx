@@ -286,10 +286,6 @@ export default function App() {
               />
             )}
 
-            {compareMode && portfolioA.funds.length > 0 && portfolioB.funds.length > 0 && (
-              <FutureValueCalculator bundleA={bundleA} bundleB={bundleB} feeA={fee1} feeB={fee2} />
-            )}
-
             {cagrPortfolios.length > 0 && (
               <div style={{
                 display: "flex",
@@ -303,6 +299,10 @@ export default function App() {
                   <RiskPanel compareMode={compareMode} portfolios={riskPortfolios} />
                 </div>
               </div>
+            )}
+
+            {compareMode && portfolioA.funds.length > 0 && portfolioB.funds.length > 0 && (
+              <FutureValueCalculator bundleA={bundleA} bundleB={bundleB} feeA={fee1} feeB={fee2} />
             )}
 
           </>
