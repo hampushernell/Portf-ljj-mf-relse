@@ -95,11 +95,8 @@ export default function AboutModal({ onClose }) {
 
         <hr style={DIVIDER} />
 
-        {/* Disclaimer + Kontakt */}
-        <p style={{ fontFamily: FONT.family.body, fontSize: "11px", color: COLOR.text.ghost, lineHeight: 1.55, margin: "0 0 10px" }}>
-          Historisk avkastning är ingen garanti för framtida avkastning. Ingenting på den här sidan utgör finansiell rådgivning.
-        </p>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", paddingTop: "10px", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+        {/* Kontakt */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span style={{ fontSize: "13px", color: COLOR.text.secondary, lineHeight: 1 }}>✉</span>
           <span style={{ fontFamily: FONT.family.body, fontSize: "12px", color: COLOR.text.secondary }}>Frågor eller feedback?</span>
           <a href="mailto:info@minportfolj.se" style={{ fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600, color: "#7b93ff", textDecoration: "none", marginLeft: "2px" }}>info@minportfolj.se</a>
