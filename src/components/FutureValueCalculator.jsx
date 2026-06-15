@@ -134,8 +134,26 @@ function YearStepper({ years, setYears }) {
         gap: "4px",
         background: "rgba(255,255,255,0.06)",
       }}>
-        <span style={{ fontFamily: FONT.family.display, fontSize: "14px", fontWeight: 700, color: "#f0ede8" }}>{years}</span>
-        <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: "#5a6e8a" }}>år</span>
+        <input
+          type="number"
+          value={years}
+          onChange={e => setYears(e.target.value === "" ? "" : Number(e.target.value))}
+          onBlur={e => setYears(Math.min(30, Math.max(5, Number(e.target.value) || 5)))}
+          style={{
+            width: "100%",
+            textAlign: "center",
+            fontFamily: FONT.family.display,
+            fontSize: "14px",
+            fontWeight: 700,
+            color: "#f0ede8",
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            WebkitAppearance: "none",
+            MozAppearance: "textfield",
+          }}
+        />
+        <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: "#5a6e8a", flexShrink: 0 }}>år</span>
       </div>
       <button
         style={{ ...btnStyle, borderLeft: "1px solid rgba(255,255,255,0.08)" }}
