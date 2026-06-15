@@ -282,27 +282,33 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "22px", alignItems: "flex-end" }}>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
           <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Engångsbelopp</span>
-          <input
-            type="number"
-            className="fvc-input"
-            value={startAmount}
-            onChange={e => setStartAmount(e.target.value)}
-            placeholder="100 000 kr"
-            style={inputStyle}
-            min={0}
-          />
+          <div style={{ ...inputStyle, display: "flex", alignItems: "center", padding: 0 }}>
+            <input
+              type="number"
+              className="fvc-input"
+              value={startAmount}
+              onChange={e => setStartAmount(e.target.value)}
+              placeholder="100 000"
+              style={{ ...inputStyle, border: "none", background: "transparent", flex: 1, minWidth: 0, paddingRight: "4px" }}
+              min={0}
+            />
+            <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: "#5a6e8a", paddingRight: "12px", flexShrink: 0 }}>kr</span>
+          </div>
         </div>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
           <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Månadssparande</span>
-          <input
-            type="number"
-            className="fvc-input"
-            value={monthlyAmount}
-            onChange={e => setMonthlyAmount(e.target.value)}
-            placeholder="2 000 kr"
-            style={inputStyle}
-            min={0}
-          />
+          <div style={{ ...inputStyle, display: "flex", alignItems: "center", padding: 0 }}>
+            <input
+              type="number"
+              className="fvc-input"
+              value={monthlyAmount}
+              onChange={e => setMonthlyAmount(e.target.value)}
+              placeholder="2 000"
+              style={{ ...inputStyle, border: "none", background: "transparent", flex: 1, minWidth: 0, paddingRight: "4px" }}
+              min={0}
+            />
+            <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: "#5a6e8a", paddingRight: "12px", flexShrink: 0 }}>kr</span>
+          </div>
         </div>
         <div style={{ flex: "1 1 140px", minWidth: "120px" }}>
           <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Tidshorisont</span>
