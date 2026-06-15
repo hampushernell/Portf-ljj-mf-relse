@@ -132,6 +132,7 @@ Yahoo råpriser
 | `ManualFundModal.jsx` | Skapa/redigera manuell fond |
 | `CAGRTable.jsx` | CAGR-tabell per portfölj med per-fond breakdown och expand/collapse |
 | `FeeBadge.jsx` | Badge för avgiftskälla (FI/Manuell) |
+| `FutureValueCalculator.jsx` | Framtidsvärdes-kalkylator i jämförelseläget (under grafen) — projicerar slutvärde netto och avgiftsuppskattning för Portfölj A och B. Inputs: startbelopp, månadsinsättning, tidshorisont. Använder CAGR från returnbundle och viktad avgift från `getWeightedFee()`. Ingen beräkningslogik i komponenten. |
 
 ---
 

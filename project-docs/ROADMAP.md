@@ -88,6 +88,14 @@ Mål: produkten ska namnge vinnaren och ge risk-kontext — inte bara visa grafe
 - [x] **Volatilitet (standardavvikelse årsvis)** — implementerad i `RiskPanel.jsx`, annualiserad, färgkodad (< 12% grön, < 20% gul, ≥ 20% röd)
 - [ ] **Benchmark-linje i grafen** — OMXS30 eller MSCI World som valfri referenslinje. Möjliggör frågan "slog din portfölj index?". Kräver ny fond i registret eller separat benchmarkdata
 
+## Fas 6.5 – Framtidsvärde ✓
+
+Mål: komplettera beslutsstödet med ett konkret kr-utfall baserat på historisk avkastning och avgift.
+
+- [x] **FutureValueCalculator** — ny komponent i jämförelseläget under grafen. Inputs: startbelopp, månadsinsättning, tidshorisont (slider 5–30 år). Visar slutvärde netto (historisk CAGR), slutvärde utan avgift (uppskattning: CAGR + viktad avgift) och avgiftskostnad i kr per portfölj. Sammanfattningsrad namnger vinnaren och kr-skillnaden. Avkastning visas alltid efter avgifter (branschstandard), förklarat via ?-tooltip.
+
+---
+
 ## Fas 7 – Delning och reach
 
 Mål: varje jämförelse ska kunna delas med en URL. Produkten ska hittas via Google.

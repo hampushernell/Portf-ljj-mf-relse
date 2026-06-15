@@ -78,6 +78,75 @@ function PortfolioCard({ label, accent, netCAGR, fee, netFV, grossFV, feeCost, i
   );
 }
 
+function YearStepper({ years, setYears }) {
+  const intervalRef = useRef(null);
+  const timeoutRef  = useRef(null);
+
+  const change = delta => setYears(y => Math.min(30, Math.max(5, y + delta)));
+
+  const startHold = delta => {
+    change(delta);
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(() => change(delta), 80);
+    }, 400);
+  };
+
+  const stopHold = () => {
+    clearTimeout(timeoutRef.current);
+    clearInterval(intervalRef.current);
+  };
+
+  const btnStyle = {
+    width: "44px",
+    height: "38px",
+    background: "rgba(255,255,255,0.05)",
+    border: "none",
+    color: "#94a3b8",
+    cursor: "pointer",
+    fontSize: "16px",
+    lineHeight: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    userSelect: "none",
+    flexShrink: 0,
+  };
+
+  return (
+    <div style={{
+      display: "flex",
+      height: "38px",
+      borderRadius: "8px",
+      border: "1px solid rgba(255,255,255,0.11)",
+      overflow: "hidden",
+    }}>
+      <button
+        style={{ ...btnStyle, borderRight: "1px solid rgba(255,255,255,0.08)" }}
+        onMouseDown={() => startHold(-1)}
+        onMouseUp={stopHold}
+        onMouseLeave={stopHold}
+      >−</button>
+      <div style={{
+        flex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "4px",
+        background: "rgba(255,255,255,0.06)",
+      }}>
+        <span style={{ fontFamily: FONT.family.display, fontSize: "14px", fontWeight: 700, color: "#f0ede8" }}>{years}</span>
+        <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: "#5a6e8a" }}>år</span>
+      </div>
+      <button
+        style={{ ...btnStyle, borderLeft: "1px solid rgba(255,255,255,0.08)" }}
+        onMouseDown={() => startHold(1)}
+        onMouseUp={stopHold}
+        onMouseLeave={stopHold}
+      >+</button>
+    </div>
+  );
+}
+
 export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) {
   const { isMobile } = useBreakpoint();
   const [startAmount, setStartAmount]   = useState("100000");
@@ -217,18 +286,9 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
             min={0}
           />
         </div>
-        <div style={{ flex: "2 1 180px", minWidth: "140px" }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "6px" }}>
-            <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary }}>Tidshorisont</span>
-            <span style={{ fontFamily: FONT.family.display, fontSize: "14px", fontWeight: 700, color: COLOR.text.primary }}>{years} år</span>
-          </div>
-          <input
-            type="range"
-            min={5} max={30}
-            value={years}
-            onChange={e => setYears(Number(e.target.value))}
-            style={{ width: "100%", accentColor: "rgba(255,255,255,0.3)", cursor: "pointer", height: "4px" }}
-          />
+        <div style={{ flex: "1 1 140px", minWidth: "120px" }}>
+          <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Tidshorisont</span>
+          <YearStepper years={years} setYears={setYears} />
         </div>
       </div>
 
