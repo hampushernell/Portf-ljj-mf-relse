@@ -82,7 +82,7 @@ function YearStepper({ years, setYears }) {
   const intervalRef = useRef(null);
   const timeoutRef  = useRef(null);
 
-  const change = delta => setYears(y => Math.min(30, Math.max(5, y + delta)));
+  const change = delta => setYears(y => Math.min(50, Math.max(1, y + delta)));
 
   const startHold = delta => {
     change(delta);
@@ -138,7 +138,7 @@ function YearStepper({ years, setYears }) {
           type="number"
           value={years}
           onChange={e => setYears(e.target.value === "" ? "" : Number(e.target.value))}
-          onBlur={e => setYears(Math.min(30, Math.max(5, Number(e.target.value) || 5)))}
+          onBlur={e => setYears(Math.min(50, Math.max(1, Number(e.target.value) || 1)))}
           style={{
             width: "100%",
             textAlign: "center",
