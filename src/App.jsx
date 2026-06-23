@@ -25,6 +25,7 @@ import FundReturnChart from "./components/FundReturnChart";
 import CAGRTable from "./components/CAGRTable";
 import RiskPanel from "./components/RiskPanel";
 import AboutModal from "./components/AboutModal";
+import HowItWorksModal from "./components/HowItWorksModal";
 import { parseUrl, serializeUrl } from "./hooks/useUrlSync";
 
 export default function App() {
@@ -35,6 +36,8 @@ export default function App() {
   const [viewMode, setViewMode] = useState("fund");
   const [span, setSpan]         = useState("Max");
   const [showAbout, setShowAbout] = useState(false);
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [howItWorksSeen, setHowItWorksSeen] = useState(() => localStorage.getItem("howItWorksSeen") === "1");
 
   // URL sync — parsed once at mount; urlInitReady gates serialization until init is done.
   const [urlInitState] = useState(() => parseUrl());
@@ -218,7 +221,29 @@ export default function App() {
         {!loading && !error && (
           <>
             {/* ── Lägesväxlare ── */}
-            <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+              <button
+                onClick={() => setShowHowItWorks(true)}
+                style={{
+                  display: "flex", alignItems: "center", gap: "5px",
+                  padding: "4px 10px",
+                  fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600,
+                  color: COLOR.text.secondary,
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.13)",
+                  borderRadius: "6px", cursor: "pointer",
+                  opacity: howItWorksSeen ? 0.45 : 1,
+                  transition: "opacity 0.3s, border-color 0.18s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.13)"}
+              >
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <circle cx="6" cy="6" r="5.25" stroke="currentColor" strokeWidth="1.25"/>
+                  <text x="6" y="9.5" textAnchor="middle" fontSize="7" fontWeight="700" fill="currentColor" fontFamily="'Syne',sans-serif">i</text>
+                </svg>
+                Hur fungerar det?
+              </button>
               <div style={{ display: "flex", background: COLOR.surface.tab, borderRadius: "7px", padding: "3px", gap: "2px", width: "fit-content" }}>
                 {[
                   { value: "fund",    label: "◈ Fonder",  activeColor: ACCENT_A_LIGHT, activeBg: "rgba(0,24,245,0.18)"   },
@@ -309,6 +334,15 @@ export default function App() {
         </div>
       </div>
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
+      {showHowItWorks && (
+        <HowItWorksModal
+          onClose={() => {
+            setShowHowItWorks(false);
+            localStorage.setItem("howItWorksSeen", "1");
+            setHowItWorksSeen(true);
+          }}
+        />
+      )}
     </div>
   );
 }
