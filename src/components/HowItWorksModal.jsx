@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { COLOR, FONT } from "../lib/tokens";
-import useBreakpoint from "../hooks/useBreakpoint";
 
 const ACCENT_A_LIGHT = "#7b93ff";
 
@@ -8,350 +7,322 @@ const STEPS = [
   {
     num: "01",
     title: "Lägg till fonder",
-    desc: 'Klicka på "Lägg till fond" i Portfölj A. Sök på fondnamn eller filtrera per kategori — globalfond, sverigefond, räntefond och fler.',
+    desc: 'Klicka på "Lägg till fond" i Portfölj A. Sök på fondnamn eller filtrera per kategori — Globalfond, Sverigefond, Räntefond och fler. Klicka på en fond för att lägga till den.',
   },
   {
     num: "02",
-    title: "Välj tidsspan",
-    desc: "Klicka på 1 år, 3 år eller Max ovanför grafen. Linjen ritar om direkt — indexerad från 100 från periodens start.",
+    title: "Välj tidsspan och läs grafen",
+    desc: "Klicka på ett tidsspan ovanför grafen — 3 mån, 1 år, 3 år eller Max. Grafen ritar om direkt. Tooltipet visar avkastning per datum. Sammanfattningsraden under namnger vinnaren.",
   },
   {
     num: "03",
-    title: "Jämför två portföljer",
-    desc: "Byt till Jämför-läget och bygg en andra portfölj. Mixa fonder och justera vikter med slidern — grafen uppdateras i realtid.",
-  },
-  {
-    num: "04",
     title: "Analysera utfallet",
-    desc: "Under grafen: CAGR per period och riskanalys med max drawdown och volatilitet färgkodad grön–gul–röd.",
+    desc: "CAGR-tabellen visar genomsnittlig årsavkastning per period. Riskpanelen visar max nedgång och volatilitet — färgkodad grön–gul–röd så du direkt ser vilken portfölj tagit mest risk.",
   },
 ];
 
+const STEP_DURATION = 5500;
+const TICK_MS = 80;
+
 const KEYFRAMES = `
-@keyframes slideInFromRight {
-  from { opacity: 0; transform: translateX(32px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes slideInFromLeft {
-  from { opacity: 0; transform: translateX(-32px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-18px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
-}
-@keyframes tooltipFade {
-  0%,  55% { opacity: 0; transform: translateY(4px); }
-  65%, 85% { opacity: 1; transform: translateY(0);   }
-  95%,100% { opacity: 0; transform: translateY(-2px); }
-}
-@keyframes drawLine {
-  from { stroke-dashoffset: 300; }
-  to   { stroke-dashoffset: 0;   }
-}
-@keyframes spanPulse {
-  0%,100% { opacity: 0.5; }
-  50%     { opacity: 1;   }
-}
-@keyframes tooltipIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0);   }
-}
-@keyframes panelFadeA {
-  from { opacity: 0; transform: translateX(-14px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes panelFadeB {
-  from { opacity: 0; transform: translateX(14px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes sliderMove {
-  from { transform: translateX(0); }
-  to   { transform: translateX(52px); }
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0);   }
-}
-@keyframes riskPop {
-  from { opacity: 0; transform: scale(0.85); }
-  to   { opacity: 1; transform: scale(1);    }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to   { opacity: 1; transform: scale(1);    }
-}
-@media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
-}
+@keyframes slideR { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideL { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes sil { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes spanPulse { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
+@keyframes drawLine { from { stroke-dashoffset: 700; } to { stroke-dashoffset: 0; } }
+@keyframes tipIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes rPop { from { opacity: 0; transform: scale(0.84); } to { opacity: 1; transform: scale(1); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }
 `;
 
-// ── SVG illustrations ─────────────────────────────────────────────────────────
+// ── SVG illustrations ──────────────────────────────────────────────────────────
 
 function Step1SVG() {
   return (
-    <svg viewBox="0 0 500 188" width="100%" height="100%" style={{ display: "block" }} aria-hidden="true">
+    <svg viewBox="0 0 520 200" width="100%" height="100%" style={{ display: "block" }} aria-hidden="true">
       <style>{`
-        .s1-row { animation: slideInLeft 0.4s ease both; }
-        .s1-row1 { animation-delay: 0.2s; }
-        .s1-row2 { animation-delay: 0.55s; }
-        .s1-row3 { animation-delay: 0.9s; }
-        .s1-cursor { animation: blink 0.9s infinite; }
-        .s1-tooltip { animation: tooltipFade 3.5s infinite; }
+        .r1 { animation: sil 0.38s ease both; animation-delay: 0.15s; }
+        .r2 { animation: sil 0.38s ease both; animation-delay: 0.45s; }
+        .r3 { animation: sil 0.38s ease both; animation-delay: 0.75s; }
+        .cur { animation: blink 0.9s step-end infinite; }
       `}</style>
 
-      {/* Modal card */}
-      <rect x="100" y="14" width="300" height="162" rx="10" fill="#0d1120" stroke="rgba(255,255,255,0.10)" strokeWidth="1"/>
+      {/* Card */}
+      <rect x="14" y="5" width="492" height="190" rx="12" fill="#0d1120" stroke="rgba(255,255,255,0.10)" strokeWidth="1"/>
+
+      {/* Card header */}
+      <text x="30" y="25" fontFamily="Syne, sans-serif" fontSize="11.5" fontWeight="700" fill="#f0ede8">Lägg till fond</text>
+      <text x="490" y="25" fontFamily="Syne, sans-serif" fontSize="17" fill="#5a6e8a" textAnchor="end">×</text>
+      <line x1="14" y1="33" x2="506" y2="33" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
 
       {/* Search bar */}
-      <rect x="116" y="28" width="268" height="28" rx="5" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.11)" strokeWidth="1"/>
-      <text x="130" y="47" fontFamily="'Syne', sans-serif" fontSize="11" fill="#94a3b8">Sök fond...</text>
-      <rect className="s1-cursor" x="207" y="33" width="1.5" height="16" rx="1" fill="#7b93ff"/>
+      <rect x="28" y="38" width="464" height="22" rx="5" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.11)" strokeWidth="1"/>
+      <text x="42" y="53" fontFamily="Syne, sans-serif" fontSize="10" fill="#5a6e8a">Sök fond...</text>
+      <rect className="cur" x="113" y="43" width="1.5" height="13" rx="0.5" fill="#7b93ff"/>
+
+      {/* Chip row */}
+      <rect x="28" y="65" width="72" height="16" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" strokeWidth="1"/>
+      <text x="64" y="77" fontFamily="Syne, sans-serif" fontSize="8" fontWeight="600" fill="#5a6e8a" textAnchor="middle">▼ FILTRERA</text>
+      <rect x="106" y="65" width="92" height="16" rx="8" fill="rgba(0,24,245,0.12)" stroke="rgba(0,24,245,0.35)" strokeWidth="1"/>
+      <text x="152" y="77" fontFamily="Syne, sans-serif" fontSize="8" fontWeight="600" fill="#7b93ff" textAnchor="middle">GLOBALFOND ×</text>
+
+      {/* Counter */}
+      <text x="28" y="97" fontFamily="Syne, sans-serif" fontSize="8.5" fontWeight="600" letterSpacing="0.05em" fill="#5a6e8a">6 FONDER</text>
 
       {/* Fund rows */}
       {[
-        { y: 68,  name: "Länsförs. Global",  fee: "0.20%", cls: "s1-row s1-row1" },
-        { y: 98,  name: "SPP Aktiefond Global", fee: "0.15%", cls: "s1-row s1-row2" },
-        { y: 128, name: "Avanza Global",      fee: "0.10%", cls: "s1-row s1-row3" },
-      ].map(({ y, name, fee, cls }) => (
+        { cls: "r1", y: 101, dot: "#7b93ff", name: "Länsförs. Global",    sub: "Globalfond · 0.20%" },
+        { cls: "r2", y: 133, dot: "#38bdf8", name: "SPP Aktiefond Global", sub: "Globalfond · 0.15%" },
+        { cls: "r3", y: 165, dot: "#6ee7b7", name: "Avanza Global",       sub: "Globalfond · 0.10%" },
+      ].map(({ cls, y, dot, name, sub }) => (
         <g key={y} className={cls}>
-          <rect x="116" y={y} width="268" height="22" rx="4" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
-          <text x="127" y={y + 15} fontFamily="'Syne', sans-serif" fontSize="10" fill="#f0ede8">{name}</text>
-          <text x="354" y={y + 15} fontFamily="'Syne', sans-serif" fontSize="10" fill="#94a3b8" textAnchor="end">{fee}</text>
+          <rect x="28" y={y} width="464" height="28" rx="5" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
+          <circle cx="43" cy={y + 14} r="3.5" fill={dot}/>
+          <text x="53" y={y + 16} fontFamily="Syne, sans-serif" fontSize="10.5" fontWeight="600" fill="#f0ede8">{name}</text>
+          <text x="53" y={y + 26} fontFamily="Syne, sans-serif" fontSize="9" fill="#5a6e8a">{sub}</text>
+          <circle cx="479" cy={y + 14} r="8" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.13)" strokeWidth="1"/>
+          <text x="479" y={y + 18.5} fontFamily="Syne, sans-serif" fontSize="13" fontWeight="300" fill="#94a3b8" textAnchor="middle">+</text>
         </g>
       ))}
-
-      {/* Tooltip "Lägg till" */}
-      <g className="s1-tooltip">
-        <rect x="326" y="120" width="60" height="18" rx="4" fill="#7b93ff"/>
-        <text x="356" y="132" fontFamily="'Syne', sans-serif" fontSize="9" fontWeight="600" fill="#010911" textAnchor="middle">Lägg till</text>
-      </g>
     </svg>
   );
 }
 
 function Step2SVG() {
   return (
-    <svg viewBox="0 0 500 188" width="100%" height="100%" style={{ display: "block" }} aria-hidden="true">
+    <svg viewBox="0 0 520 200" width="100%" height="100%" style={{ display: "block" }} aria-hidden="true">
       <style>{`
-        .s2-lineA { stroke-dasharray: 300; animation: drawLine 1.4s ease both; animation-delay: 0.3s; }
-        .s2-lineB { stroke-dasharray: 300; animation: drawLine 1.4s ease both; animation-delay: 0.7s; }
-        .s2-span  { animation: spanPulse 1.5s ease infinite; }
-        .s2-tip   { animation: tooltipIn 0.4s ease both; animation-delay: 1.8s; }
+        .sp-act { animation: spanPulse 1.6s ease infinite; }
+        .la { stroke-dasharray: 700; stroke-dashoffset: 700; animation: drawLine 1.3s ease both; animation-delay: 0.3s; }
+        .lb { stroke-dasharray: 700; stroke-dashoffset: 700; animation: drawLine 1.3s ease both; animation-delay: 0.75s; }
+        .tip { animation: tipIn 0.4s ease both; animation-delay: 1.8s; opacity: 0; }
       `}</style>
 
-      {/* Span buttons */}
+      {/* Card border */}
+      <rect x="14" y="5" width="492" height="190" rx="12" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.10)" strokeWidth="1"/>
+
+      {/* Header */}
+      <text x="30" y="24" fontFamily="Syne, sans-serif" fontSize="11" fontWeight="700" fill="#f0ede8">Historisk avkastning</text>
+
+      {/* Span buttons (right-aligned) */}
       {[
-        { label: "1 år",  x: 110, active: false },
-        { label: "3 år",  x: 155, active: true  },
-        { label: "Max",   x: 202, active: false },
+        { label: "3 mån", x: 336, active: false },
+        { label: "1 år",  x: 381, active: false },
+        { label: "3 år",  x: 416, active: true  },
+        { label: "Max",   x: 455, active: false },
       ].map(({ label, x, active }) => (
         <g key={label}>
-          <rect x={x} y="14" width="38" height="18" rx="4"
-            fill={active ? "rgba(123,147,255,0.18)" : "rgba(255,255,255,0.04)"}
-            stroke={active ? "rgba(123,147,255,0.4)" : "rgba(255,255,255,0.08)"} strokeWidth="1"
-            className={active ? "s2-span" : ""}/>
-          <text x={x + 19} y="27" fontFamily="'Syne', sans-serif" fontSize="9" fontWeight={active ? "700" : "400"}
-            fill={active ? "#7b93ff" : "#94a3b8"} textAnchor="middle">{label}</text>
+          <rect x={x} y="13" width={label.length * 5.8 + 12} height="16" rx="4"
+            fill={active ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.04)"}
+            stroke={active ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.07)"} strokeWidth="1"
+            className={active ? "sp-act" : ""}/>
+          <text x={x + (label.length * 5.8 + 12) / 2} y="25" fontFamily="Syne, sans-serif" fontSize="8.5"
+            fontWeight={active ? "700" : "400"} fill={active ? "#f0ede8" : "#5a6e8a"} textAnchor="middle">{label}</text>
         </g>
       ))}
 
-      {/* Chart axes */}
-      <line x1="90" y1="44" x2="90" y2="158" stroke="rgba(255,255,255,0.08)" strokeWidth="1"/>
-      <line x1="90" y1="158" x2="420" y2="158" stroke="rgba(255,255,255,0.08)" strokeWidth="1"/>
+      <line x1="14" y1="34" x2="506" y2="34" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
 
-      {/* Horizontal grid */}
-      {[70, 100, 130].map(y => (
-        <line key={y} x1="90" x2="420" y1={y} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="4 4"/>
+      {/* Y-axis grid lines */}
+      {[
+        { y: 52,  label: "+150%" },
+        { y: 88,  label: "+75%"  },
+        { y: 124, label: "0%"    },
+      ].map(({ y, label }) => (
+        <g key={y}>
+          <line x1="62" x2="504" y1={y} y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="4 3"/>
+          <text x="18" y={y + 4} fontFamily="Syne, sans-serif" fontSize="8" fill="#5a6e8a">{label}</text>
+        </g>
       ))}
 
       {/* Line A */}
-      <polyline className="s2-lineA"
-        points="90,130 150,118 210,108 270,95 330,80 390,62 420,55"
-        fill="none" stroke="#7b93ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline className="la"
+        points="62,124 152,108 248,88 352,70 448,56 504,50"
+        fill="none" stroke="#7b93ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 
       {/* Line B */}
-      <polyline className="s2-lineB"
-        points="90,135 150,128 210,122 270,115 330,108 390,98 420,92"
-        fill="none" stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline className="lb"
+        points="62,124 152,116 248,108 352,100 448,95 504,93"
+        fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 
       {/* Tooltip */}
-      <g className="s2-tip">
-        <rect x="350" y="42" width="72" height="32" rx="5" fill="#0d1120" stroke="rgba(255,255,255,0.12)" strokeWidth="1"/>
-        <text x="386" y="55" fontFamily="'Syne', sans-serif" fontSize="9" fill="#94a3b8" textAnchor="middle">Portfölj A</text>
-        <text x="386" y="68" fontFamily="'Syne', sans-serif" fontSize="10" fontWeight="700" fill="#7b93ff" textAnchor="middle">+42.3%</text>
+      <g className="tip">
+        <rect x="316" y="46" width="86" height="42" rx="5" fill="#0d1120" stroke="rgba(255,255,255,0.13)" strokeWidth="1"/>
+        <text x="359" y="60" fontFamily="Syne, sans-serif" fontSize="8.5" fill="#5a6e8a" textAnchor="middle">jun 2024</text>
+        <circle cx="326" cy="70" r="3.5" fill="#7b93ff"/>
+        <text x="333" y="73" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="600" fill="#6ee7b7">+112%</text>
+        <circle cx="326" cy="82" r="3.5" fill="#38bdf8"/>
+        <text x="333" y="85" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="600" fill="#38bdf8">+59%</text>
       </g>
+
+      {/* Legend */}
+      <circle cx="28" cy="139" r="4" fill="#7b93ff"/>
+      <text x="36" y="143" fontFamily="Syne, sans-serif" fontSize="9.5" fill="#94a3b8">Portfölj A</text>
+      <text x="94" y="143" fontFamily="Syne, sans-serif" fontSize="10" fontWeight="700" fill="#6ee7b7">+147%</text>
+      <circle cx="148" cy="139" r="4" fill="#38bdf8"/>
+      <text x="156" y="143" fontFamily="Syne, sans-serif" fontSize="9.5" fill="#94a3b8">Portfölj B</text>
+      <text x="214" y="143" fontFamily="Syne, sans-serif" fontSize="10" fontWeight="700" fill="#38bdf8">+77%</text>
+
+      {/* Summary row */}
+      <rect x="14" y="153" width="492" height="42" rx="0" fill="rgba(255,255,255,0.025)"/>
+      <line x1="14" y1="153" x2="506" y2="153" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
+      <text x="30" y="173" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="600" fill="#6ee7b7">Portfölj A +147%</text>
+      <text x="149" y="173" fontFamily="Syne, sans-serif" fontSize="9.5" fill="#5a6e8a">  ·  </text>
+      <text x="165" y="173" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="600" fill="#38bdf8">Portfölj B +77%</text>
+      <text x="272" y="173" fontFamily="Syne, sans-serif" fontSize="9.5" fill="#5a6e8a">  ·  </text>
+      <text x="288" y="173" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="600" fill="#f0ede8">Skillnad +70 pp</text>
     </svg>
   );
 }
 
 function Step3SVG() {
   return (
-    <svg viewBox="0 0 500 188" width="100%" height="100%" style={{ display: "block" }} aria-hidden="true">
+    <svg viewBox="0 0 520 200" width="100%" height="100%" style={{ display: "block" }} aria-hidden="true">
       <style>{`
-        .s3-panelA { animation: panelFadeA 0.5s ease both; animation-delay: 0.1s; }
-        .s3-panelB { animation: panelFadeB 0.5s ease both; animation-delay: 0.4s; }
-        .s3-thumb  { animation: sliderMove 2.5s ease 0.8s infinite alternate; }
-        .s3-badge  { animation: fadeUp 0.4s ease both; animation-delay: 1.0s; }
+        .fu1 { animation: fadeUp 0.32s ease both; animation-delay: 0.10s; }
+        .fu2 { animation: fadeUp 0.32s ease both; animation-delay: 0.30s; }
+        .fu3 { animation: fadeUp 0.32s ease both; animation-delay: 0.50s; }
+        .fu4 { animation: fadeUp 0.32s ease both; animation-delay: 0.70s; }
+        .fu5 { animation: fadeUp 0.32s ease both; animation-delay: 0.90s; }
+        .rp1 { animation: rPop 0.35s ease both; animation-delay: 1.05s; }
+        .rp2 { animation: rPop 0.35s ease both; animation-delay: 1.25s; }
+        .rp3 { animation: rPop 0.35s ease both; animation-delay: 1.45s; }
+        .rp4 { animation: rPop 0.35s ease both; animation-delay: 1.65s; }
       `}</style>
 
-      {/* Panel A */}
-      <g className="s3-panelA">
-        <rect x="30" y="14" width="198" height="162" rx="8" fill="#0d1120" stroke="rgba(0,24,245,0.35)" strokeWidth="1"/>
-        <text x="44" y="33" fontFamily="'Syne', sans-serif" fontSize="10" fontWeight="700" fill="#7b93ff">Portfölj A</text>
-        {/* Fund rows */}
-        {[
-          { y: 44, name: "Länsförs. Global", pct: "60%"  },
-          { y: 66, name: "Avanza Global",    pct: "40%"  },
-        ].map(({ y, name, pct }) => (
-          <g key={y}>
-            <rect x="44" y={y} width="170" height="18" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" strokeWidth="1"/>
-            <text x="52" y={y + 12} fontFamily="'Syne', sans-serif" fontSize="9" fill="#f0ede8">{name}</text>
-            <text x="206" y={y + 12} fontFamily="'Syne', sans-serif" fontSize="9" fill="#7b93ff" textAnchor="end">{pct}</text>
-          </g>
-        ))}
-        {/* Slider */}
-        <rect x="44" y="96" width="170" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
-        <rect x="44" y="96" width="100" height="4" rx="2" fill="rgba(123,147,255,0.5)"/>
-        <circle className="s3-thumb" cx="144" cy="98" r="6" fill="#7b93ff" stroke="#0d1120" strokeWidth="1.5"/>
-      </g>
+      {/* ── Left card: CAGR ── */}
+      <rect x="8" y="6" width="246" height="188" rx="10" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.10)" strokeWidth="1"/>
 
-      {/* Panel B */}
-      <g className="s3-panelB">
-        <rect x="272" y="14" width="198" height="162" rx="8" fill="#0d1120" stroke="rgba(56,189,248,0.3)" strokeWidth="1"/>
-        <text x="286" y="33" fontFamily="'Syne', sans-serif" fontSize="10" fontWeight="700" fill="#38bdf8">Portfölj B</text>
-        {[
-          { y: 44, name: "Swedbank Robur",  pct: "50%" },
-          { y: 66, name: "SPP Aktiefond",   pct: "50%" },
-        ].map(({ y, name, pct }) => (
-          <g key={y}>
-            <rect x="286" y={y} width="170" height="18" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" strokeWidth="1"/>
-            <text x="294" y={y + 12} fontFamily="'Syne', sans-serif" fontSize="9" fill="#f0ede8">{name}</text>
-            <text x="448" y={y + 12} fontFamily="'Syne', sans-serif" fontSize="9" fill="#38bdf8" textAnchor="end">{pct}</text>
-          </g>
-        ))}
-        <rect x="286" y="96" width="170" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
-        <rect x="286" y="96" width="85" height="4" rx="2" fill="rgba(56,189,248,0.5)"/>
-        <circle cx="371" cy="98" r="6" fill="#38bdf8" stroke="#0d1120" strokeWidth="1.5"/>
-      </g>
+      <text x="22" y="22" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="700" fill="#f0ede8">Historisk snittavkastning</text>
+      <text x="22" y="33" fontFamily="Syne, sans-serif" fontSize="8.5" fill="#5a6e8a">CAGR (per år)</text>
 
-      {/* FI badge */}
-      <g className="s3-badge">
-        <rect x="210" y="80" width="80" height="20" rx="4" fill="rgba(58,154,168,0.18)" stroke="rgba(58,154,168,0.4)" strokeWidth="1"/>
-        <text x="250" y="94" fontFamily="'Syne', sans-serif" fontSize="9" fontWeight="600" fill="#3a9aa8" textAnchor="middle">FI-avgift</text>
-      </g>
-    </svg>
-  );
-}
+      {/* Column headers */}
+      <text x="22" y="48" fontFamily="Syne, sans-serif" fontSize="8" fontWeight="600" letterSpacing="0.05em" fill="#5a6e8a">PERIOD</text>
+      <text x="178" y="48" fontFamily="Syne, sans-serif" fontSize="8" fontWeight="600" letterSpacing="0.04em" fill="#7b93ff" textAnchor="end">A</text>
+      <text x="242" y="48" fontFamily="Syne, sans-serif" fontSize="8" fontWeight="600" letterSpacing="0.04em" fill="#38bdf8" textAnchor="end">B</text>
+      <line x1="8" y1="52" x2="254" y2="52" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
 
-function Step4SVG() {
-  return (
-    <svg viewBox="0 0 500 188" width="100%" height="100%" style={{ display: "block" }} aria-hidden="true">
-      <style>{`
-        .s4-row1  { animation: fadeUp 0.4s ease both; animation-delay: 0.1s; }
-        .s4-row2  { animation: fadeUp 0.4s ease both; animation-delay: 0.35s; }
-        .s4-row3  { animation: fadeUp 0.4s ease both; animation-delay: 0.6s; }
-        .s4-row4  { animation: fadeUp 0.4s ease both; animation-delay: 0.9s; }
-        .s4-rbad1 { animation: riskPop 0.3s ease both; animation-delay: 1.1s; }
-        .s4-rbad2 { animation: riskPop 0.3s ease both; animation-delay: 1.3s; }
-      `}</style>
-
-      {/* Summary row */}
-      <g className="s4-row1">
-        <rect x="60" y="10" width="380" height="26" rx="5" fill="rgba(123,147,255,0.08)" stroke="rgba(123,147,255,0.2)" strokeWidth="1"/>
-        <text x="76" y="27" fontFamily="'Syne', sans-serif" fontSize="10" fill="#94a3b8">Portfölj A</text>
-        <text x="360" y="27" fontFamily="'Syne', sans-serif" fontSize="11" fontWeight="700" fill="#7b93ff" textAnchor="end">+57.2%</text>
-        <text x="432" y="27" fontFamily="'Syne', sans-serif" fontSize="9" fill="#94a3b8" textAnchor="end">CAGR Max</text>
-      </g>
-
-      {/* CAGR table rows */}
+      {/* CAGR rows */}
       {[
-        { y: 46,  label: "CAGR 3 år",  val: "+18.4%", color: "#7b93ff", cls: "s4-row2" },
-        { y: 72,  label: "CAGR Max",   val: "+9.7%",  color: "#7b93ff", cls: "s4-row3" },
-        { y: 98,  label: "Volatilitet",val: "14.2%",  color: "#f59e0b", cls: "s4-row4" },
-      ].map(({ y, label, val, color, cls }) => (
+        { cls: "fu1", y: 64,  period: "1 mån",  a: "+1.2%",  b: "+0.8%"  },
+        { cls: "fu2", y: 84,  period: "1 år",   a: "+23.4%", b: "+18.7%" },
+        { cls: "fu3", y: 104, period: "3 år",   a: "+18.6%", b: "+14.2%" },
+        { cls: "fu4", y: 124, period: "Max",    a: "+9.8%",  b: "+7.4%"  },
+      ].map(({ cls, y, period, a, b }) => (
         <g key={y} className={cls}>
-          <rect x="60" y={y} width="380" height="20" rx="4" fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.06)" strokeWidth="1"/>
-          <text x="76" y={y + 13} fontFamily="'Syne', sans-serif" fontSize="10" fill="#94a3b8">{label}</text>
-          <text x="430" y={y + 13} fontFamily="'Syne', sans-serif" fontSize="10" fontWeight="600" fill={color} textAnchor="end">{val}</text>
+          <text x="22" y={y} fontFamily="Syne, sans-serif" fontSize="9.5" fill="#5a6e8a">{period}</text>
+          <text x="178" y={y} fontFamily="Syne, sans-serif" fontSize="10" fontWeight="600" fill="#6ee7b7" textAnchor="end">{a}</text>
+          <text x="242" y={y} fontFamily="Syne, sans-serif" fontSize="10" fontWeight="600" fill="#38bdf8" textAnchor="end">{b}</text>
+          <line x1="8" y1={y + 6} x2="254" y2={y + 6} stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
         </g>
       ))}
 
-      {/* Risk badges */}
-      <g className="s4-rbad1">
-        <rect x="60" y="130" width="88" height="22" rx="5" fill="rgba(248,113,113,0.15)" stroke="rgba(248,113,113,0.3)" strokeWidth="1"/>
-        <text x="104" y="145" fontFamily="'Syne', sans-serif" fontSize="9" fontWeight="600" fill="#f87171" textAnchor="middle">Max DD −28%</text>
+      {/* ── Right card: Risk ── */}
+      <rect x="264" y="6" width="248" height="188" rx="10" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.10)" strokeWidth="1"/>
+
+      <text x="278" y="22" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="700" fill="#f0ede8">Riskanalys</text>
+
+      {/* Column headers */}
+      <text x="278" y="48" fontFamily="Syne, sans-serif" fontSize="8" fontWeight="600" letterSpacing="0.05em" fill="#5a6e8a">RISK</text>
+      <text x="382" y="48" fontFamily="Syne, sans-serif" fontSize="8" fontWeight="600" letterSpacing="0.04em" fill="#7b93ff" textAnchor="middle">A</text>
+      <text x="470" y="48" fontFamily="Syne, sans-serif" fontSize="8" fontWeight="600" letterSpacing="0.04em" fill="#38bdf8" textAnchor="middle">B</text>
+      <line x1="264" y1="52" x2="512" y2="52" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
+
+      {/* Max nedgång */}
+      <text x="278" y="72" fontFamily="Syne, sans-serif" fontSize="9" fill="#5a6e8a">Max nedgång</text>
+      <g className="rp1">
+        <rect x="352" y="58" width="54" height="18" rx="4" fill="rgba(248,113,113,0.14)" stroke="rgba(248,113,113,0.25)" strokeWidth="1"/>
+        <text x="379" y="71" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="600" fill="#f87171" textAnchor="middle">−28%</text>
       </g>
-      <g className="s4-rbad2">
-        <rect x="158" y="130" width="96" height="22" rx="5" fill="rgba(245,158,11,0.15)" stroke="rgba(245,158,11,0.3)" strokeWidth="1"/>
-        <text x="206" y="145" fontFamily="'Syne', sans-serif" fontSize="9" fontWeight="600" fill="#f59e0b" textAnchor="middle">Volatilitet 14%</text>
+      <g className="rp2">
+        <rect x="440" y="58" width="54" height="18" rx="4" fill="rgba(245,158,11,0.14)" stroke="rgba(245,158,11,0.25)" strokeWidth="1"/>
+        <text x="467" y="71" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="600" fill="#f59e0b" textAnchor="middle">−22%</text>
       </g>
-      <g className="s4-rbad1" style={{ animationDelay: "1.45s" }}>
-        <rect x="264" y="130" width="96" height="22" rx="5" fill="rgba(110,231,183,0.15)" stroke="rgba(110,231,183,0.3)" strokeWidth="1"/>
-        <text x="312" y="145" fontFamily="'Syne', sans-serif" fontSize="9" fontWeight="600" fill="#6ee7b7" textAnchor="middle">CAGR +18.4%</text>
+      <line x1="264" y1="84" x2="512" y2="84" stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
+
+      {/* Volatilitet */}
+      <text x="278" y="104" fontFamily="Syne, sans-serif" fontSize="9" fill="#5a6e8a">Volatilitet/år</text>
+      <g className="rp3">
+        <rect x="352" y="90" width="54" height="18" rx="4" fill="rgba(245,158,11,0.14)" stroke="rgba(245,158,11,0.25)" strokeWidth="1"/>
+        <text x="379" y="103" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="600" fill="#f59e0b" textAnchor="middle">14.2%</text>
+      </g>
+      <g className="rp4">
+        <rect x="440" y="90" width="54" height="18" rx="4" fill="rgba(110,231,183,0.14)" stroke="rgba(110,231,183,0.25)" strokeWidth="1"/>
+        <text x="467" y="103" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="600" fill="#6ee7b7" textAnchor="middle">11.8%</text>
+      </g>
+      <line x1="264" y1="116" x2="512" y2="116" stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
+
+      {/* Shared fu5 summary row */}
+      <g className="fu5">
+        <rect x="264" y="128" width="248" height="58" rx="0" fill="rgba(255,255,255,0.02)"/>
+        <line x1="264" y1="128" x2="512" y2="128" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
+        <text x="278" y="145" fontFamily="Syne, sans-serif" fontSize="8.5" fontWeight="600" letterSpacing="0.04em" fill="#5a6e8a">VINNARE PER MÅTT</text>
+        <text x="278" y="162" fontFamily="Syne, sans-serif" fontSize="9" fill="#94a3b8">Avkastning</text>
+        <text x="390" y="162" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="700" fill="#7b93ff">Portfölj A</text>
+        <text x="278" y="176" fontFamily="Syne, sans-serif" fontSize="9" fill="#94a3b8">Lägst risk</text>
+        <text x="390" y="176" fontFamily="Syne, sans-serif" fontSize="9.5" fontWeight="700" fill="#38bdf8">Portfölj B</text>
       </g>
     </svg>
   );
 }
 
-const SVG_BY_STEP = [Step1SVG, Step2SVG, Step3SVG, Step4SVG];
+const SVG_BY_STEP = [Step1SVG, Step2SVG, Step3SVG];
 
-// ── Progress bar ──────────────────────────────────────────────────────────────
-
-const STEP_DURATION = 5500;
-const TICK_MS = 80;
+// ── Progress bar ───────────────────────────────────────────────────────────────
 
 function ProgressBar({ onAdvance }) {
   const [progress, setProgress] = useState(0);
-  const timerRef = useRef(null);
+  const intervalRef = useRef(null);
   const progressRef = useRef(0);
 
   useEffect(() => {
-    timerRef.current = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       progressRef.current += (TICK_MS / STEP_DURATION) * 100;
       if (progressRef.current >= 100) {
-        clearInterval(timerRef.current);
+        clearInterval(intervalRef.current);
         setProgress(100);
         onAdvance();
       } else {
         setProgress(progressRef.current);
       }
     }, TICK_MS);
-    return () => clearInterval(timerRef.current);
+    return () => clearInterval(intervalRef.current);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div style={{ height: "2px", background: "rgba(255,255,255,0.06)", borderRadius: "1px", overflow: "hidden" }}>
+    <div style={{ height: "2px", background: "rgba(255,255,255,0.06)", flexShrink: 0 }}>
       <div style={{
         height: "100%", width: `${progress}%`,
         background: ACCENT_A_LIGHT,
         transition: `width ${TICK_MS}ms linear`,
-        borderRadius: "1px",
       }}/>
     </div>
   );
 }
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
+// ── Modal ──────────────────────────────────────────────────────────────────────
 
 export default function HowItWorksModal({ onClose }) {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState("forward");
-  const { isMobile } = useBreakpoint();
   const StepSVG = SVG_BY_STEP[step];
 
-  const goNext = () => { setDirection("forward");  setStep(s => Math.min(s + 1, STEPS.length - 1)); };
-  const goPrev = () => { setDirection("backward"); setStep(s => Math.max(s - 1, 0)); };
-  const goStep = (i) => { setDirection(i > step ? "forward" : "backward"); setStep(i); };
-
+  const goNext = () => {
+    setDirection("forward");
+    setStep(s => Math.min(s + 1, STEPS.length - 1));
+  };
+  const goPrev = () => {
+    setDirection("backward");
+    setStep(s => Math.max(s - 1, 0));
+  };
+  const goStep = (i) => {
+    setDirection(i >= step ? "forward" : "backward");
+    setStep(i);
+  };
   const handleAdvance = () => {
     if (step < STEPS.length - 1) goNext();
   };
@@ -361,7 +332,7 @@ export default function HowItWorksModal({ onClose }) {
       onClick={onClose}
       style={{
         position: "fixed", inset: 0, zIndex: 1000,
-        background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)",
+        background: "rgba(0,0,0,0.62)", backdropFilter: "blur(5px)",
         display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
         animation: "fadeIn 0.2s ease",
       }}
@@ -373,7 +344,7 @@ export default function HowItWorksModal({ onClose }) {
           background: COLOR.bg.elevated,
           border: "1px solid rgba(255,255,255,0.10)",
           borderRadius: "16px",
-          width: "min(500px, 92vw)",
+          width: "min(520px, 92vw)",
           position: "relative",
           overflow: "hidden",
           animation: "scaleIn 0.25s ease",
@@ -384,26 +355,28 @@ export default function HowItWorksModal({ onClose }) {
         {/* Close button */}
         <button
           onClick={onClose}
+          aria-label="Stäng"
           style={{
-            position: "absolute", top: "12px", right: "12px", zIndex: 2,
+            position: "absolute", top: "11px", right: "11px", zIndex: 2,
+            width: "27px", height: "27px",
             background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)",
-            color: COLOR.text.secondary, cursor: "pointer", fontSize: "18px",
-            lineHeight: 1, padding: "2px 7px", borderRadius: "6px", transition: "color 0.2s",
+            color: COLOR.text.secondary, cursor: "pointer", fontSize: "17px",
+            lineHeight: 1, borderRadius: "6px", display: "flex", alignItems: "center",
+            justifyContent: "center", transition: "color 0.2s",
           }}
           onMouseEnter={e => e.currentTarget.style.color = COLOR.text.primary}
           onMouseLeave={e => e.currentTarget.style.color = COLOR.text.secondary}
-          aria-label="Stäng"
         >×</button>
 
-        {/* Animated step wrapper — key remounts on step change, triggering slide */}
+        {/* Animated step wrapper */}
         <div style={{ overflow: "hidden", position: "relative" }}>
           <div
             key={step}
-            style={{ animation: `${direction === "forward" ? "slideInFromRight" : "slideInFromLeft"} 0.3s ease` }}
+            style={{ animation: `${direction === "forward" ? "slideR" : "slideL"} 0.3s ease` }}
           >
             {/* Illustration */}
             <div style={{
-              height: "188px",
+              height: "200px",
               background: COLOR.bg.base,
               borderBottom: "1px solid rgba(255,255,255,0.07)",
               overflow: "hidden",
@@ -412,34 +385,27 @@ export default function HowItWorksModal({ onClose }) {
             </div>
 
             {/* Text section */}
-            <div style={{ padding: "20px 24px 16px" }}>
+            <div style={{ padding: "18px 24px 14px" }}>
               <p style={{
                 fontFamily: FONT.family.display,
-                fontSize: isMobile ? "9px" : "10px",
-                fontWeight: 700,
-                letterSpacing: "0.07em",
-                color: ACCENT_A_LIGHT,
-                margin: "0 0 6px",
-                textTransform: "uppercase",
+                fontSize: "10px", fontWeight: 700,
+                letterSpacing: "0.07em", textTransform: "uppercase",
+                color: ACCENT_A_LIGHT, margin: "0 0 5px",
               }}>
                 {STEPS[step].num} / {String(STEPS.length).padStart(2, "0")}
               </p>
               <h2 style={{
                 fontFamily: FONT.family.display,
-                fontSize: isMobile ? "14px" : "16px",
-                fontWeight: 700,
-                color: COLOR.text.primary,
-                margin: "0 0 8px",
+                fontSize: "16px", fontWeight: 700,
+                color: COLOR.text.primary, margin: "0 0 7px",
                 letterSpacing: "-0.01em",
               }}>
                 {STEPS[step].title}
               </h2>
               <p style={{
                 fontFamily: FONT.family.body,
-                fontSize: "13px",
-                color: COLOR.text.muted,
-                lineHeight: 1.6,
-                margin: 0,
+                fontSize: "13px", color: COLOR.text.muted,
+                lineHeight: 1.6, margin: 0,
               }}>
                 {STEPS[step].desc}
               </p>
@@ -450,7 +416,7 @@ export default function HowItWorksModal({ onClose }) {
         {/* Footer */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "0 24px 20px",
+          padding: "0 24px 18px",
         }}>
           {/* Dot navigation */}
           <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
@@ -460,14 +426,10 @@ export default function HowItWorksModal({ onClose }) {
                 onClick={() => goStep(i)}
                 aria-label={`Steg ${i + 1}`}
                 style={{
-                  width: i === step ? "18px" : "6px",
-                  height: "6px",
-                  borderRadius: "3px",
-                  border: "none",
-                  cursor: "pointer",
+                  width: i === step ? "18px" : "6px", height: "6px",
+                  borderRadius: "3px", border: "none", cursor: "pointer",
                   background: i === step ? ACCENT_A_LIGHT : "rgba(255,255,255,0.18)",
-                  padding: 0,
-                  transition: "width 0.25s ease, background 0.2s",
+                  padding: 0, transition: "width 0.25s ease, background 0.2s",
                 }}
               />
             ))}
@@ -479,62 +441,43 @@ export default function HowItWorksModal({ onClose }) {
               onClick={goPrev}
               disabled={step === 0}
               style={{
-                fontFamily: FONT.family.display,
-                fontSize: "11px", fontWeight: 600,
-                padding: "6px 14px",
-                borderRadius: "6px",
-                border: "1px solid rgba(255,255,255,0.12)",
-                background: "transparent",
+                fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600,
+                padding: "6px 14px", borderRadius: "6px",
+                border: "1px solid rgba(255,255,255,0.12)", background: "transparent",
                 color: step === 0 ? "rgba(255,255,255,0.2)" : COLOR.text.secondary,
-                cursor: step === 0 ? "default" : "pointer",
-                transition: "color 0.2s",
+                cursor: step === 0 ? "default" : "pointer", transition: "color 0.2s",
               }}
-            >
-              Föregående
-            </button>
+            >Föregående</button>
+
             {step < STEPS.length - 1 ? (
               <button
                 onClick={goNext}
                 style={{
-                  fontFamily: FONT.family.display,
-                  fontSize: "11px", fontWeight: 600,
-                  padding: "6px 14px",
-                  borderRadius: "6px",
-                  border: "none",
-                  background: ACCENT_A_LIGHT,
-                  color: "#010911",
-                  cursor: "pointer",
-                  transition: "opacity 0.2s",
+                  fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600,
+                  padding: "6px 14px", borderRadius: "6px",
+                  border: "none", background: ACCENT_A_LIGHT,
+                  color: "#010911", cursor: "pointer",
                 }}
                 onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
                 onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-              >
-                Nästa
-              </button>
+              >Nästa</button>
             ) : (
               <button
                 onClick={onClose}
                 style={{
-                  fontFamily: FONT.family.display,
-                  fontSize: "11px", fontWeight: 600,
-                  padding: "6px 14px",
-                  borderRadius: "6px",
-                  border: "none",
-                  background: ACCENT_A_LIGHT,
-                  color: "#010911",
-                  cursor: "pointer",
-                  transition: "opacity 0.2s",
+                  fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600,
+                  padding: "6px 14px", borderRadius: "6px",
+                  border: "none", background: ACCENT_A_LIGHT,
+                  color: "#010911", cursor: "pointer",
                 }}
                 onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
                 onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-              >
-                Stäng
-              </button>
+              >Stäng</button>
             )}
           </div>
         </div>
 
-        {/* Progress bar */}
+        {/* Progress bar — key remounts on step change, restarting the timer */}
         <ProgressBar key={step} onAdvance={handleAdvance} />
       </div>
     </div>

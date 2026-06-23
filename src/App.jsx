@@ -179,23 +179,47 @@ export default function App() {
             <p style={{ margin: "3px 0 0", fontSize: "11px", color: COLOR.text.secondary }}>Jämför avgifter & historisk avkastning</p>
           </div>
         </div>
-        <span
-          onClick={() => setShowAbout(true)}
-          style={{
-            display: "flex", alignItems: "center", gap: "7px",
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            borderRadius: "20px", padding: "5px 11px 5px 12px", cursor: "pointer",
-            marginLeft: "auto",
-          }}
-        >
-          <span style={{ fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600, color: COLOR.text.muted }}>Om</span>
-          <span style={{ width: "1px", height: "11px", background: "rgba(255,255,255,0.15)" }} />
-          <svg width="24" height="18" viewBox="0 0 44 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect x="0" y="0" width="16" height="40" rx="5" fill="#5a6e8a"/>
-            <rect x="20" y="0" width="24" height="40" rx="6" fill="#94a3b8"/>
-          </svg>
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginLeft: "auto" }}>
+          <button
+            onClick={() => setShowHowItWorks(true)}
+            style={{
+              display: "flex", alignItems: "center", gap: "5px",
+              padding: "4px 10px",
+              fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600,
+              color: COLOR.text.secondary,
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,0.13)",
+              borderRadius: "6px", cursor: "pointer",
+              opacity: howItWorksSeen ? 0.45 : 1,
+              transition: "opacity 0.3s, border-color 0.18s",
+            }}
+            onMouseOver={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.28)"}
+            onMouseOut={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.13)"}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <circle cx="6" cy="6" r="5.25" stroke="currentColor" strokeWidth="1.2"/>
+              <path d="M6 8.5V6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              <circle cx="6" cy="4" r="0.6" fill="currentColor"/>
+            </svg>
+            <span style={{ display: isMobile ? "none" : "inline" }}>Hur fungerar det?</span>
+          </button>
+          <span
+            onClick={() => setShowAbout(true)}
+            style={{
+              display: "flex", alignItems: "center", gap: "7px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.10)",
+              borderRadius: "20px", padding: "5px 11px 5px 12px", cursor: "pointer",
+            }}
+          >
+            <span style={{ fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600, color: COLOR.text.muted }}>Om</span>
+            <span style={{ width: "1px", height: "11px", background: "rgba(255,255,255,0.15)" }} />
+            <svg width="24" height="18" viewBox="0 0 44 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect x="0" y="0" width="16" height="40" rx="5" fill="#5a6e8a"/>
+              <rect x="20" y="0" width="24" height="40" rx="6" fill="#94a3b8"/>
+            </svg>
+          </span>
+        </div>
       </div>
 
       <div style={{ padding: isMobile ? "12px 14px" : "22px 36px", display: "flex", flexDirection: "column", gap: isMobile ? "12px" : "18px" }}>
@@ -221,29 +245,7 @@ export default function App() {
         {!loading && !error && (
           <>
             {/* ── Lägesväxlare ── */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-              <button
-                onClick={() => setShowHowItWorks(true)}
-                style={{
-                  display: "flex", alignItems: "center", gap: "5px",
-                  padding: "4px 10px",
-                  fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600,
-                  color: COLOR.text.secondary,
-                  background: "transparent",
-                  border: "1px solid rgba(255,255,255,0.13)",
-                  borderRadius: "6px", cursor: "pointer",
-                  opacity: howItWorksSeen ? 0.45 : 1,
-                  transition: "opacity 0.3s, border-color 0.18s",
-                }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.13)"}
-              >
-                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <circle cx="6" cy="6" r="5.25" stroke="currentColor" strokeWidth="1.25"/>
-                  <text x="6" y="9.5" textAnchor="middle" fontSize="7" fontWeight="700" fill="currentColor" fontFamily="'Syne',sans-serif">i</text>
-                </svg>
-                Hur fungerar det?
-              </button>
+            <div>
               <div style={{ display: "flex", background: COLOR.surface.tab, borderRadius: "7px", padding: "3px", gap: "2px", width: "fit-content" }}>
                 {[
                   { value: "fund",    label: "◈ Fonder",  activeColor: ACCENT_A_LIGHT, activeBg: "rgba(0,24,245,0.18)"   },
