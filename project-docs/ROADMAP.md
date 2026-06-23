@@ -87,6 +87,8 @@ Mål: produkten ska namnge vinnaren och ge risk-kontext — inte bara visa grafe
 - [x] **Max drawdown** — `RiskPanel.jsx` visar max nedgång per portfölj och per fond med datum (t.ex. "−38%, mars 2020"), färgkodad grön/gul/röd
 - [x] **Volatilitet (standardavvikelse årsvis)** — implementerad i `RiskPanel.jsx`, annualiserad, färgkodad (< 12% grön, < 20% gul, ≥ 20% röd)
 - [ ] **Benchmark-linje i grafen** — OMXS30 eller MSCI World som valfri referenslinje. Möjliggör frågan "slog din portfölj index?". Kräver ny fond i registret eller separat benchmarkdata
+  - Alternativ A: lägg till en indexfond (t.ex. Avanza Global) som "dold" benchmark — enklast, nyttjar befintlig pipeline
+  - Alternativ B: separat benchmarkdata från Yahoo utanför fondregistret — mer flexibelt, mer arbete
 
 ## Fas 6.5 – Framtidsvärde ✓
 
@@ -96,12 +98,12 @@ Mål: komplettera beslutsstödet med ett konkret kr-utfall baserat på historisk
 
 ---
 
-## Fas 7 – Delning och reach
+## Fas 7 – Delning och reach ✓ (delvis)
 
 Mål: varje jämförelse ska kunna delas med en URL. Produkten ska hittas via Google.
 
-- [ ] **URL-serialisering** — portföljens fonder, allokeringar och valt span kodas i URL-parametrar (`?a=id:pct,id:pct&b=...&span=3y`). Ren frontend, ingen backend. Gör varje jämförelse delbar och bokmärkbar. Implementeras i `usePortfolio.js` + `App.jsx`
-- [ ] **Kopiera länk-knapp** — enkelt UI-element i grafkortet som kopierar aktuell URL till clipboard
+- [x] **URL-serialisering** — implementerad i `hooks/useUrlSync.js`. Parsar och serialiserar fonder, allokeringar, span och mode via `?a=id:pct&b=...&span=3y&mode=compare`
+- [x] **Kopiera länk-knapp** — implementerad i `ReturnChart.jsx` och `FundReturnChart.jsx` via `navigator.clipboard.writeText(window.location.href)`
 - [ ] **SSR/prerendering** — Vite SSG eller `vite-plugin-ssr` för statiska sidor per fondkategori. Ger Google något att indexera på termer som "jämför globalfonder avgift", "bästa sverigefond historik". Kräver arkitekturellt beslut — utvärderas separat
 
 ## Fas 8 – Onboarding och startläge

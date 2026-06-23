@@ -244,7 +244,67 @@ Transparent background, `1px solid rgba(255,255,255,0.10)` border, 14px radius, 
 
 **SVG:** `viewBox="0 0 800 H"`, `H=330` desktop / `H=400` mobil. `PL=PR=0` — linjer och gridlinjer löper från x=0 till x=W. Y-axeletiketter inuti grafen (`x=8`, under gridlinjen), fontSize `10` desktop / `16` mobil. Strokewidth `1.5` i båda lägena.
 
-## 6. Do's and Don'ts
+## 6. Animation System
+
+All animation and transition values are defined in `src/lib/animations.js`. **Never hardcode duration strings or keyframe names in component files.**
+
+### Tokens
+
+**DURATION (ms):**
+- `instant` (80): hover-tints, färg/opacity state-changes
+- `fast` (150): knappar, badges, dropdown-rader, ikon-rotationer
+- `base` (220): fondkort mount, span-switch
+- `moderate` (300): grafkort, CAGR-tabell, modaldialog
+- `slow` (380): portföljpanel mount
+
+**EASING:**
+- `standard` — `ease` — hover/state, symmetrisk
+- `decelerate` — `cubic-bezier(0.0, 0.0, 0.2, 1)` — entering, mjuk inbromsning
+- `accelerate` — `cubic-bezier(0.4, 0.0, 1, 1)` — leaving, snabb start
+
+### Keyframes (src/index.css)
+
+| Keyframe | Används för |
+|----------|-------------|
+| `fadeSlideUp` | PortfolioPanel mount |
+| `scaleIn` | ReturnChart, FundReturnChart, CAGRTable, RiskPanel, modaldialog |
+| `slideInLeft` | FundRow mount |
+| `fadeIn` | Modal overlay, inline sections |
+| `fadeOut` | Modal overlay close (exit) |
+| `scaleOut` | Modal dialog close (exit) |
+
+### ANIM tokens → komponentmapping
+
+| Token | Komponent |
+|-------|-----------|
+| `ANIM.panelMount` | PortfolioPanel |
+| `ANIM.cardMount` | ReturnChart, FundReturnChart, CAGRTable, RiskPanel |
+| `ANIM.rowMount` | FundRow |
+| `ANIM.overlayMount` | Alla modal overlays |
+| `ANIM.dialogMount` | Alla modal dialogs |
+| `ANIM.fadeMount` | Inline sections (fee summary, header-elements) |
+| `ANIM.overlayOut` | Modal overlay close |
+| `ANIM.dialogOut` | Modal dialog close |
+| `ANIM.hover` | Hover background på rader/knappar |
+| `ANIM.hoverColor` | Hover på ikoner/text |
+| `ANIM.tab` | Tab/mode-toggle |
+| `ANIM.spanSwitch` | Graf byter tidsspan |
+| `ANIM.barWidth` | Allokeringsbar width |
+| `ANIM.iconRotate` | Expand/collapse-pilar |
+
+### Reduced-motion regel
+
+**The Motion-Is-Optional Rule.** Alla animation/transition-strängar slås in med `anim()` från `animations.js`. `anim()` returnerar `"none"` om `prefers-reduced-motion: reduce` är satt. Ingen animation i systemet är obligatorisk för funktionalitet — de är alla visuell feedback, aldrig bärare av information.
+
+### Named Rules
+
+**The Token-First Rule.** Hårdkodade animation-strängar (`"0.2s ease"`, `"fadeIn 0.3s"` etc.) är förbjudna i komponentfiler. Använd alltid `ANIM.*`, `DURATION.*` eller `EASING.*`.
+
+**The Decelerate-on-Enter Rule.** Alla mount-animationer använder `EASING.decelerate`. Ingenting enters med `ease-in` (det läser som en kollision). Exit-animationer använder `EASING.accelerate`.
+
+**The No-Spring Rule.** Spring-easing (overshoot-kurvor) används inte. De bryter mot "The Clarity Terminal"-känslan. Alla rörelser är avsiktliga och stannar exakt vid sin målposition.
+
+## 7. Do's and Don'ts
 
 ### Do:
 - **Do** use uppercase Syne labels (9px, 0.05em tracking, Steel Slate) above every data field. This is the universal anchoring pattern.
