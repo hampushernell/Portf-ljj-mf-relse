@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ACCENT_A_LIGHT, ACCENT_B } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
+import { ANIM, anim } from "../lib/animations";
 
 const MANUAL_SPANS = ["1 mån", "3 mån", "1 år", "3 år"];
 
@@ -46,13 +47,13 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
       position: "fixed", inset: 0, zIndex: 1000,
       background: COLOR.bg.overlay, backdropFilter: "blur(4px)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
-      animation: "fadeIn 0.2s ease",
+      animation: anim(ANIM.overlayMount),
     }}>
       <div onClick={e => e.stopPropagation()} style={{
         background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.default}`,
         borderRadius: "16px", padding: "28px 28px 24px",
         maxWidth: "520px", width: "100%", maxHeight: "92vh",
-        overflow: "auto", animation: "scaleIn 0.25s ease",
+        overflow: "auto", animation: anim(ANIM.dialogMount),
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
           <h2 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
@@ -134,7 +135,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
                   background: COLOR.tint.negative, border: "1px solid rgba(248,113,113,0.35)",
                   color: COLOR.negative, borderRadius: "8px", padding: "9px 16px",
                   cursor: "pointer", fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
-                  transition: "background 0.2s",
+                  transition: anim(ANIM.hover),
                 }}>Ta bort fond</button>
             )}
           </div>
@@ -151,7 +152,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
                 background: "rgba(0,24,245,0.15)", border: "1px solid rgba(0,24,245,0.4)",
                 color: ACCENT_A_LIGHT, borderRadius: "8px", padding: "9px 20px",
                 cursor: "pointer", fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
-                transition: "background 0.2s",
+                transition: anim(ANIM.hover),
               }}>{initialData ? "Spara ändringar" : "Lägg till fond"}</button>
           </div>
         </div>

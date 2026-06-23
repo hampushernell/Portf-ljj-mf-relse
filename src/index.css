@@ -28,5 +28,15 @@ body {
   to   { opacity: 1; transform: scale(1);     }
 }
 
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes scaleOut {
+  from { opacity: 1; transform: scale(1);     }
+  to   { opacity: 0; transform: scale(0.985); }
+}
+
 .mode-btn:active { transform: scale(0.94); }
 .panel-card { transition: box-shadow 0.3s ease, border-color 0.3s ease; }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { getFundPct } from "../lib/calculations";
 import { formatKr, fmtFee } from "../lib/utils";
 import { COLOR, FONT, SHADOW } from "../lib/tokens";
+import { ANIM, anim } from "../lib/animations";
 import useBreakpoint from "../hooks/useBreakpoint";
 import { FeeBadge } from "./FeeBadge";
 
@@ -17,8 +18,8 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
     padding: "10px 12px",
     background: hovered ? COLOR.surface.hover : COLOR.surface.faint,
     border: `1px solid ${COLOR.border.subtle}`, borderRadius: "9px", marginBottom: "8px",
-    animation: "slideInLeft 0.22s ease", boxShadow: SHADOW.subtle,
-    transition: "background 0.15s",
+    animation: anim(ANIM.rowMount), boxShadow: SHADOW.subtle,
+    transition: anim(ANIM.hover),
     cursor: clickable ? "pointer" : "default",
   };
 
@@ -94,8 +95,8 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         padding: "10px 12px",
         background: hovered ? COLOR.surface.hover : COLOR.surface.faint,
         border: `1px solid ${COLOR.border.subtle}`, borderRadius: "9px", marginBottom: "8px",
-        animation: "slideInLeft 0.22s ease", boxShadow: SHADOW.subtle,
-        transition: "background 0.15s",
+        animation: anim(ANIM.rowMount), boxShadow: SHADOW.subtle,
+        transition: anim(ANIM.hover),
         cursor: clickable ? "pointer" : "default",
       }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
@@ -151,7 +152,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         </div>
       </div>
       <button onClick={e => { e.stopPropagation(); onRemove(); }}
-        style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "18px", padding: "2px", transition: "color 0.2s" }}
+        style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "18px", padding: "2px", transition: anim(ANIM.hoverColor) }}
         onMouseEnter={e => e.currentTarget.style.color = COLOR.negative}
         onMouseLeave={e => e.currentTarget.style.color = COLOR.text.secondary}
       >×</button>

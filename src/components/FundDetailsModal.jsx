@@ -4,6 +4,7 @@ import { rebaseSeries } from "../lib/blend";
 import { getDisplayRange } from "../lib/dateRange";
 import { FUND_ISINS, fmtFee, fmtPct } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
+import { ANIM, anim } from "../lib/animations";
 import { FeeBadge } from "./FeeBadge";
 
 export default function FundDetailsModal({ funds, accent, accentRgb, label, onClose }) {
@@ -15,7 +16,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
         position: "fixed", inset: 0, zIndex: 1000,
         background: COLOR.bg.overlay, backdropFilter: "blur(4px)",
         display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
-        animation: "fadeIn 0.2s ease",
+        animation: anim(ANIM.overlayMount),
       }}
     >
       <div
@@ -25,7 +26,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
           borderRadius: "16px", padding: "28px 28px 24px",
           maxWidth: "640px", width: "100%", maxHeight: "85vh",
           overflow: "auto", position: "relative",
-          animation: "scaleIn 0.25s ease",
+          animation: anim(ANIM.dialogMount),
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px" }}>
@@ -34,7 +35,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
           </h2>
           <button
             onClick={onClose}
-            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px", transition: "color 0.2s" }}
+            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px", transition: anim(ANIM.hoverColor) }}
             onMouseEnter={e => e.target.style.color = COLOR.text.primary}
             onMouseLeave={e => e.target.style.color = COLOR.text.secondary}
           >×</button>
@@ -80,7 +81,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
                     fontFamily: FONT.family.display, fontWeight: 600,
                     background: `rgba(${accentRgb}, 0.1)`, padding: "5px 11px",
                     borderRadius: "6px", border: `1px solid rgba(${accentRgb}, 0.3)`,
-                    whiteSpace: "nowrap", transition: "background 0.2s",
+                    whiteSpace: "nowrap", transition: anim(ANIM.hover),
                   }}
                   onMouseEnter={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.2)`}
                   onMouseLeave={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.1)`}

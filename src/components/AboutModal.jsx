@@ -1,4 +1,5 @@
 import { COLOR, FONT } from "../lib/tokens";
+import { ANIM, anim } from "../lib/animations";
 
 const SECTION_LABEL = {
   fontFamily: FONT.family.display,
@@ -33,7 +34,7 @@ export default function AboutModal({ onClose }) {
         position: "fixed", inset: 0, zIndex: 1000,
         background: COLOR.bg.overlay, backdropFilter: "blur(4px)",
         display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
-        animation: "fadeIn 0.2s ease",
+        animation: anim(ANIM.overlayMount),
       }}
     >
       <div
@@ -43,7 +44,7 @@ export default function AboutModal({ onClose }) {
           borderRadius: "14px", padding: "28px 28px 24px",
           maxWidth: "540px", width: "100%", maxHeight: "85vh",
           overflow: "auto", position: "relative",
-          animation: "scaleIn 0.25s ease",
+          animation: anim(ANIM.dialogMount),
         }}
       >
         {/* Header */}
@@ -53,7 +54,7 @@ export default function AboutModal({ onClose }) {
           </h2>
           <button
             onClick={onClose}
-            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px", transition: "color 0.2s" }}
+            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px", transition: anim(ANIM.hoverColor) }}
             onMouseEnter={e => e.target.style.color = COLOR.text.primary}
             onMouseLeave={e => e.target.style.color = COLOR.text.secondary}
           >×</button>

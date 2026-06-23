@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { COLOR, FONT } from "../lib/tokens";
+import { ANIM, anim } from "../lib/animations";
 import useBreakpoint from "../hooks/useBreakpoint";
 
 const fmtCAGR = v =>
@@ -13,7 +14,7 @@ function Chevron({ open }) {
     <svg
       width="11" height="11" viewBox="0 0 11 11" fill="none"
       style={{
-        transition: "transform 0.18s ease",
+        transition: anim(ANIM.iconRotate),
         transform: open ? "rotate(90deg)" : "rotate(0deg)",
         flexShrink: 0,
       }}
@@ -60,7 +61,7 @@ export default function CAGRTable({ compareMode, portfolios }) {
       border: `1px solid ${COLOR.border.card}`,
       borderRadius: isMobile ? "10px" : "14px",
       overflow: "hidden",
-      animation: "scaleIn 0.3s ease",
+      animation: anim(ANIM.cardMount),
     }}>
       {/* Header */}
       <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
@@ -96,7 +97,7 @@ export default function CAGRTable({ compareMode, portfolios }) {
           style={{
             position: "fixed", inset: 0, background: COLOR.bg.overlay, backdropFilter: "blur(4px)",
             display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "20px",
-            animation: "fadeIn 0.2s ease",
+            animation: anim(ANIM.overlayMount),
           }}
         >
           <div

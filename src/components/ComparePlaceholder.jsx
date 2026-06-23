@@ -1,6 +1,7 @@
 import useBreakpoint from "../hooks/useBreakpoint";
 import { ACCENT_B } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
+import { ANIM, anim } from "../lib/animations";
 
 export default function ComparePlaceholder({ onClick }) {
   const { isMobile } = useBreakpoint();
@@ -16,7 +17,7 @@ export default function ComparePlaceholder({ onClick }) {
         border: "1px dashed rgba(255,255,255,0.14)",
         borderRadius: "14px",
         cursor: "pointer",
-        transition: "background 0.2s, border-color 0.2s",
+        transition: anim(ANIM.allFast),
       }}
       onMouseEnter={e => { e.currentTarget.style.background = "rgba(56,189,248,0.04)"; e.currentTarget.style.borderColor = "rgba(56,189,248,0.30)"; }}
       onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)"; }}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { COLOR, FONT } from "../lib/tokens";
+import { ANIM, anim } from "../lib/animations";
 import FundSearchModal from "./FundSearchModal";
 
 export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loading, onSaveManualFund, failedFunds = [], label, accent, accentRgb, hasFunds }) {
@@ -50,7 +51,7 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
           <span style={{
             fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
             color: triggerHovered ? COLOR.text.primary : COLOR.text.secondary,
-            transition: "color 0.15s",
+            transition: anim(ANIM.hoverColor),
           }}>Lägg till fond</span>
         </div>
       )}

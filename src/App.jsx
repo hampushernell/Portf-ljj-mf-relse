@@ -18,6 +18,7 @@ import {
   FUND_COLORS, TIME_SPANS,
 } from "./lib/utils";
 import { COLOR, FONT } from "./lib/tokens";
+import { ANIM, anim } from "./lib/animations";
 import PortfolioPanel from "./components/PortfolioPanel";
 import ComparePlaceholder from "./components/ComparePlaceholder";
 import ReturnChart from "./components/ReturnChart";
@@ -228,7 +229,7 @@ export default function App() {
                     background: viewMode === value ? activeBg : "transparent",
                     border: "none", color: viewMode === value ? activeColor : COLOR.text.secondary,
                     padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
-                    fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600, transition: "all 0.2s",
+                    fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600, transition: anim(ANIM.tab),
                   }}>{label}</button>
                 ))}
               </div>

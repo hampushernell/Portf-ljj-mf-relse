@@ -2,6 +2,7 @@ import { useState } from "react";
 import { getWeightedFee, portfolioKrTotal } from "../lib/calculations";
 import { FUND_COLORS, ALLOC_SHADES_A, ALLOC_SHADES_B, formatKr, fmtFee } from "../lib/utils";
 import { COLOR, FONT, SHADOW } from "../lib/tokens";
+import { ANIM, anim } from "../lib/animations";
 import useBreakpoint from "../hooks/useBreakpoint";
 import FundRow from "./FundRow";
 import FundSearch from "./FundSearch";
@@ -38,7 +39,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
         flex: 1, minWidth: 0, background: "transparent",
         border: `1px solid ${accent}73`, borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px" : "20px",
         display: "flex", flexDirection: "column", gap: "12px",
-        animation: "fadeSlideUp 0.35s ease",
+        animation: anim(ANIM.panelMount),
         boxShadow: SHADOW.card,
         minHeight: funds.length === 0 && !isMobile ? "240px" : "auto",
       }}>
@@ -72,12 +73,12 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               border: "none", color: inputMode === m ? COLOR.text.primary : COLOR.text.secondary,
               padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
               fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
-              transition: "all 0.2s",
+              transition: anim(ANIM.tab),
             }}>{m === "pct" ? "% Procent" : "kr Kronor"}</button>
           ))}
         </div>
         {inputMode === "pct" && (
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", animation: "fadeIn 0.2s ease" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", animation: anim(ANIM.fadeMount) }}>
             <input type="number" value={manualAmount || ""}
               onChange={e => onManualAmountChange(parseFloat(e.target.value) || 0)}
               placeholder="Belopp"
@@ -124,7 +125,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               const pct = allocations[f.id]?.pct || 0;
               const color = viewMode === "compare" ? (isB ? ALLOC_SHADES_B : ALLOC_SHADES_A)[i % 10] : FUND_COLORS[i % FUND_COLORS.length];
               return pct > 0 ? (
-                <div key={f.id} style={{ width: `${pct}%`, background: color, transition: "width 0.3s ease" }} />
+                <div key={f.id} style={{ width: `${pct}%`, background: color, transition: anim(ANIM.barWidth) }} />
               ) : null;
             })}
           </div>
@@ -185,7 +186,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
             border: `1px solid rgba(${accentRgb}, 0.25)`, color: accent,
             borderRadius: "8px", padding: "9px 14px", cursor: "pointer",
             fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
-            transition: "background 0.2s", textAlign: "center",
+            transition: anim(ANIM.hover), textAlign: "center",
           }}
           onMouseEnter={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.15)`}
           onMouseLeave={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.07)`}
@@ -207,7 +208,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           style={{
             position: "fixed", inset: 0, background: COLOR.bg.overlay, backdropFilter: "blur(4px)",
             display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "20px",
-            animation: "fadeIn 0.2s ease",
+            animation: anim(ANIM.overlayMount),
           }}
         >
           <div

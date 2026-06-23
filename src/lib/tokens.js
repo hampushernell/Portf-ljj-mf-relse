@@ -115,13 +115,6 @@ export const SHADOW = {
   medium:    "0 3px 10px rgba(0,0,0,0.35)",
 };
 
-// ── Övergångar ────────────────────────────────────────────────────────────────
-export const TRANSITION = {
-  fast:  "0.2s",
-  base:  "0.3s",
-  slide: "0.22s ease",
-};
-
 // ── Spacing ───────────────────────────────────────────────────────────────────
 export const SPACE = {
   0.5: "2px",

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { portfolioReturn, computePortfolioContext } from "../lib/calculations";
 import { ACCENT_A, ACCENT_B, TIME_SPANS, formatKr, fmtPct } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
+import { ANIM, anim } from "../lib/animations";
 import SVGChart from "./SVGChart";
 import useBreakpoint from "../hooks/useBreakpoint";
 
@@ -23,7 +24,7 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
     computePortfolioContext({ latestNavTs, spanMonths, oldestTs, allSeries: [seriesA, seriesB] });
 
   return (
-    <div style={{ background: "transparent", border: `1px solid ${COLOR.border.card}`, borderRadius: isMobile ? "10px" : "14px", overflow: "hidden", animation: "scaleIn 0.3s ease" }}>
+    <div style={{ background: "transparent", border: `1px solid ${COLOR.border.card}`, borderRadius: isMobile ? "10px" : "14px", overflow: "hidden", animation: anim(ANIM.cardMount) }}>
       <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
         <div>
@@ -64,7 +65,7 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
                         color: selectedSpan === ts.label ? COLOR.text.primary : full ? COLOR.text.secondary : COLOR.warning,
                         padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
                         fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
-                        transition: "all 0.18s", whiteSpace: "nowrap",
+                        transition: anim(ANIM.tab), whiteSpace: "nowrap",
                         boxShadow: selectedSpan === ts.label ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
                       }}
                     >{ts.label}{!full ? " ⚠" : ""}</button>
@@ -81,7 +82,7 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
                 borderRadius: "6px", padding: "5px 9px", cursor: "pointer",
                 fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
                 color: copied ? COLOR.positive : COLOR.text.secondary,
-                transition: "all 0.18s", whiteSpace: "nowrap",
+                transition: anim(ANIM.tab), whiteSpace: "nowrap",
               }}
             >{copied ? "Kopierat!" : "⎘ Dela"}</button>
           </div>

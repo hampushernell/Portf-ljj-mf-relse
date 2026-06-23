@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { fmtFee } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
+import { ANIM, anim } from "../lib/animations";
 import ManualFundModal from "./ManualFundModal";
 
 const CATEGORY_ORDER = [
@@ -19,19 +20,19 @@ function CategoryRow({ cat, isSelected, onToggle }) {
         padding: "8px 12px", cursor: "pointer",
         display: "flex", justifyContent: "space-between", alignItems: "center",
         background: hovered ? "rgba(255,255,255,0.05)" : "transparent",
-        transition: "background 0.1s",
+        transition: anim(ANIM.hover),
       }}
     >
       <span style={{
         fontSize: "12px", fontFamily: FONT.family.display,
-        color: hovered ? "#f0ede8" : "#94a3b8", transition: "color 0.1s",
+        color: hovered ? "#f0ede8" : "#94a3b8", transition: anim(ANIM.hoverColor),
       }}>{cat}</span>
       <div style={{
         width: "14px", height: "14px", borderRadius: "3px", flexShrink: 0,
         background: isSelected ? "rgba(0,24,245,0.25)" : "transparent",
         border: isSelected ? "1px solid rgba(0,24,245,0.5)" : "1px solid rgba(255,255,255,0.2)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        transition: "all 0.12s",
+        transition: anim(ANIM.allFast),
       }}>
         {isSelected && (
           <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
@@ -103,7 +104,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
         position: "fixed", inset: 0, zIndex: 1000,
         background: "rgba(0,0,0,0.3)", backdropFilter: "blur(4px)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "20px", animation: "fadeIn 0.2s ease",
+        padding: "20px", animation: anim(ANIM.overlayMount),
       }}
     >
       <div
@@ -180,7 +181,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                   color: isFilterActive ? "#7b93ff" : "#5a6e8a",
                   fontFamily: FONT.family.display, fontWeight: 600,
                   fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.04em",
-                  transition: "all 0.15s",
+                  transition: anim(ANIM.allFast),
                 }}
               >
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
@@ -191,7 +192,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                 FILTRERA
                 <svg
                   width="8" height="5" viewBox="0 0 8 5" fill="none"
-                  style={{ flexShrink: 0, transform: filterOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}
+                  style={{ flexShrink: 0, transform: filterOpen ? "rotate(180deg)" : "none", transition: anim(ANIM.iconRotate) }}
                 >
                   <path d="M1 1L4 4L7 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -258,7 +259,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
               style={{
                 padding: "8px 10px", borderRadius: "9px",
                 display: "flex", alignItems: "center", gap: "8px",
-                cursor: "pointer", transition: "background 0.1s",
+                cursor: "pointer", transition: anim(ANIM.hover),
               }}
             >
               <div style={{
@@ -300,7 +301,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                     border: "1px solid transparent",
                     cursor: "pointer",
                     opacity: added ? 0.45 : 1,
-                    transition: "background 0.1s, border-color 0.1s",
+                    transition: anim(ANIM.allFast),
                   }}
                 >
                   <div style={{
@@ -363,7 +364,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
               background: "rgba(0,24,245,0.10)", border: "1px solid rgba(0,24,245,0.30)",
               color: "#7b93ff", fontSize: "12px", fontFamily: FONT.family.display,
               fontWeight: 600, padding: "8px 18px", borderRadius: "8px",
-              cursor: "pointer", transition: "background 0.15s",
+              cursor: "pointer", transition: anim(ANIM.hover),
             }}
           >Klar</button>
         </div>
