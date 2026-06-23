@@ -28,6 +28,14 @@ const STEPS = [
 ];
 
 const KEYFRAMES = `
+@keyframes slideInFromRight {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInFromLeft {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 @keyframes slideInLeft {
   from { opacity: 0; transform: translateX(-18px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -336,11 +344,13 @@ function ProgressBar({ onAdvance }) {
 
 export default function HowItWorksModal({ onClose }) {
   const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState("forward");
   const { isMobile } = useBreakpoint();
   const StepSVG = SVG_BY_STEP[step];
 
-  const goNext = () => setStep(s => Math.min(s + 1, STEPS.length - 1));
-  const goPrev = () => setStep(s => Math.max(s - 1, 0));
+  const goNext = () => { setDirection("forward");  setStep(s => Math.min(s + 1, STEPS.length - 1)); };
+  const goPrev = () => { setDirection("backward"); setStep(s => Math.max(s - 1, 0)); };
+  const goStep = (i) => { setDirection(i > step ? "forward" : "backward"); setStep(i); };
 
   const handleAdvance = () => {
     if (step < STEPS.length - 1) goNext();
@@ -385,52 +395,56 @@ export default function HowItWorksModal({ onClose }) {
           aria-label="Stäng"
         >×</button>
 
-        {/* Illustration */}
-        <div
-          key={step}
-          style={{
-            height: "188px",
-            background: COLOR.bg.base,
-            borderBottom: "1px solid rgba(255,255,255,0.07)",
-            overflow: "hidden",
-            flexShrink: 0,
-          }}
-        >
-          <StepSVG />
-        </div>
+        {/* Animated step wrapper — key remounts on step change, triggering slide */}
+        <div style={{ overflow: "hidden", position: "relative" }}>
+          <div
+            key={step}
+            style={{ animation: `${direction === "forward" ? "slideInFromRight" : "slideInFromLeft"} 0.3s ease` }}
+          >
+            {/* Illustration */}
+            <div style={{
+              height: "188px",
+              background: COLOR.bg.base,
+              borderBottom: "1px solid rgba(255,255,255,0.07)",
+              overflow: "hidden",
+            }}>
+              <StepSVG />
+            </div>
 
-        {/* Text section */}
-        <div style={{ padding: "20px 24px 16px" }}>
-          <p style={{
-            fontFamily: FONT.family.display,
-            fontSize: isMobile ? "9px" : "10px",
-            fontWeight: 700,
-            letterSpacing: "0.07em",
-            color: ACCENT_A_LIGHT,
-            margin: "0 0 6px",
-            textTransform: "uppercase",
-          }}>
-            {STEPS[step].num} / {String(STEPS.length).padStart(2, "0")}
-          </p>
-          <h2 style={{
-            fontFamily: FONT.family.display,
-            fontSize: isMobile ? "14px" : "16px",
-            fontWeight: 700,
-            color: COLOR.text.primary,
-            margin: "0 0 8px",
-            letterSpacing: "-0.01em",
-          }}>
-            {STEPS[step].title}
-          </h2>
-          <p style={{
-            fontFamily: FONT.family.body,
-            fontSize: "13px",
-            color: COLOR.text.muted,
-            lineHeight: 1.6,
-            margin: 0,
-          }}>
-            {STEPS[step].desc}
-          </p>
+            {/* Text section */}
+            <div style={{ padding: "20px 24px 16px" }}>
+              <p style={{
+                fontFamily: FONT.family.display,
+                fontSize: isMobile ? "9px" : "10px",
+                fontWeight: 700,
+                letterSpacing: "0.07em",
+                color: ACCENT_A_LIGHT,
+                margin: "0 0 6px",
+                textTransform: "uppercase",
+              }}>
+                {STEPS[step].num} / {String(STEPS.length).padStart(2, "0")}
+              </p>
+              <h2 style={{
+                fontFamily: FONT.family.display,
+                fontSize: isMobile ? "14px" : "16px",
+                fontWeight: 700,
+                color: COLOR.text.primary,
+                margin: "0 0 8px",
+                letterSpacing: "-0.01em",
+              }}>
+                {STEPS[step].title}
+              </h2>
+              <p style={{
+                fontFamily: FONT.family.body,
+                fontSize: "13px",
+                color: COLOR.text.muted,
+                lineHeight: 1.6,
+                margin: 0,
+              }}>
+                {STEPS[step].desc}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Footer */}
@@ -443,7 +457,7 @@ export default function HowItWorksModal({ onClose }) {
             {STEPS.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setStep(i)}
+                onClick={() => goStep(i)}
                 aria-label={`Steg ${i + 1}`}
                 style={{
                   width: i === step ? "18px" : "6px",
