@@ -25,7 +25,6 @@ import FundReturnChart from "./components/FundReturnChart";
 import CAGRTable from "./components/CAGRTable";
 import RiskPanel from "./components/RiskPanel";
 import AboutModal from "./components/AboutModal";
-import FutureValueCalculator from "./components/FutureValueCalculator";
 import { parseUrl, serializeUrl } from "./hooks/useUrlSync";
 
 export default function App() {
@@ -301,9 +300,6 @@ export default function App() {
               </div>
             )}
 
-            {compareMode && portfolioA.funds.length > 0 && portfolioB.funds.length > 0 && (
-              <FutureValueCalculator bundleA={bundleA} bundleB={bundleB} feeA={fee1} feeB={fee2} />
-            )}
 
           </>
         )}
