@@ -25,7 +25,6 @@ import FundReturnChart from "./components/FundReturnChart";
 import CAGRTable from "./components/CAGRTable";
 import RiskPanel from "./components/RiskPanel";
 import AboutModal from "./components/AboutModal";
-import HowItWorksModal from "./components/HowItWorksModal";
 import { parseUrl, serializeUrl } from "./hooks/useUrlSync";
 
 export default function App() {
@@ -36,8 +35,6 @@ export default function App() {
   const [viewMode, setViewMode] = useState("fund");
   const [span, setSpan]         = useState("Max");
   const [showAbout, setShowAbout] = useState(false);
-  const [showHowItWorks, setShowHowItWorks] = useState(false);
-  const [howItWorksSeen, setHowItWorksSeen] = useState(() => localStorage.getItem("howItWorksSeen") === "1");
 
   // URL sync — parsed once at mount; urlInitReady gates serialization until init is done.
   const [urlInitState] = useState(() => parseUrl());
@@ -179,47 +176,23 @@ export default function App() {
             <p style={{ margin: "3px 0 0", fontSize: "11px", color: COLOR.text.secondary }}>Jämför avgifter & historisk avkastning</p>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginLeft: "auto" }}>
-          <button
-            onClick={() => setShowHowItWorks(true)}
-            style={{
-              display: "flex", alignItems: "center", gap: "5px",
-              padding: "4px 10px",
-              fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600,
-              color: COLOR.text.secondary,
-              background: "transparent",
-              border: "1px solid rgba(255,255,255,0.13)",
-              borderRadius: "6px", cursor: "pointer",
-              opacity: howItWorksSeen ? 0.45 : 1,
-              transition: "opacity 0.3s, border-color 0.18s",
-            }}
-            onMouseOver={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.28)"}
-            onMouseOut={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.13)"}
-          >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-              <circle cx="6" cy="6" r="5.25" stroke="currentColor" strokeWidth="1.2"/>
-              <path d="M6 8.5V6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-              <circle cx="6" cy="4" r="0.6" fill="currentColor"/>
-            </svg>
-            <span style={{ display: isMobile ? "none" : "inline" }}>Hur fungerar det?</span>
-          </button>
-          <span
-            onClick={() => setShowAbout(true)}
-            style={{
-              display: "flex", alignItems: "center", gap: "7px",
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.10)",
-              borderRadius: "20px", padding: "5px 11px 5px 12px", cursor: "pointer",
-            }}
-          >
-            <span style={{ fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600, color: COLOR.text.muted }}>Om</span>
-            <span style={{ width: "1px", height: "11px", background: "rgba(255,255,255,0.15)" }} />
-            <svg width="24" height="18" viewBox="0 0 44 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <rect x="0" y="0" width="16" height="40" rx="5" fill="#5a6e8a"/>
-              <rect x="20" y="0" width="24" height="40" rx="6" fill="#94a3b8"/>
-            </svg>
-          </span>
-        </div>
+        <span
+          onClick={() => setShowAbout(true)}
+          style={{
+            display: "flex", alignItems: "center", gap: "7px",
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: "20px", padding: "5px 11px 5px 12px", cursor: "pointer",
+            marginLeft: "auto",
+          }}
+        >
+          <span style={{ fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600, color: COLOR.text.muted }}>Om</span>
+          <span style={{ width: "1px", height: "11px", background: "rgba(255,255,255,0.15)" }} />
+          <svg width="24" height="18" viewBox="0 0 44 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="0" y="0" width="16" height="40" rx="5" fill="#5a6e8a"/>
+            <rect x="20" y="0" width="24" height="40" rx="6" fill="#94a3b8"/>
+          </svg>
+        </span>
       </div>
 
       <div style={{ padding: isMobile ? "12px 14px" : "22px 36px", display: "flex", flexDirection: "column", gap: isMobile ? "12px" : "18px" }}>
@@ -336,15 +309,6 @@ export default function App() {
         </div>
       </div>
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
-      {showHowItWorks && (
-        <HowItWorksModal
-          onClose={() => {
-            setShowHowItWorks(false);
-            localStorage.setItem("howItWorksSeen", "1");
-            setHowItWorksSeen(true);
-          }}
-        />
-      )}
     </div>
   );
 }
