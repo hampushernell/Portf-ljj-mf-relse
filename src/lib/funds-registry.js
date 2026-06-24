@@ -3,7 +3,7 @@ export const FUNDS_REGISTRY = [
   { id: 1,  ticker: "0P0001ECQR.ST", isin: "SE0011527613", name: "Avanza Global",                      category: "Globalfond",        fallbackFee: 0.08 },
   { id: 2,  ticker: "0P0001CKSU.ST", isin: "FI4000261326", name: "Nordea Global Enhanced Growth",       category: "Globalfond",        fallbackFee: 0.60 },
   { id: 3,  ticker: "0P0000YVZ3.ST", isin: "SE0005188836", name: "Länsförsäkringar Global Index",       category: "Globalfond",        fallbackFee: 0.20 },
-  { id: 4,  ticker: "0P0000XAIN.ST", isin: "FI4000046685", name: "Nordea Global Index Select",          category: "Globalfond",        fallbackFee: 0.40 },
+  { id: 4,  ticker: "0P0000XAIN.ST", isin: "FI4000046685", name: "Nordea Global Index Select",          category: "Globalfond",        fallbackFee: 0.19 },
   { id: 5,  ticker: "0P0001F3XN.ST", isin: "SE0011309707", name: "Handelsbanken Global Index",          category: "Globalfond",        fallbackFee: 0.41 },
   { id: 6,  ticker: "0P0001Q6FC.ST", isin: "NO0010827280", name: "DNB Global Indeks S",                 category: "Globalfond",        fallbackFee: 0.20 },
   { id: 7,  ticker: "0P00000LST.ST", isin: "SE0000671919", name: "Storebrand Global All Countries",     category: "Globalfond",        fallbackFee: 0.31 },
@@ -59,7 +59,7 @@ export const FUNDS_REGISTRY = [
   { id: 43, ticker: "0P00000LDD.ST", isin: "SE0000542979", name: "Swedbank Robur Globalfond A",         category: "Globalfond",        fallbackFee: 1.29 },
   { id: 44, ticker: "0P0000YYOP.ST", isin: "FI4000064076", name: "Nordea Global Dividend A",            category: "Globalfond",        fallbackFee: 0.80 }, // FI-fond, ej FI-täckning
   // Sverigefonder (tillägg)
-  { id: 45, ticker: "0P0000HNUF.ST", isin: "SE0002591016", name: "Nordea Sverige Passiv",               category: "Sverigefond",       fallbackFee: 0.20 },
+  { id: 45, ticker: "0P0000HNUF.ST", isin: "SE0002591016", name: "Nordea Sverige Passiv",               category: "Sverigefond",       fallbackFee: 0.19 },
   // USA-fonder (tillägg)
   { id: 46, ticker: "0P00000FYR.ST", isin: "SE0000594111", name: "SPP Aktiefond USA",                   category: "USA-fond",          fallbackFee: 0.20 },
   // Europafonder (tillägg)
@@ -67,7 +67,7 @@ export const FUNDS_REGISTRY = [
   // Temafonder (tillägg)
   { id: 48, ticker: "0P00014CZ3.ST", isin: "SE0005965662", name: "Handelsbanken Hållbar Energi A1",     category: "Temafond",          fallbackFee: 1.50 },
   // Tillväxtmarknadsfonder (tillägg)
-  { id: 49, ticker: "0P0001E1JQ.ST", isin: "LU1648400262", name: "Nordea 2 BetaPlus Emerging Markets",  category: "Tillväxtmarknadsfond", fallbackFee: 0.75 }, // LU-fond, ej FI-täckning
+  { id: 49, ticker: "0P0001E1JQ.ST", isin: "LU1648400262", name: "Emerging Markets Enhanced BP",        category: "Tillväxtmarknadsfond", fallbackFee: 0.65 }, // LU-fond, ej FI-täckning
   // Räntefonder (tillägg)
   { id: 50, ticker: "0P0000NRW6.ST", isin: "FI4000010525", name: "Nordea Stratega Ränta",               category: "Räntefond",         fallbackFee: 0.65 }, // FI-fond, ej FI-täckning
 ];
