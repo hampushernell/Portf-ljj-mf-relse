@@ -117,9 +117,9 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
         onTouchEnd={() => setTooltip(null)}>
 
         {yTicks.map(({ y }, i) => (
-          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
+          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="1"/>
         ))}
-        <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="5 4"/>
+        <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth="1" strokeDasharray="5 4"/>
         {lines.map(l => {
           if (l.series.length <= 1) return null;
           return (

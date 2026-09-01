@@ -99,7 +99,7 @@ function YearStepper({ years, setYears }) {
   const btnStyle = {
     width: "44px",
     height: "38px",
-    background: "rgba(255,255,255,0.05)",
+    background: COLOR.surface.tab,
     border: "none",
     color: "#94a3b8",
     cursor: "pointer",
@@ -117,11 +117,11 @@ function YearStepper({ years, setYears }) {
       display: "flex",
       height: "38px",
       borderRadius: "8px",
-      border: "1px solid rgba(255,255,255,0.11)",
+      border: `1px solid ${COLOR.border.muted}`,
       overflow: "hidden",
     }}>
       <button
-        style={{ ...btnStyle, borderRight: "1px solid rgba(255,255,255,0.08)" }}
+        style={{ ...btnStyle, borderRight: `1px solid ${COLOR.border.muted}` }}
         onMouseDown={() => startHold(-1)}
         onMouseUp={stopHold}
         onMouseLeave={stopHold}
@@ -132,7 +132,7 @@ function YearStepper({ years, setYears }) {
         alignItems: "center",
         justifyContent: "center",
         gap: "4px",
-        background: "rgba(255,255,255,0.06)",
+        background: COLOR.surface.input,
       }}>
         <input
           type="number"
@@ -156,7 +156,7 @@ function YearStepper({ years, setYears }) {
         <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: COLOR.text.secondary, flexShrink: 0 }}>år</span>
       </div>
       <button
-        style={{ ...btnStyle, borderLeft: "1px solid rgba(255,255,255,0.08)" }}
+        style={{ ...btnStyle, borderLeft: `1px solid ${COLOR.border.muted}` }}
         onMouseDown={() => startHold(1)}
         onMouseUp={stopHold}
         onMouseLeave={stopHold}
@@ -206,8 +206,8 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
   const diff       = Math.abs(netFV_A - netFV_B);
 
   const inputStyle = {
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.11)",
+    background: COLOR.surface.input,
+    border: `1px solid ${COLOR.border.muted}`,
     borderRadius: "8px",
     color: COLOR.text.primary,
     fontFamily: FONT.family.display,

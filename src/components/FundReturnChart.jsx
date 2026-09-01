@@ -61,8 +61,8 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
               onClick={handleCopy}
               title="Kopiera länk"
               style={{
-                background: copied ? "rgba(110,231,183,0.10)" : "rgba(255,255,255,0.04)",
-                border: `1px solid ${copied ? "rgba(110,231,183,0.25)" : "rgba(255,255,255,0.10)"}`,
+                background: copied ? "rgba(110,231,183,0.10)" : COLOR.surface[1],
+                border: `1px solid ${copied ? "rgba(110,231,183,0.25)" : COLOR.border.card}`,
                 borderRadius: "6px", padding: "5px 9px", cursor: "pointer",
                 fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
                 color: copied ? COLOR.positive : COLOR.text.secondary,

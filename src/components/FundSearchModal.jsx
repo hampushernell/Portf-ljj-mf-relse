@@ -19,7 +19,7 @@ function CategoryRow({ cat, isSelected, onToggle }) {
       style={{
         padding: "8px 12px", cursor: "pointer",
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        background: hovered ? "rgba(255,255,255,0.05)" : "transparent",
+        background: hovered ? COLOR.surface.tab : "transparent",
         transition: anim(ANIM.hover),
       }}
     >
@@ -30,7 +30,7 @@ function CategoryRow({ cat, isSelected, onToggle }) {
       <div style={{
         width: "14px", height: "14px", borderRadius: "3px", flexShrink: 0,
         background: isSelected ? "rgba(0,24,245,0.25)" : "transparent",
-        border: isSelected ? "1px solid rgba(0,24,245,0.5)" : "1px solid rgba(255,255,255,0.2)",
+        border: isSelected ? "1px solid rgba(0,24,245,0.5)" : `1px solid ${COLOR.border.circle}`,
         display: "flex", alignItems: "center", justifyContent: "center",
         transition: anim(ANIM.allFast),
       }}>
@@ -111,14 +111,14 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
         onClick={e => e.stopPropagation()}
         style={{
           background: COLOR.bg.elevated,
-          border: "1px solid rgba(255,255,255,0.13)",
+          border: `1px solid ${COLOR.border.strong}`,
           borderRadius: "14px", width: "100%", maxWidth: "560px",
         }}
       >
         {/* Header */}
         <div style={{
           padding: "18px 20px 14px",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          borderBottom: `1px solid ${COLOR.border.subtle}`,
           display: "flex", justifyContent: "space-between", alignItems: "flex-start",
         }}>
           <div>
@@ -136,7 +136,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
             onClick={onClose}
             style={{
               width: "28px", height: "28px", borderRadius: "50%", flexShrink: 0,
-              background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+              background: COLOR.surface.input, border: `1px solid ${COLOR.border.card}`,
               color: COLOR.text.secondary, cursor: "pointer", display: "flex",
               alignItems: "center", justifyContent: "center",
               fontSize: "18px", lineHeight: 1, fontFamily: FONT.family.display, padding: 0,
@@ -177,7 +177,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                   background: isFilterActive ? "rgba(0,24,245,0.12)" : "transparent",
                   border: isFilterActive
                     ? "1px solid rgba(0,24,245,0.35)"
-                    : "1px solid rgba(255,255,255,0.10)",
+                    : `1px solid ${COLOR.border.card}`,
                   color: isFilterActive ? "#7b93ff" : COLOR.text.secondary,
                   fontFamily: FONT.family.display, fontWeight: 600,
                   fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.04em",
@@ -200,7 +200,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
               {filterOpen && (
                 <div style={{
                   position: "absolute", top: "calc(100% + 4px)", left: 0,
-                  background: "#0d1120", border: "1px solid rgba(255,255,255,0.13)",
+                  background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.strong}`,
                   borderRadius: "10px", zIndex: 10,
                   boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
                   minWidth: "190px", overflow: "hidden",
@@ -254,7 +254,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
           }}>
             <div
               onClick={() => setShowManualModal(true)}
-              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.055)"}
+              onMouseEnter={e => e.currentTarget.style.background = COLOR.surface.hover}
               onMouseLeave={e => e.currentTarget.style.background = "transparent"}
               style={{
                 padding: "8px 10px", borderRadius: "9px",
@@ -284,8 +284,8 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                     e.currentTarget.style.background = "rgba(248,113,113,0.07)";
                     e.currentTarget.style.borderColor = "rgba(248,113,113,0.15)";
                   } : e => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.055)";
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
+                    e.currentTarget.style.background = COLOR.surface.hover;
+                    e.currentTarget.style.borderColor = COLOR.border.subtle;
                   }}
                   onMouseLeave={added ? e => {
                     setHoveredId(null);
@@ -328,8 +328,8 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                   </div>
                   <div style={{
                     width: "16px", height: "16px", borderRadius: "50%", flexShrink: 0,
-                    background: added ? "rgba(110,231,183,0.15)" : "rgba(255,255,255,0.04)",
-                    border: `1px solid ${added ? "rgba(110,231,183,0.3)" : "rgba(255,255,255,0.12)"}`,
+                    background: added ? "rgba(110,231,183,0.15)" : COLOR.surface[1],
+                    border: `1px solid ${added ? "rgba(110,231,183,0.3)" : COLOR.border.default}`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
                     {added && (
@@ -350,7 +350,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
         {/* Footer */}
         <div style={{
           padding: "12px 20px",
-          borderTop: "1px solid rgba(255,255,255,0.07)",
+          borderTop: `1px solid ${COLOR.border.subtle}`,
           display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
           <span style={{ fontSize: "11px", color: COLOR.text.secondary, fontFamily: FONT.family.display }}>

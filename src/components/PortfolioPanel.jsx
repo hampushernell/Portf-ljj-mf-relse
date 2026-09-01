@@ -53,7 +53,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           <button onClick={onHide} style={{
             marginLeft: "auto", display: "flex", alignItems: "center", gap: "4px",
             fontSize: "11px", color: COLOR.text.secondary,
-            background: "rgba(255,255,255,0.06)", border: `1px solid ${COLOR.border.subtle}`,
+            background: COLOR.surface.input, border: `1px solid ${COLOR.border.subtle}`,
             borderRadius: "6px", padding: "4px 9px", cursor: "pointer",
           }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>

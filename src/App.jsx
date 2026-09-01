@@ -181,8 +181,8 @@ export default function App() {
           onClick={() => setShowAbout(true)}
           style={{
             display: "flex", alignItems: "center", gap: "7px",
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.10)",
+            background: COLOR.surface.tab,
+            border: `1px solid ${COLOR.border.card}`,
             borderRadius: "20px", padding: "5px 11px 5px 12px", cursor: "pointer",
             marginLeft: "auto",
           }}

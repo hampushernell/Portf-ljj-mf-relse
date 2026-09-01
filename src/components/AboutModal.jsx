@@ -22,7 +22,7 @@ const BODY = {
 
 const DIVIDER = {
   border: "none",
-  borderTop: "1px solid rgba(255,255,255,0.07)",
+  borderTop: `1px solid ${COLOR.border.subtle}`,
   margin: "20px 0",
 };
 

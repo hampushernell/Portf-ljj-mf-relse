@@ -53,14 +53,14 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <div style={{ overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch" }}>
-              <div style={{ display: "flex", gap: "3px", background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
+              <div style={{ display: "flex", gap: "3px", background: COLOR.surface[1], borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
                 {TIME_SPANS.map(ts => {
                   const full = spanHasFullData(ts);
                   return (
                     <button key={ts.label} onClick={() => onSpanChange(ts.label)}
                       title={!full ? "Ofullständig data – Yahoo Finance saknar historik för vald period" : undefined}
                       style={{
-                        background: selectedSpan === ts.label ? "rgba(255,255,255,0.12)" : "transparent",
+                        background: selectedSpan === ts.label ? COLOR.border.default : "transparent",
                         border: "none",
                         color: selectedSpan === ts.label ? COLOR.text.primary : full ? COLOR.text.secondary : COLOR.warning,
                         padding: "5px 10px", borderRadius: "6px", cursor: "pointer",
@@ -77,8 +77,8 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
               onClick={handleCopy}
               title="Kopiera länk"
               style={{
-                background: copied ? "rgba(110,231,183,0.10)" : "rgba(255,255,255,0.04)",
-                border: `1px solid ${copied ? "rgba(110,231,183,0.25)" : "rgba(255,255,255,0.10)"}`,
+                background: copied ? "rgba(110,231,183,0.10)" : COLOR.surface[1],
+                border: `1px solid ${copied ? "rgba(110,231,183,0.25)" : COLOR.border.card}`,
                 borderRadius: "6px", padding: "5px 9px", cursor: "pointer",
                 fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
                 color: copied ? COLOR.positive : COLOR.text.secondary,

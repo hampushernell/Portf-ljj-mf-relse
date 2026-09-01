@@ -13,7 +13,7 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
         <div
           onClick={() => setIsOpen(true)}
           style={{
-            border: "1px solid rgba(255,255,255,0.12)",
+            border: `1px solid ${COLOR.border.default}`,
             borderRadius: "9px", padding: "20px 14px", background: "transparent",
             display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
             cursor: "pointer",
@@ -36,7 +36,7 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
           onMouseEnter={() => setTriggerHovered(true)}
           onMouseLeave={() => setTriggerHovered(false)}
           style={{
-            border: "1px solid rgba(255,255,255,0.12)",
+            border: `1px solid ${COLOR.border.default}`,
             borderRadius: "9px", padding: "10px 12px",
             display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
             cursor: "pointer", minHeight: "60px", boxSizing: "border-box",
