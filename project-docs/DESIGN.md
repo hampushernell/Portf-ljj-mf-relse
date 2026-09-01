@@ -18,30 +18,30 @@ colors:
 typography:
   display:
     fontFamily: "'Syne', sans-serif"
-    fontSize: "20px"
+    fontSize: "22px"
     fontWeight: 800
     lineHeight: 1.1
     letterSpacing: "-0.02em"
   headline:
     fontFamily: "'Syne', sans-serif"
-    fontSize: "16px"
+    fontSize: "17px"
     fontWeight: 700
     lineHeight: 1.3
   title:
     fontFamily: "'Syne', sans-serif"
-    fontSize: "13px"
+    fontSize: "14px"
     fontWeight: 600
     lineHeight: 1.4
   body:
     fontFamily: "'DM Sans', sans-serif"
-    fontSize: "13px"
+    fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.6
   label:
     fontFamily: "'Syne', sans-serif"
-    fontSize: "9px"
+    fontSize: "11px"
     fontWeight: 600
-    letterSpacing: "0.05em"
+    letterSpacing: "0.04em"
 rounded:
   sm: "4px"
   md: "8px"
@@ -165,16 +165,18 @@ A near-monochromatic dark field interrupted only by two precise accent signals.
 **Character:** Syne's slightly angular letterforms read as deliberate and confident without tipping into aggressive. DM Sans is warm and legible at small sizes — the two together read as "a sharp tool built by someone who cares about the details."
 
 ### Hierarchy
-- **Display** (800, 20px, line-height 1.1, tracking -0.02em): Page title "MinPortfölj". One instance per page.
-- **Headline** (700, 16px, line-height 1.3): Panel headers ("Portfölj A", "Historisk avkastning"). Section anchors.
-- **Title** (600–700, 13px, line-height 1.4): Fund names in rows, modal section headers, stat values. The workhorse of UI text.
-- **Body** (DM Sans 400, 13px, line-height 1.6): Modal explanatory copy. Never used for UI chrome. Max line length 65ch.
-- **Label** (600, 9px, uppercase, tracking 0.05–0.06em): All data labels ("Avgift/år", "Andel %", section labels in summaries). Syne uppercase at 9px with wide tracking functions as a unit marker, not a heading.
+- **Display** (800, 22px, line-height 1.1, tracking -0.02em): Page title "MinPortfölj". One instance per page.
+- **Headline** (700, 17px, line-height 1.3): Panel headers ("Portfölj A", "Historisk avkastning"). Section anchors.
+- **Title** (600–700, 14px, line-height 1.4): Fund names in rows, modal section headers, stat values. The workhorse of UI text.
+- **Body** (DM Sans 400, 14px, line-height 1.6): Modal explanatory copy. Never used for UI chrome. Max line length 65ch.
+- **Label** (600, 11px, uppercase, tracking 0.04em): All data labels ("Avgift/år", "Andel %", section labels in summaries). Syne uppercase at 11px with wide tracking functions as a unit marker, not a heading.
 
 ### Named Rules
 **The Chrome/Content Split Rule.** Syne carries all interface chrome: buttons, tabs, labels, headings, fund names, badges, tooltips. DM Sans carries all explanatory prose: modal body text, fee source descriptions. Swapping this — DM Sans on a tab label, Syne on a paragraph — breaks the system's voice.
 
-**The Label Contract.** Every data field is preceded by an uppercase Syne label at 9px with letter-spacing 0.05em and color Steel Slate. The label names the unit; the value below it names the number. This pattern is non-negotiable — unlabelled data fields are prohibited.
+**The Label Contract.** Every data field is preceded by an uppercase Syne label at 11px with letter-spacing 0.04em and color Steel Slate. The label names the unit; the value below it names the number. This pattern is non-negotiable — unlabelled data fields are prohibited.
+
+**The Token-Only Size Rule.** Hårdkodade fontSize-värden är förbjudna. Alla storlekar kommer från FONT.size. Ikoner och glyfer använder FONT.icon och ingår inte i typskalan.
 
 ## 4. Elevation
 
