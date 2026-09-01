@@ -43,7 +43,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
 
   if (!portfolios?.length) return null;
 
-  const colW = isMobile ? "76px" : "88px";
+  const colW = "88px";
   const grid = `1fr ${colW} ${colW}`;
   const pH = isMobile ? "16px" : "24px";
 

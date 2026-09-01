@@ -32,7 +32,7 @@ export default function CAGRTable({ compareMode, portfolios }) {
 
   if (!portfolios?.length) return null;
 
-  const colW = isMobile ? "52px" : "64px";
+  const colW = "64px";
   const grid = `1fr ${colW} ${colW}`;
   const pH = isMobile ? "16px" : "24px";
 
