@@ -28,7 +28,7 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
       <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
         <div>
-          <h3 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
+          <h3 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
           <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
             {seriesA.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

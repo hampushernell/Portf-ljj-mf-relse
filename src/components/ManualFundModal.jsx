@@ -23,7 +23,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
     padding: "8px 12px", outline: "none", fontFamily: FONT.family.display,
   });
   const label = (txt) => (
-    <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: FONT.family.display, marginBottom: "5px" }}>{txt}</div>
+    <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.04em", fontFamily: FONT.family.display, marginBottom: "5px" }}>{txt}</div>
   );
 
   const handleSubmit = () => {
@@ -56,7 +56,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
         overflow: "auto", animation: anim(ANIM.dialogMount),
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-          <h2 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
+          <h2 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3, color: COLOR.text.primary, margin: 0 }}>
             {initialData ? "Redigera fond" : "Lägg till fond manuellt"}
           </h2>
           <button onClick={onClose} style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: FONT.icon.md, lineHeight: 1, padding: "0 4px" }}>×</button>

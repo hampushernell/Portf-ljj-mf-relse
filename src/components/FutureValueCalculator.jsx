@@ -21,7 +21,7 @@ const LABEL = {
   fontFamily: FONT.family.display,
   fontSize: FONT.size.xxs,
   fontWeight: 600,
-  letterSpacing: "0.05em",
+  letterSpacing: "0.04em",
   textTransform: "uppercase",
   color: COLOR.text.secondary,
   marginBottom: "5px",
@@ -42,7 +42,7 @@ function PortfolioCard({ label, accent, netCAGR, fee, netFV, grossFV, feeCost, i
       <div style={{ marginBottom: "16px" }}>
         <div style={{
           fontFamily: FONT.family.display, fontSize: FONT.size.sm, fontWeight: 700,
-          letterSpacing: "0.05em", textTransform: "uppercase",
+          letterSpacing: "0.04em", textTransform: "uppercase",
           color: accent, marginBottom: "4px",
         }}>{label}</div>
         <div style={{ fontFamily: FONT.family.body, fontSize: FONT.size.sm, color: COLOR.text.muted }}>
@@ -53,7 +53,7 @@ function PortfolioCard({ label, accent, netCAGR, fee, netFV, grossFV, feeCost, i
       <div style={{ marginBottom: "16px" }}>
         <span style={LABEL}>Slutvärde netto</span>
         <div style={{
-          fontFamily: FONT.family.display, fontSize: FONT.size["5xl"], fontWeight: 700,
+          fontFamily: FONT.family.display, fontSize: FONT.size["5xl"], fontWeight: 700, lineHeight: 1.1,
           color: COLOR.text.primary, letterSpacing: "-0.01em",
         }}>{fmtKr(netFV)}</div>
       </div>
@@ -230,7 +230,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
         <div>
-          <h3 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, margin: "0 0 4px" }}>
+          <h3 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3, color: COLOR.text.primary, margin: "0 0 4px" }}>
             Spar- och avgiftskalkylator
           </h3>
           <p style={{ fontFamily: FONT.family.body, fontSize: FONT.size.sm, color: COLOR.text.secondary, margin: 0 }}>
@@ -281,7 +281,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
       `}</style>
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "22px", alignItems: "flex-end" }}>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
-          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Engångsbelopp</span>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Engångsbelopp</span>
           <div style={{ ...inputStyle, display: "flex", alignItems: "center", padding: 0 }}>
             <input
               type="number"
@@ -296,7 +296,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
           </div>
         </div>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
-          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Månadssparande</span>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Månadssparande</span>
           <div style={{ ...inputStyle, display: "flex", alignItems: "center", padding: 0 }}>
             <input
               type="number"
@@ -311,7 +311,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
           </div>
         </div>
         <div style={{ flex: "1 1 140px", minWidth: "120px" }}>
-          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Tidshorisont</span>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Tidshorisont</span>
           <YearStepper years={years} setYears={setYears} />
         </div>
       </div>

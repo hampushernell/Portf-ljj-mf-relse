@@ -96,8 +96,8 @@ export const FONT = {
 
   tracking: {
     tight: "-0.02em",
-    wide:  "0.05em",
-    wider: "0.06em",
+    wide:  "0.04em",
+    wider: "0.05em",
   },
 };
 

@@ -124,7 +124,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
           <div>
             <div style={{
               fontSize: FONT.size.xxs, color: COLOR.text.secondary, fontFamily: FONT.family.display,
-              fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em",
+              fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em",
               marginBottom: "4px",
             }}>{label}</div>
             <div style={{

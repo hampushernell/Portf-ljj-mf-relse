@@ -25,7 +25,7 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
       <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
         <div>
-          <h3 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
+          <h3 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
           {fundLines.length > 1 && portfolioSeries.length > 0 && (
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke="rgba(255,255,255,0.85)" strokeWidth="2.5" strokeLinecap="round"/></svg>
@@ -123,7 +123,7 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
           { lbl: "Investerat belopp", val: totalA > 0 ? formatKr(totalA) : "–" },
         ].map(({ lbl, val, col, sub }) => (
           <div key={lbl} style={{ background: COLOR.surface[1], borderRadius: "10px", padding: "12px 16px" }}>
-            <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px", fontFamily: FONT.family.display }}>{lbl}</div>
+            <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px", fontFamily: FONT.family.display }}>{lbl}</div>
             <div style={{ fontFamily: FONT.family.display, fontSize: FONT.size["2xl"], fontWeight: 700, color: col || COLOR.text.primary }}>{val}</div>
             {sub && <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, marginTop: "2px" }}>{sub}</div>}
           </div>

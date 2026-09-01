@@ -173,7 +173,7 @@ export default function App() {
       <div style={{ padding: isMobile ? "12px 16px 10px" : "26px 36px 18px", borderBottom: `1px solid ${COLOR.border.subtle}`, display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
           <div>
-            <h1 style={{ fontFamily: FONT.family.display, fontSize: FONT.size["4xl"], fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: COLOR.text.primary }}>MinPortfölj</h1>
+            <h1 style={{ fontFamily: FONT.family.display, fontSize: FONT.size["4xl"], fontWeight: 800, lineHeight: 1.1, margin: 0, letterSpacing: "-0.02em", color: COLOR.text.primary }}>MinPortfölj</h1>
             <p style={{ margin: "3px 0 0", fontSize: FONT.size.sm, color: COLOR.text.secondary }}>Jämför avgifter & historisk avkastning</p>
           </div>
         </div>

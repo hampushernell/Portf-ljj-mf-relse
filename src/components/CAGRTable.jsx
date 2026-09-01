@@ -67,7 +67,7 @@ export default function CAGRTable({ compareMode, portfolios }) {
       <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <div>
           <h3 style={{
-            fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700,
+            fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3,
             color: COLOR.text.primary, margin: "0 0 4px",
           }}>
             Historisk snittavkastning (CAGR)
@@ -108,7 +108,7 @@ export default function CAGRTable({ compareMode, portfolios }) {
               fontFamily: FONT.family.display,
             }}
           >
-            <div style={{ fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, marginBottom: "12px" }}>Vad är CAGR?</div>
+            <div style={{ fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3, color: COLOR.text.primary, marginBottom: "12px" }}>Vad är CAGR?</div>
             <p style={{ fontSize: FONT.size.base, fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: "0 0 16px 0" }}>
               CAGR visar den genomsnittliga årliga avkastningen under en vald period. Beräkningen baseras på dagliga kurser med 100 som startvärde vid periodens början. Om en investering vuxit från 100 kr till 150 kr på 5 år motsvarar det ~8,4% per år i genomsnitt.
             </p>
@@ -129,7 +129,7 @@ export default function CAGRTable({ compareMode, portfolios }) {
         {["FOND", "3 ÅR", "MAX"].map((lbl, i) => (
           <span key={lbl} style={{
             fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600,
-            color: COLOR.text.secondary, letterSpacing: "0.05em",
+            color: COLOR.text.secondary, letterSpacing: "0.04em",
             textTransform: "uppercase",
             textAlign: i === 0 ? "left" : "right",
           }}>{lbl}</span>

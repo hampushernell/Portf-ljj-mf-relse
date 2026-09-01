@@ -5,7 +5,7 @@ const SECTION_LABEL = {
   fontFamily: FONT.family.display,
   fontSize: FONT.size.xxs,
   fontWeight: 600,
-  letterSpacing: "0.05em",
+  letterSpacing: "0.04em",
   textTransform: "uppercase",
   color: COLOR.text.secondary,
   marginBottom: "6px",
@@ -49,7 +49,7 @@ export default function AboutModal({ onClose }) {
       >
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "22px" }}>
-          <h2 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
+          <h2 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3, color: COLOR.text.primary, margin: 0 }}>
             Om minportfölj.se
           </h2>
           <button

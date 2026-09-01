@@ -101,7 +101,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
       <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <div>
           <h3 style={{
-            fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700,
+            fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3,
             color: COLOR.text.primary, margin: "0 0 4px",
           }}>
             Riskanalys
@@ -142,7 +142,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
               fontFamily: FONT.family.display,
             }}
           >
-            <div style={{ fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, marginBottom: "12px" }}>Riskanalys</div>
+            <div style={{ fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3, color: COLOR.text.primary, marginBottom: "12px" }}>Riskanalys</div>
             <p style={{ fontSize: FONT.size.base, fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: "0 0 16px 0" }}>
               <strong style={{ color: COLOR.text.primary }}>Max nedgång</strong> är den största förlusten från en topp till en botten under portföljen/fondens maximala tidsperiod. Datum anger när botten nåddes.
             </p>
@@ -163,7 +163,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
         {["FOND", "MAX NEDGÅNG", "VOLATILITET"].map((lbl, i) => (
           <span key={lbl} style={{
             fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600,
-            color: COLOR.text.secondary, letterSpacing: "0.05em",
+            color: COLOR.text.secondary, letterSpacing: "0.04em",
             textTransform: "uppercase",
             textAlign: i === 0 ? "left" : "right",
           }}>{lbl}</span>
