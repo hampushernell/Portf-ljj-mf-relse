@@ -54,7 +54,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
     <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: color, flexShrink: 0 }} />
   );
 
-  const DdCell = ({ dd, size = "13px", muted = false }) => {
+  const DdCell = ({ dd, size = FONT.size.base, muted = false }) => {
     const { drawdown, timestamp } = dd ?? {};
     if (drawdown == null) {
       return (
@@ -70,7 +70,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
           {fmtDd(drawdown)}
         </span>
         {dateStr && (
-          <span style={{ fontSize: "10px", color: COLOR.text.muted, fontFamily: FONT.family.display, marginTop: "1px" }}>
+          <span style={{ fontSize: FONT.size.xs, color: COLOR.text.muted, fontFamily: FONT.family.display, marginTop: "1px" }}>
             {dateStr}
           </span>
         )}
@@ -78,7 +78,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
     );
   };
 
-  const VolCell = ({ vol, size = "13px", muted = false }) => (
+  const VolCell = ({ vol, size = FONT.size.base, muted = false }) => (
     <span style={{
       fontFamily: FONT.family.display, fontSize: size,
       fontWeight: vol != null ? 600 : 400,
@@ -101,13 +101,13 @@ export default function RiskPanel({ compareMode, portfolios }) {
       <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <div>
           <h3 style={{
-            fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700,
+            fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700,
             color: COLOR.text.primary, margin: "0 0 4px",
           }}>
             Riskanalys
           </h3>
           <p style={{
-            fontFamily: FONT.family.body, fontSize: "11px",
+            fontFamily: FONT.family.body, fontSize: FONT.size.sm,
             color: COLOR.text.secondary, margin: 0,
           }}>
             Max nedgång &amp; volatilitet
@@ -119,7 +119,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
             display: "inline-flex", alignItems: "center", justifyContent: "center",
             width: "15px", height: "15px", borderRadius: "50%",
             border: `1px solid ${COLOR.border.circle}`, background: "none",
-            color: COLOR.text.secondary, fontSize: "9px", cursor: "pointer", lineHeight: 1,
+            color: COLOR.text.secondary, fontSize: FONT.size.xxs, cursor: "pointer", lineHeight: 1,
             fontFamily: FONT.family.display, flexShrink: 0, padding: 0,
           }}
         >?</button>
@@ -142,12 +142,12 @@ export default function RiskPanel({ compareMode, portfolios }) {
               fontFamily: FONT.family.display,
             }}
           >
-            <div style={{ fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, marginBottom: "12px" }}>Riskanalys</div>
-            <p style={{ fontSize: "13px", fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: "0 0 16px 0" }}>
+            <div style={{ fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, marginBottom: "12px" }}>Riskanalys</div>
+            <p style={{ fontSize: FONT.size.base, fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: "0 0 16px 0" }}>
               <strong style={{ color: COLOR.text.primary }}>Max nedgång</strong> är den största förlusten från en topp till en botten under portföljen/fondens maximala tidsperiod. Datum anger när botten nåddes.
             </p>
             <div style={{ height: "1px", background: COLOR.border.muted, margin: "0 0 12px 0" }} />
-            <p style={{ fontSize: "13px", fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: 0 }}>
+            <p style={{ fontSize: FONT.size.base, fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: 0 }}>
               <strong style={{ color: COLOR.text.primary }}>Volatilitet</strong> mäter hur mycket portföljens dagliga avkastning varierar, annualiserad till ett helårsvärde. Hög volatilitet (≥ 20%) innebär stora svängningar — bra och dåliga. Låg volatilitet (&lt; 12%) innebär en jämnare resa.
             </p>
           </div>
@@ -162,7 +162,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
       }}>
         {["FOND", "MAX NEDGÅNG", "VOLATILITET"].map((lbl, i) => (
           <span key={lbl} style={{
-            fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600,
+            fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600,
             color: COLOR.text.secondary, letterSpacing: "0.05em",
             textTransform: "uppercase",
             textAlign: i === 0 ? "left" : "right",
@@ -183,7 +183,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
               <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
                 <DotPortfolio color={p.color} />
                 <span style={{
-                  fontFamily: FONT.family.display, fontSize: "13px", fontWeight: 700,
+                  fontFamily: FONT.family.display, fontSize: FONT.size.base, fontWeight: 700,
                   color: COLOR.text.primary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                 }}>{p.name}</span>
               </div>
@@ -199,12 +199,12 @@ export default function RiskPanel({ compareMode, portfolios }) {
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", paddingLeft: "24px", minWidth: 0 }}>
                   <DotFund color={f.color} />
                   <span style={{
-                    fontFamily: FONT.family.display, fontSize: "12px", fontWeight: 400,
+                    fontFamily: FONT.family.display, fontSize: FONT.size.md, fontWeight: 400,
                     color: COLOR.text.secondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                   }}>{f.name}</span>
                 </div>
-                <DdCell dd={f.maxDrawdown} size="12px" muted />
-                <VolCell vol={f.volatility} size="12px" muted />
+                <DdCell dd={f.maxDrawdown} size={FONT.size.md} muted />
+                <VolCell vol={f.volatility} size={FONT.size.md} muted />
               </div>
             ))}
           </>
@@ -229,7 +229,7 @@ export default function RiskPanel({ compareMode, portfolios }) {
             <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
               <DotPortfolio color={p.color} />
               <span style={{
-                fontFamily: FONT.family.display, fontSize: "13px", fontWeight: 700,
+                fontFamily: FONT.family.display, fontSize: FONT.size.base, fontWeight: 700,
                 color: COLOR.text.primary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
               }}>{p.name}</span>
               <Chevron open={!!openSet[i]} />
@@ -246,12 +246,12 @@ export default function RiskPanel({ compareMode, portfolios }) {
             }}>
               <div style={{ display: "flex", alignItems: "center", paddingLeft: "24px", minWidth: 0 }}>
                 <span style={{
-                  fontFamily: FONT.family.display, fontSize: "12px", fontWeight: 400,
+                  fontFamily: FONT.family.display, fontSize: FONT.size.md, fontWeight: 400,
                   color: COLOR.text.secondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                 }}>{f.name}</span>
               </div>
-              <DdCell dd={f.maxDrawdown} size="12px" muted />
-              <VolCell vol={f.volatility} size="12px" muted />
+              <DdCell dd={f.maxDrawdown} size={FONT.size.md} muted />
+              <VolCell vol={f.volatility} size={FONT.size.md} muted />
             </div>
           ))}
         </div>

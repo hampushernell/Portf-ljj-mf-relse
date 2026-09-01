@@ -3,7 +3,7 @@ import { ANIM, anim } from "../lib/animations";
 
 const SECTION_LABEL = {
   fontFamily: FONT.family.display,
-  fontSize: "9px",
+  fontSize: FONT.size.xxs,
   fontWeight: 600,
   letterSpacing: "0.05em",
   textTransform: "uppercase",
@@ -13,7 +13,7 @@ const SECTION_LABEL = {
 
 const BODY = {
   fontFamily: FONT.family.body,
-  fontSize: "13px",
+  fontSize: FONT.size.base,
   color: COLOR.text.muted,
   lineHeight: 1.6,
   maxWidth: "65ch",
@@ -49,12 +49,12 @@ export default function AboutModal({ onClose }) {
       >
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "22px" }}>
-          <h2 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
+          <h2 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
             Om minportfölj.se
           </h2>
           <button
             onClick={onClose}
-            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px", transition: anim(ANIM.hoverColor) }}
+            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: FONT.icon.md, lineHeight: 1, padding: "0 4px", transition: anim(ANIM.hoverColor) }}
             onMouseEnter={e => e.target.style.color = COLOR.text.primary}
             onMouseLeave={e => e.target.style.color = COLOR.text.secondary}
           >×</button>
@@ -98,9 +98,9 @@ export default function AboutModal({ onClose }) {
 
         {/* Kontakt */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ fontSize: "13px", color: COLOR.text.secondary, lineHeight: 1 }}>✉</span>
-          <span style={{ fontFamily: FONT.family.body, fontSize: "12px", color: COLOR.text.secondary }}>Frågor eller feedback?</span>
-          <a href="mailto:info@minportfolj.se" style={{ fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600, color: "#7b93ff", textDecoration: "none", marginLeft: "2px" }}>info@minportfolj.se</a>
+          <span style={{ fontSize: FONT.size.base, color: COLOR.text.secondary, lineHeight: 1 }}>✉</span>
+          <span style={{ fontFamily: FONT.family.body, fontSize: FONT.size.md, color: COLOR.text.secondary }}>Frågor eller feedback?</span>
+          <a href="mailto:info@minportfolj.se" style={{ fontFamily: FONT.family.display, fontSize: FONT.size.sm, fontWeight: 600, color: "#7b93ff", textDecoration: "none", marginLeft: "2px" }}>info@minportfolj.se</a>
         </div>
       </div>
     </div>

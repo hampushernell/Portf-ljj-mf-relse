@@ -28,7 +28,7 @@ export function FeeBadge({ source, period, isManual, updatedAt }) {
   }
   return (
     <span title={tooltip} style={{
-      fontSize: "9px", fontFamily: FONT.family.display, fontWeight: 600,
+      fontSize: FONT.size.xxs, fontFamily: FONT.family.display, fontWeight: 600,
       color: style.color, background: style.bg,
       padding: "1px 5px", borderRadius: "4px", lineHeight: "14px",
       whiteSpace: "nowrap", cursor: "default",

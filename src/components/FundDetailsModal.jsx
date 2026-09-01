@@ -30,12 +30,12 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px" }}>
-          <h2 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
+          <h2 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>
             {label} – Detaljer & historik
           </h2>
           <button
             onClick={onClose}
-            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "24px", lineHeight: 1, padding: "0 4px", transition: anim(ANIM.hoverColor) }}
+            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: FONT.icon.md, lineHeight: 1, padding: "0 4px", transition: anim(ANIM.hoverColor) }}
             onMouseEnter={e => e.target.style.color = COLOR.text.primary}
             onMouseLeave={e => e.target.style.color = COLOR.text.secondary}
           >×</button>
@@ -44,7 +44,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
         <div style={{
           background: `rgba(${accentRgb}, 0.07)`, border: `1px solid rgba(${accentRgb}, 0.22)`,
           borderRadius: "10px", padding: "12px 16px", marginBottom: "22px",
-          fontSize: "12px", color: COLOR.text.subtle, lineHeight: 1.65, fontFamily: FONT.family.body,
+          fontSize: FONT.size.md, color: COLOR.text.subtle, lineHeight: 1.65, fontFamily: FONT.family.body,
         }}>
           Prisdata hämtas från Yahoo Finance och är tillgänglig fr.o.m. mars 2022 för dessa fonder.
           För fullständig historik, besök respektive fondsida via länkarna nedan.
@@ -71,13 +71,13 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
                 <div>
-                  <div style={{ fontFamily: FONT.family.display, fontSize: "13px", fontWeight: 700, color: COLOR.text.primary }}>{fund.name}</div>
-                  <div style={{ fontSize: "11px", color: COLOR.text.secondary, marginTop: "2px" }}>{fund.category}</div>
+                  <div style={{ fontFamily: FONT.family.display, fontSize: FONT.size.base, fontWeight: 700, color: COLOR.text.primary }}>{fund.name}</div>
+                  <div style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary, marginTop: "2px" }}>{fund.category}</div>
                 </div>
                 <a
                   href={morningstarUrl} target="_blank" rel="noopener noreferrer"
                   style={{
-                    fontSize: "11px", color: accent, textDecoration: "none",
+                    fontSize: FONT.size.sm, color: accent, textDecoration: "none",
                     fontFamily: FONT.family.display, fontWeight: 600,
                     background: `rgba(${accentRgb}, 0.1)`, padding: "5px 11px",
                     borderRadius: "6px", border: `1px solid rgba(${accentRgb}, 0.3)`,
@@ -91,9 +91,9 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px" }}>
                 <div style={{ background: COLOR.surface[1], borderRadius: "7px", padding: "8px 10px" }}>
-                  <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px", fontFamily: FONT.family.display }}>Avgift/år</div>
+                  <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px", fontFamily: FONT.family.display }}>Avgift/år</div>
                   <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <span style={{ fontFamily: FONT.family.display, fontSize: "12px", fontWeight: 600, color: COLOR.text.primary }}>{fmtFee(fund.fee)}</span>
+                    <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.md, fontWeight: 600, color: COLOR.text.primary }}>{fmtFee(fund.fee)}</span>
                     <FeeBadge source={fund.feeSource} period={fund.feePeriod} isManual={fund.isManual ?? false} updatedAt={fund.updatedAt} />
                   </div>
                 </div>
@@ -103,7 +103,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
                   { lbl: "Data fr.o.m.", val: oldestDate },
                 ].map(({ lbl, val, color, mono }) => (
                   <div key={lbl} style={{ background: COLOR.surface[1], borderRadius: "7px", padding: "8px 10px" }}>
-                    <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px", fontFamily: FONT.family.display }}>{lbl}</div>
+                    <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px", fontFamily: FONT.family.display }}>{lbl}</div>
                     <div style={{ fontFamily: mono ? "monospace" : FONT.family.display, fontSize: mono ? "10px" : "12px", fontWeight: 600, color: color || COLOR.text.primary }}>{val}</div>
                   </div>
                 ))}

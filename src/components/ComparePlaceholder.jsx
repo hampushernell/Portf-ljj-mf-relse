@@ -26,9 +26,9 @@ export default function ComparePlaceholder({ onClick }) {
         width: "36px", height: "36px", borderRadius: "50%",
         background: "rgba(56,189,248,0.10)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: "18px", color: ACCENT_B,
+        fontSize: FONT.icon.sm, color: ACCENT_B,
       }}>⇄</div>
-      <span style={{ fontSize: "11px", fontWeight: 600, color: COLOR.text.secondary, fontFamily: FONT.family.display, letterSpacing: "0.02em" }}>
+      <span style={{ fontSize: FONT.size.sm, fontWeight: 600, color: COLOR.text.secondary, fontFamily: FONT.family.display, letterSpacing: "0.02em" }}>
         Jämför portfölj
       </span>
     </button>

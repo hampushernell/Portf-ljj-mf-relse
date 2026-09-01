@@ -19,7 +19,7 @@ const fmtFee = v => Number(v).toFixed(2).replace(".", ",") + "%";
 const LABEL = {
   display: "block",
   fontFamily: FONT.family.display,
-  fontSize: "9px",
+  fontSize: FONT.size.xxs,
   fontWeight: 600,
   letterSpacing: "0.05em",
   textTransform: "uppercase",
@@ -41,11 +41,11 @@ function PortfolioCard({ label, accent, netCAGR, fee, netFV, grossFV, feeCost, i
     }}>
       <div style={{ marginBottom: "16px" }}>
         <div style={{
-          fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 700,
+          fontFamily: FONT.family.display, fontSize: FONT.size.sm, fontWeight: 700,
           letterSpacing: "0.05em", textTransform: "uppercase",
           color: accent, marginBottom: "4px",
         }}>{label}</div>
-        <div style={{ fontFamily: FONT.family.body, fontSize: "11px", color: COLOR.text.muted }}>
+        <div style={{ fontFamily: FONT.family.body, fontSize: FONT.size.sm, color: COLOR.text.muted }}>
           CAGR · {fmtPct(netCAGR)} | Avgift {fmtFee(fee)}
         </div>
       </div>
@@ -53,7 +53,7 @@ function PortfolioCard({ label, accent, netCAGR, fee, netFV, grossFV, feeCost, i
       <div style={{ marginBottom: "16px" }}>
         <span style={LABEL}>Slutvärde netto</span>
         <div style={{
-          fontFamily: FONT.family.display, fontSize: "22px", fontWeight: 700,
+          fontFamily: FONT.family.display, fontSize: FONT.size["5xl"], fontWeight: 700,
           color: COLOR.text.primary, letterSpacing: "-0.01em",
         }}>{fmtKr(netFV)}</div>
       </div>
@@ -62,14 +62,14 @@ function PortfolioCard({ label, accent, netCAGR, fee, netFV, grossFV, feeCost, i
         <div style={{ marginBottom: "10px" }}>
           <span style={LABEL}>Utan avgift (uppskattning)</span>
           <div style={{
-            fontFamily: FONT.family.display, fontSize: "15px", fontWeight: 600,
+            fontFamily: FONT.family.display, fontSize: FONT.size.lg, fontWeight: 600,
             color: COLOR.text.primary,
           }}>{fmtKr(grossFV)}</div>
         </div>
         <div>
           <span style={LABEL}>Avgift</span>
           <div style={{
-            fontFamily: FONT.family.display, fontSize: "13px", fontWeight: 600,
+            fontFamily: FONT.family.display, fontSize: FONT.size.base, fontWeight: 600,
             color: COLOR.negative,
           }}>−{fmtKr(feeCost)}</div>
         </div>
@@ -103,7 +103,7 @@ function YearStepper({ years, setYears }) {
     border: "none",
     color: "#94a3b8",
     cursor: "pointer",
-    fontSize: "16px",
+    fontSize: FONT.size.xl,
     lineHeight: 1,
     display: "flex",
     alignItems: "center",
@@ -143,7 +143,7 @@ function YearStepper({ years, setYears }) {
             width: "100%",
             textAlign: "center",
             fontFamily: FONT.family.display,
-            fontSize: "14px",
+            fontSize: FONT.size.base,
             fontWeight: 700,
             color: "#f0ede8",
             background: "transparent",
@@ -153,7 +153,7 @@ function YearStepper({ years, setYears }) {
             MozAppearance: "textfield",
           }}
         />
-        <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: COLOR.text.secondary, flexShrink: 0 }}>år</span>
+        <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xs, color: COLOR.text.secondary, flexShrink: 0 }}>år</span>
       </div>
       <button
         style={{ ...btnStyle, borderLeft: `1px solid ${COLOR.border.muted}` }}
@@ -211,7 +211,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
     borderRadius: "8px",
     color: COLOR.text.primary,
     fontFamily: FONT.family.display,
-    fontSize: "13px",
+    fontSize: FONT.size.base,
     fontWeight: 600,
     padding: "9px 14px",
     outline: "none",
@@ -230,10 +230,10 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
         <div>
-          <h3 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: "0 0 4px" }}>
+          <h3 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, margin: "0 0 4px" }}>
             Spar- och avgiftskalkylator
           </h3>
-          <p style={{ fontFamily: FONT.family.body, fontSize: "11px", color: COLOR.text.secondary, margin: 0 }}>
+          <p style={{ fontFamily: FONT.family.body, fontSize: FONT.size.sm, color: COLOR.text.secondary, margin: 0 }}>
             Ränta på ränta- och avgiftskalkyl
           </p>
         </div>
@@ -248,7 +248,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
               color: COLOR.text.secondary,
               cursor: "pointer",
               fontFamily: FONT.family.display,
-              fontSize: "11px", fontWeight: 700,
+              fontSize: FONT.size.sm, fontWeight: 700,
               display: "flex", alignItems: "center", justifyContent: "center",
               padding: 0,
             }}
@@ -263,7 +263,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
               width: "min(300px, calc(100vw - 48px))",
               boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
               fontFamily: FONT.family.body,
-              fontSize: "12px",
+              fontSize: FONT.size.md,
               color: COLOR.text.muted,
               lineHeight: 1.6,
             }}>
@@ -281,7 +281,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
       `}</style>
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "22px", alignItems: "flex-end" }}>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
-          <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Engångsbelopp</span>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Engångsbelopp</span>
           <div style={{ ...inputStyle, display: "flex", alignItems: "center", padding: 0 }}>
             <input
               type="number"
@@ -292,11 +292,11 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
               style={{ ...inputStyle, border: "none", background: "transparent", flex: 1, minWidth: 0, paddingRight: "4px" }}
               min={0}
             />
-            <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: COLOR.text.secondary, paddingRight: "12px", flexShrink: 0 }}>kr</span>
+            <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xs, color: COLOR.text.secondary, paddingRight: "12px", flexShrink: 0 }}>kr</span>
           </div>
         </div>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
-          <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Månadssparande</span>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Månadssparande</span>
           <div style={{ ...inputStyle, display: "flex", alignItems: "center", padding: 0 }}>
             <input
               type="number"
@@ -307,11 +307,11 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
               style={{ ...inputStyle, border: "none", background: "transparent", flex: 1, minWidth: 0, paddingRight: "4px" }}
               min={0}
             />
-            <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: COLOR.text.secondary, paddingRight: "12px", flexShrink: 0 }}>kr</span>
+            <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xs, color: COLOR.text.secondary, paddingRight: "12px", flexShrink: 0 }}>kr</span>
           </div>
         </div>
         <div style={{ flex: "1 1 140px", minWidth: "120px" }}>
-          <span style={{ fontFamily: FONT.family.display, fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Tidshorisont</span>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Tidshorisont</span>
           <YearStepper years={years} setYears={setYears} />
         </div>
       </div>
@@ -341,7 +341,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
         display: "flex", alignItems: "center", gap: "10px",
       }}>
         <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: winnerCol, flexShrink: 0 }} />
-        <span style={{ fontFamily: FONT.family.body, fontSize: "12px", color: COLOR.text.primary }}>
+        <span style={{ fontFamily: FONT.family.body, fontSize: FONT.size.md, color: COLOR.text.primary }}>
           Portfölj <strong style={{ color: winnerCol }}>{winner}</strong> har gett{" "}
           <strong style={{ color: winnerCol }}>+{fmtKr(diff)}</strong> mer efter {years} år.
         </span>

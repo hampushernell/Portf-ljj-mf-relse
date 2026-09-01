@@ -173,8 +173,8 @@ export default function App() {
       <div style={{ padding: isMobile ? "12px 16px 10px" : "26px 36px 18px", borderBottom: `1px solid ${COLOR.border.subtle}`, display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
           <div>
-            <h1 style={{ fontFamily: FONT.family.display, fontSize: "20px", fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: COLOR.text.primary }}>MinPortfölj</h1>
-            <p style={{ margin: "3px 0 0", fontSize: "11px", color: COLOR.text.secondary }}>Jämför avgifter & historisk avkastning</p>
+            <h1 style={{ fontFamily: FONT.family.display, fontSize: FONT.size["4xl"], fontWeight: 800, margin: 0, letterSpacing: "-0.02em", color: COLOR.text.primary }}>MinPortfölj</h1>
+            <p style={{ margin: "3px 0 0", fontSize: FONT.size.sm, color: COLOR.text.secondary }}>Jämför avgifter & historisk avkastning</p>
           </div>
         </div>
         <span
@@ -187,7 +187,7 @@ export default function App() {
             marginLeft: "auto",
           }}
         >
-          <span style={{ fontFamily: FONT.family.display, fontSize: "11px", fontWeight: 600, color: COLOR.text.muted }}>Om</span>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.sm, fontWeight: 600, color: COLOR.text.muted }}>Om</span>
           <span style={{ width: "1px", height: "11px", background: "rgba(255,255,255,0.15)" }} />
           <svg width="24" height="18" viewBox="0 0 44 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <rect x="0" y="0" width="16" height="40" rx="5" fill="#5a6e8a"/>
@@ -199,19 +199,19 @@ export default function App() {
       <div style={{ padding: isMobile ? "12px 14px" : "22px 36px", display: "flex", flexDirection: "column", gap: isMobile ? "12px" : "18px" }}>
 
         {error && (
-          <div style={{ padding: "16px", background: COLOR.tint.negative, border: "1px solid rgba(248,113,113,0.3)", borderRadius: "10px", color: COLOR.negative, fontSize: "13px", fontFamily: FONT.family.display }}>
+          <div style={{ padding: "16px", background: COLOR.tint.negative, border: "1px solid rgba(248,113,113,0.3)", borderRadius: "10px", color: COLOR.negative, fontSize: FONT.size.base, fontFamily: FONT.family.display }}>
             {error}
           </div>
         )}
 
         {!loading && failedFunds.length > 0 && (
-          <div style={{ padding: "16px", background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.3)", borderRadius: "10px", color: COLOR.warningLight, fontSize: "13px", fontFamily: FONT.family.display }}>
+          <div style={{ padding: "16px", background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.3)", borderRadius: "10px", color: COLOR.warningLight, fontSize: FONT.size.base, fontFamily: FONT.family.display }}>
             {failedFunds.join(", ")} kunde inte laddas just nu – försök igen senare
           </div>
         )}
 
         {loading && (
-          <div style={{ textAlign: "center", padding: "40px 0", color: COLOR.text.secondary, fontSize: "13px", fontFamily: FONT.family.display }}>
+          <div style={{ textAlign: "center", padding: "40px 0", color: COLOR.text.secondary, fontSize: FONT.size.base, fontFamily: FONT.family.display }}>
             Hämtar fonddata från Yahoo Finance…
           </div>
         )}
@@ -229,7 +229,7 @@ export default function App() {
                     background: viewMode === value ? activeBg : "transparent",
                     border: "none", color: viewMode === value ? activeColor : COLOR.text.secondary,
                     padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
-                    fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600, transition: anim(ANIM.tab),
+                    fontSize: FONT.size.sm, fontFamily: FONT.family.display, fontWeight: 600, transition: anim(ANIM.tab),
                   }}>{label}</button>
                 ))}
               </div>
@@ -305,7 +305,7 @@ export default function App() {
           </>
         )}
 
-        <div style={{ fontSize: "10px", color: COLOR.text.ghost, textAlign: "center", paddingBottom: "12px" }}>
+        <div style={{ fontSize: FONT.size.xs, color: COLOR.text.ghost, textAlign: "center", paddingBottom: "12px" }}>
           * Historisk avkastning från Yahoo Finance. Historisk avkastning garanterar inte framtida resultat.
         </div>
       </div>

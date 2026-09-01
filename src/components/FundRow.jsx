@@ -33,12 +33,12 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         {/* Rad 1 */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
           {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
-          <span style={{ fontFamily: FONT.family.display, fontSize: "13px", fontWeight: 600, color: COLOR.text.primary, flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.base, fontWeight: 600, color: COLOR.text.primary, flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {fund.name}
           </span>
-          {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: COLOR.warning, fontSize: "11px", lineHeight: 1 }}>⚠</span>}
+          {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: COLOR.warning, fontSize: FONT.size.sm, lineHeight: 1 }}>⚠</span>}
           <button onClick={e => { e.stopPropagation(); onRemove(); }}
-            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "18px", padding: "2px" }}
+            style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: FONT.icon.sm, padding: "2px" }}
             onMouseEnter={e => e.currentTarget.style.color = COLOR.negative}
             onMouseLeave={e => e.currentTarget.style.color = COLOR.text.secondary}>×</button>
         </div>
@@ -46,7 +46,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         <div onClick={e => e.stopPropagation()}
           style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "6px" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-            <label style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
               {inputMode === "pct" ? "Andel %" : "Belopp kr"}
             </label>
             <input type="number" value={inputVal}
@@ -54,20 +54,20 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
                 const val = parseFloat(e.target.value) || 0;
                 onUpdate(inputMode === "pct" ? { pct: val } : { kr: val });
               }}
-              style={{ background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`, borderRadius: "6px", color: COLOR.text.primary, fontSize: "13px", padding: "5px 8px", width: "100%", outline: "none", fontFamily: FONT.family.display, boxSizing: "border-box" }}
+              style={{ background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`, borderRadius: "6px", color: COLOR.text.primary, fontSize: FONT.size.base, padding: "5px 8px", width: "100%", outline: "none", fontFamily: FONT.family.display, boxSizing: "border-box" }}
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-            <label style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
               {inputMode === "pct" ? "≈ kr" : "≈ %"}
             </label>
-            <div style={{ background: COLOR.surface.faint, border: `1px solid ${COLOR.border.muted}`, borderRadius: "6px", color: COLOR.text.secondary, fontSize: "11px", padding: "5px 8px" }}>
+            <div style={{ background: COLOR.surface.faint, border: `1px solid ${COLOR.border.muted}`, borderRadius: "6px", color: COLOR.text.secondary, fontSize: FONT.size.sm, padding: "5px 8px" }}>
               {inputMode === "pct" ? formatKr(kr) : `${pct.toFixed(1)}%`}
             </div>
           </div>
         </div>
         {/* Rad 3 */}
-        <div style={{ fontSize: "10px", color: COLOR.text.secondary, display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+        <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
           <span>{fund.category} · {fmtFee(fund.fee)} avgift/år</span>
           <FeeBadge source={fund.feeSource} period={fund.feePeriod} isManual={fund.isManual ?? false} updatedAt={fund.updatedAt} />
         </div>
@@ -76,7 +76,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
           const color = days > 90 ? COLOR.negative : days > 30 ? COLOR.warningLight : COLOR.text.secondary;
           const dateStr = new Date(fund.updatedAt).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
           return (
-            <div style={{ fontSize: "10px", color, marginTop: "4px" }}>
+            <div style={{ fontSize: FONT.size.xs, color, marginTop: "4px" }}>
               {days > 30 ? "⚠️ " : ""}Uppdaterad: {dateStr}
             </div>
           );
@@ -103,10 +103,10 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         {dotColor && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: dotColor, flexShrink: 0 }} />}
         <div style={{ minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-            <span style={{ fontFamily: FONT.family.display, fontSize: "13px", color: COLOR.text.primary, fontWeight: 600 }}>{fund.name}</span>
-            {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: COLOR.warning, fontSize: "11px", lineHeight: 1 }}>⚠</span>}
+            <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.base, color: COLOR.text.primary, fontWeight: 600 }}>{fund.name}</span>
+            {!spanHasData && <span title="Ingen data för valt tidsspann" style={{ color: COLOR.warning, fontSize: FONT.size.sm, lineHeight: 1 }}>⚠</span>}
           </div>
-          <div style={{ fontSize: "11px", color: COLOR.text.secondary, marginTop: "1px", display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+          <div style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary, marginTop: "1px", display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
             <span>{fund.category} · {fmtFee(fund.fee)} avgift</span>
             <FeeBadge source={fund.feeSource} period={fund.feePeriod} isManual={fund.isManual ?? false} updatedAt={fund.updatedAt} />
             {fund.currentPrice && <span> · {fund.currentPrice.toFixed(2)} SEK</span>}
@@ -116,7 +116,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
             const color = days > 90 ? COLOR.negative : days > 30 ? COLOR.warningLight : COLOR.text.secondary;
             const dateStr = new Date(fund.updatedAt).toLocaleDateString("sv-SE", { day: "numeric", month: "long", year: "numeric" });
             return (
-              <div style={{ fontSize: "10px", color, marginTop: "2px" }}>
+              <div style={{ fontSize: FONT.size.xs, color, marginTop: "2px" }}>
                 {days > 30 ? "⚠️ " : ""}Uppdaterad: {dateStr}
               </div>
             );
@@ -124,7 +124,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         </div>
       </div>
       <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        <label style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
           {inputMode === "pct" ? "Andel %" : "Belopp kr"}
         </label>
         <input type="number" value={inputVal}
@@ -134,25 +134,25 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
           }}
           style={{
             background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`,
-            borderRadius: "6px", color: COLOR.text.primary, fontSize: "13px",
+            borderRadius: "6px", color: COLOR.text.primary, fontSize: FONT.size.base,
             padding: "5px 8px", width: "100%", outline: "none",
             fontFamily: FONT.family.display, boxSizing: "border-box",
           }}
         />
       </div>
       <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        <label style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>
           {inputMode === "pct" ? "≈ kr" : "≈ %"}
         </label>
         <div style={{
           background: COLOR.surface.faint, border: `1px solid ${COLOR.border.muted}`,
-          borderRadius: "6px", color: COLOR.text.secondary, fontSize: "11px", padding: "5px 8px",
+          borderRadius: "6px", color: COLOR.text.secondary, fontSize: FONT.size.sm, padding: "5px 8px",
         }}>
           {inputMode === "pct" ? formatKr(kr) : `${pct.toFixed(1)}%`}
         </div>
       </div>
       <button onClick={e => { e.stopPropagation(); onRemove(); }}
-        style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: "18px", padding: "2px", transition: anim(ANIM.hoverColor) }}
+        style={{ background: "none", border: "none", color: COLOR.text.secondary, cursor: "pointer", fontSize: FONT.icon.sm, padding: "2px", transition: anim(ANIM.hoverColor) }}
         onMouseEnter={e => e.currentTarget.style.color = COLOR.negative}
         onMouseLeave={e => e.currentTarget.style.color = COLOR.text.secondary}
       >×</button>

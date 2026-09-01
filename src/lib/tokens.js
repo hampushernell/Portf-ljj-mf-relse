@@ -67,15 +67,22 @@ export const FONT = {
   },
 
   size: {
-    xxs:   "9px",
-    xs:    "10px",
-    sm:    "11px",
-    md:    "12px",
-    base:  "13px",
-    lg:    "16px",
-    xl:    "17px",
-    "2xl": "18px",
-    "3xl": "20px",
+    xxs:   "9px",    // → 11px i commit 2
+    xs:    "10px",   // → 11px
+    sm:    "11px",   // → 12px
+    md:    "12px",   // → 13px
+    base:  "13px",   // → 14px
+    lg:    "15px",   // → 16px
+    xl:    "16px",   // → 17px
+    "2xl": "17px",   // → 19px
+    "3xl": "18px",   // → 20px
+    "4xl": "20px",   // → 22px
+    "5xl": "22px",   // → 24px
+  },
+
+  icon: {
+    sm: "18px",
+    md: "24px",
   },
 
   weight: {

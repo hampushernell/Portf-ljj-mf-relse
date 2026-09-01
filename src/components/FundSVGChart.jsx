@@ -135,6 +135,7 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
             opacity="1"
           />
         )}
+        {/* TODO commit 3: y-axeletiketter fontSize={isMobile ? 18 : 12} */}
         {yTicks.map(({ v, y }, i) => (
           <text key={i} x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.muted} fontSize={isMobile ? 16 : 10} fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
         ))}
@@ -149,23 +150,23 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
           left: tooltip.x / W * 100 > 60 ? "auto" : `calc(${tooltip.x / W * 100}% + 14px)`,
           right: tooltip.x / W * 100 > 60 ? `calc(${(1 - tooltip.x / W) * 100}% + 14px)` : "auto",
           background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.strong}`,
-          borderRadius: "8px", padding: "8px 12px", fontSize: "12px",
+          borderRadius: "8px", padding: "8px 12px", fontSize: FONT.size.md,
           fontFamily: FONT.family.display, pointerEvents: "none", zIndex: 10,
           boxShadow: SHADOW.tooltip, maxWidth: "220px",
         }}>
-          <div style={{ color: COLOR.text.secondary, fontSize: "10px", marginBottom: "6px" }}>
+          <div style={{ color: COLOR.text.secondary, fontSize: FONT.size.xs, marginBottom: "6px" }}>
             {tooltip.timestamp ? new Date(tooltip.timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" }) : ""}
           </div>
           {tooltip.portfolio != null && showPortfolioLine && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "5px" }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "white", flexShrink: 0 }} />
-              <span style={{ color: COLOR.text.primary, fontSize: "11px" }}>Portfölj: <strong style={{ color: (tooltip.portfolio - 100) >= 0 ? COLOR.positive : COLOR.negative }}>{fmtPct(tooltip.portfolio - 100)}</strong></span>
+              <span style={{ color: COLOR.text.primary, fontSize: FONT.size.sm }}>Portfölj: <strong style={{ color: (tooltip.portfolio - 100) >= 0 ? COLOR.positive : COLOR.negative }}>{fmtPct(tooltip.portfolio - 100)}</strong></span>
             </div>
           )}
           {tooltip.funds.map(f => f.value != null && (
             <div key={f.name} style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: f.color, flexShrink: 0 }} />
-              <span style={{ color: COLOR.text.subtle, fontSize: "10px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <span style={{ color: COLOR.text.subtle, fontSize: FONT.size.xs, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {f.name.split(" ").slice(0, 2).join(" ")}: <strong style={{ color: (f.value - 100) >= 0 ? COLOR.positive : COLOR.negative }}>{fmtPct(f.value - 100)}</strong>
               </span>
             </div>

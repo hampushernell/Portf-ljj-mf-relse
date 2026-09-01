@@ -48,11 +48,11 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: accent, flexShrink: 0 }} />
         )}
         <BriefcaseIcon color={accent} />
-        <h2 style={{ fontFamily: FONT.family.display, fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>{label}</h2>
+        <h2 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, margin: 0 }}>{label}</h2>
         {isB && onHide && (
           <button onClick={onHide} style={{
             marginLeft: "auto", display: "flex", alignItems: "center", gap: "4px",
-            fontSize: "11px", color: COLOR.text.secondary,
+            fontSize: FONT.size.sm, color: COLOR.text.secondary,
             background: COLOR.surface.input, border: `1px solid ${COLOR.border.subtle}`,
             borderRadius: "6px", padding: "4px 9px", cursor: "pointer",
           }}>
@@ -72,7 +72,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               background: inputMode === m ? COLOR.surface.active : "transparent",
               border: "none", color: inputMode === m ? COLOR.text.primary : COLOR.text.secondary,
               padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
-              fontSize: "11px", fontFamily: FONT.family.display, fontWeight: 600,
+              fontSize: FONT.size.sm, fontFamily: FONT.family.display, fontWeight: 600,
               transition: anim(ANIM.tab),
             }}>{m === "pct" ? "% Procent" : "kr Kronor"}</button>
           ))}
@@ -84,11 +84,11 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               placeholder="Belopp"
               style={{
                 background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`,
-                borderRadius: "6px", color: COLOR.text.primary, fontSize: "13px",
+                borderRadius: "6px", color: COLOR.text.primary, fontSize: FONT.size.base,
                 padding: "5px 9px", width: "100px", outline: "none", fontFamily: FONT.family.display,
               }}
             />
-            <span style={{ fontSize: "11px", color: COLOR.text.secondary }}>kr</span>
+            <span style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary }}>kr</span>
           </div>
         )}
       </div>
@@ -112,9 +112,9 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
       {funds.length > 0 && inputMode === "pct" && (
         <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-            <div style={{ fontSize: "9px", color: COLOR.text.secondary, fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.06em" }}>Fördelning</div>
+            <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.06em" }}>Fördelning</div>
             <span style={{
-              fontSize: "10px",
+              fontSize: FONT.size.xs,
               color: pctOk ? COLOR.positive : COLOR.negative,
               background: pctOk ? COLOR.tint.positive : COLOR.tint.negativeStrong,
               padding: "2px 8px", borderRadius: "20px", fontFamily: FONT.family.display, fontWeight: 600,
@@ -137,8 +137,8 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               return (
                 <div key={f.id} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                   <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: color, flexShrink: 0 }} />
-                  <span style={{ fontSize: "10px", color: COLOR.text.secondary, fontFamily: FONT.family.display }}>{shortName}</span>
-                  <span style={{ fontSize: "10px", color: COLOR.text.primary, fontFamily: FONT.family.display, fontWeight: 600 }}>{pct.toFixed(1)}%</span>
+                  <span style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, fontFamily: FONT.family.display }}>{shortName}</span>
+                  <span style={{ fontSize: FONT.size.xs, color: COLOR.text.primary, fontFamily: FONT.family.display, fontWeight: 600 }}>{pct.toFixed(1)}%</span>
                 </div>
               );
             })}
@@ -148,31 +148,31 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
 
       {funds.length > 0 && (
         <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
-          <div style={{ fontSize: "9px", color: COLOR.text.secondary, marginBottom: "12px", fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
+          <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, marginBottom: "12px", fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.06em" }}>Portföljsammanfattning</div>
           <div style={{ display: "flex", gap: "12px" }}>
             <div style={{ flex: 1, background: COLOR.surface[1], borderRadius: "8px", padding: "10px 12px", boxShadow: SHADOW.medium }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
-                <span style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Avgift/år</span>
+                <span style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Avgift/år</span>
                 <button
                   onClick={() => setShowFeeInfo(true)}
                   style={{ display: "inline-flex", alignItems: "center", justifyContent: "center",
                     width: "15px", height: "15px", borderRadius: "50%",
                     border: `1px solid ${COLOR.border.circle}`, background: "none",
-                    color: COLOR.text.secondary, fontSize: "9px", cursor: "pointer", lineHeight: 1,
+                    color: COLOR.text.secondary, fontSize: FONT.size.xxs, cursor: "pointer", lineHeight: 1,
                     fontFamily: FONT.family.display, flexShrink: 0, padding: 0 }}
                 >?</button>
               </div>
-              <div style={{ fontFamily: FONT.family.display, fontSize: "17px", fontWeight: 700, color: accentText }}>{fmtFee(fee)}</div>
-              {portfolioTotal > 0 && <div style={{ fontSize: "10px", color: COLOR.text.secondary, marginTop: "2px" }}>{formatKr(portfolioTotal * fee / 100)}</div>}
+              <div style={{ fontFamily: FONT.family.display, fontSize: FONT.size["2xl"], fontWeight: 700, color: accentText }}>{fmtFee(fee)}</div>
+              {portfolioTotal > 0 && <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, marginTop: "2px" }}>{formatKr(portfolioTotal * fee / 100)}</div>}
             </div>
             <div style={{ flex: 1, background: COLOR.surface[1], borderRadius: "8px", padding: "10px 12px", boxShadow: SHADOW.medium }}>
-              <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>
+              <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>
                 {inputMode === "kr" ? "Totalt" : "Belopp"}
               </div>
-              <div style={{ fontFamily: FONT.family.display, fontSize: "17px", fontWeight: 700, color: COLOR.text.primary }}>
+              <div style={{ fontFamily: FONT.family.display, fontSize: FONT.size["2xl"], fontWeight: 700, color: COLOR.text.primary }}>
                 {portfolioTotal > 0 ? formatKr(portfolioTotal) : "–"}
               </div>
-              <div style={{ fontSize: "10px", color: COLOR.text.secondary, marginTop: "2px" }}>{funds.length} fonder</div>
+              <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, marginTop: "2px" }}>{funds.length} fonder</div>
             </div>
           </div>
         </div>
@@ -185,7 +185,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
             width: "100%", background: `rgba(${accentRgb}, 0.07)`,
             border: `1px solid rgba(${accentRgb}, 0.25)`, color: accent,
             borderRadius: "8px", padding: "9px 14px", cursor: "pointer",
-            fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
+            fontSize: FONT.size.md, fontFamily: FONT.family.display, fontWeight: 600,
             transition: anim(ANIM.hover), textAlign: "center",
           }}
           onMouseEnter={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.15)`}
@@ -219,38 +219,38 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
               fontFamily: FONT.family.display,
             }}
           >
-            <div style={{ fontSize: "16px", fontWeight: 700, color: COLOR.text.primary, marginBottom: "12px" }}>Om avgifterna i portföljen</div>
-            <p style={{ fontSize: "13px", fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: "0 0 16px 0" }}>
+            <div style={{ fontSize: FONT.size.xl, fontWeight: 700, color: COLOR.text.primary, marginBottom: "12px" }}>Om avgifterna i portföljen</div>
+            <p style={{ fontSize: FONT.size.base, fontFamily: FONT.family.body, color: COLOR.text.subtle, lineHeight: 1.6, margin: "0 0 16px 0" }}>
               Den visade avgiften är den viktade förvaltningsavgiften — varje fonds avgift vägs mot dess andel av portföljvärdet och justeras automatiskt när du ändrar fördelningen.
             </p>
             <div style={{ display: "flex", gap: "12px", marginBottom: "12px", alignItems: "flex-start" }}>
               <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: COLOR.fi, flexShrink: 0, marginTop: "3px" }} />
               <div>
-                <div style={{ fontSize: "12px", fontWeight: 600, color: COLOR.text.primary }}>FI — Finansinspektionen</div>
-                <div style={{ fontSize: "11px", fontFamily: FONT.family.body, color: COLOR.text.subtle, marginTop: "2px", lineHeight: 1.5 }}>Juridiskt bindande förvaltningsavgift som fondbolagen rapporterar kvartalsvis till FI. Uppdateras automatiskt månadsvis.</div>
+                <div style={{ fontSize: FONT.size.md, fontWeight: 600, color: COLOR.text.primary }}>FI — Finansinspektionen</div>
+                <div style={{ fontSize: FONT.size.sm, fontFamily: FONT.family.body, color: COLOR.text.subtle, marginTop: "2px", lineHeight: 1.5 }}>Juridiskt bindande förvaltningsavgift som fondbolagen rapporterar kvartalsvis till FI. Uppdateras automatiskt månadsvis.</div>
               </div>
             </div>
             <div style={{ display: "flex", gap: "12px", marginBottom: "16px", alignItems: "flex-start" }}>
               <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: COLOR.fallback, flexShrink: 0, marginTop: "3px" }} />
               <div>
-                <div style={{ fontSize: "12px", fontWeight: 600, color: COLOR.text.primary }}>Manuell — uppskattad avgift</div>
-                <div style={{ fontSize: "11px", fontFamily: FONT.family.body, color: COLOR.text.subtle, marginTop: "2px", lineHeight: 1.5 }}>Avgiften saknar verifierad FI-data och är manuellt angiven — antingen i fondregistret eller av dig. Kontrollera aktuell avgift via fondens faktablad.</div>
+                <div style={{ fontSize: FONT.size.md, fontWeight: 600, color: COLOR.text.primary }}>Manuell — uppskattad avgift</div>
+                <div style={{ fontSize: FONT.size.sm, fontFamily: FONT.family.body, color: COLOR.text.subtle, marginTop: "2px", lineHeight: 1.5 }}>Avgiften saknar verifierad FI-data och är manuellt angiven — antingen i fondregistret eller av dig. Kontrollera aktuell avgift via fondens faktablad.</div>
               </div>
             </div>
             <div style={{ height: "1px", background: COLOR.border.muted, margin: "0 0 14px 0" }} />
-            <div style={{ fontSize: "9px", color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>Verifiera på Morningstar</div>
+            <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>Verifiera på Morningstar</div>
             {funds.map(fund => {
               const ticker = fund.ticker?.replace(".ST", "");
               const isFallbackNonManual = fund.feeSource === "fallback" && !fund.isManual;
               return (
                 <div key={fund.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
                   <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span style={{ fontSize: "12px", color: COLOR.text.primary }}>{fund.name}</span>
+                    <span style={{ fontSize: FONT.size.md, color: COLOR.text.primary }}>{fund.name}</span>
                     {isFallbackNonManual && (
-                      <span style={{ fontSize: "9px", color: COLOR.fallback, background: COLOR.tint.fallback, padding: "1px 5px", borderRadius: "4px" }}>Manuell avgift</span>
+                      <span style={{ fontSize: FONT.size.xxs, color: COLOR.fallback, background: COLOR.tint.fallback, padding: "1px 5px", borderRadius: "4px" }}>Manuell avgift</span>
                     )}
                     {fund.isManual && (
-                      <span style={{ fontSize: "9px", color: COLOR.fallback, background: COLOR.tint.fallback, padding: "1px 5px", borderRadius: "4px" }}>Manuell fond</span>
+                      <span style={{ fontSize: FONT.size.xxs, color: COLOR.fallback, background: COLOR.tint.fallback, padding: "1px 5px", borderRadius: "4px" }}>Manuell fond</span>
                     )}
                   </span>
                   <a
@@ -258,7 +258,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
                       ? "https://www.morningstar.se/se/funds/default.aspx"
                       : `https://www.morningstar.se/se/funds/snapshot/snapshot.aspx?id=${ticker}`}
                     target="_blank" rel="noopener noreferrer"
-                    style={{ fontSize: "11px", color: COLOR.fi, textDecoration: "none" }}
+                    style={{ fontSize: FONT.size.sm, color: COLOR.fi, textDecoration: "none" }}
                   >{fund.isManual ? "Sök på Morningstar ↗" : "Morningstar ↗"}</a>
                 </div>
               );

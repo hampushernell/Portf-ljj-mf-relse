@@ -24,7 +24,7 @@ function CategoryRow({ cat, isSelected, onToggle }) {
       }}
     >
       <span style={{
-        fontSize: "12px", fontFamily: FONT.family.display,
+        fontSize: FONT.size.md, fontFamily: FONT.family.display,
         color: hovered ? "#f0ede8" : "#94a3b8", transition: anim(ANIM.hoverColor),
       }}>{cat}</span>
       <div style={{
@@ -123,12 +123,12 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
         }}>
           <div>
             <div style={{
-              fontSize: "9px", color: COLOR.text.secondary, fontFamily: FONT.family.display,
+              fontSize: FONT.size.xxs, color: COLOR.text.secondary, fontFamily: FONT.family.display,
               fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em",
               marginBottom: "4px",
             }}>{label}</div>
             <div style={{
-              fontSize: "15px", fontWeight: 700, color: COLOR.text.primary,
+              fontSize: FONT.size.lg, fontWeight: 700, color: COLOR.text.primary,
               fontFamily: FONT.family.display,
             }}>Lägg till fonder</div>
           </div>
@@ -139,7 +139,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
               background: COLOR.surface.input, border: `1px solid ${COLOR.border.card}`,
               color: COLOR.text.secondary, cursor: "pointer", display: "flex",
               alignItems: "center", justifyContent: "center",
-              fontSize: "18px", lineHeight: 1, fontFamily: FONT.family.display, padding: 0,
+              fontSize: FONT.icon.sm, lineHeight: 1, fontFamily: FONT.family.display, padding: 0,
             }}
           >×</button>
         </div>
@@ -158,7 +158,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
               background: COLOR.surface.tab, border: `1px solid ${COLOR.border.strong}`,
               borderRadius: "8px",
               color: loading ? COLOR.text.secondary : COLOR.text.primary,
-              fontSize: "13px", padding: "9px 14px", outline: "none",
+              fontSize: FONT.size.base, padding: "9px 14px", outline: "none",
               fontFamily: FONT.family.display, marginBottom: "8px", display: "block",
             }}
           />
@@ -180,7 +180,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                     : `1px solid ${COLOR.border.card}`,
                   color: isFilterActive ? "#7b93ff" : COLOR.text.secondary,
                   fontFamily: FONT.family.display, fontWeight: 600,
-                  fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.04em",
+                  fontSize: FONT.size.xxs, textTransform: "uppercase", letterSpacing: "0.04em",
                   transition: anim(ANIM.allFast),
                 }}
               >
@@ -221,7 +221,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
               <div key={cat} style={{
                 display: "flex", alignItems: "center", gap: "4px",
                 background: "rgba(0,24,245,0.10)", border: "1px solid rgba(0,24,245,0.25)",
-                color: "#7b93ff", fontSize: "10px", fontFamily: FONT.family.display,
+                color: "#7b93ff", fontSize: FONT.size.xs, fontFamily: FONT.family.display,
                 fontWeight: 600, textTransform: "uppercase",
                 padding: "3px 8px 3px 10px", borderRadius: "20px",
               }}>
@@ -230,7 +230,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                   onClick={() => toggleCategory(cat)}
                   onMouseEnter={e => e.currentTarget.style.opacity = "1"}
                   onMouseLeave={e => e.currentTarget.style.opacity = "0.65"}
-                  style={{ fontSize: "10px", cursor: "pointer", opacity: 0.65, lineHeight: 1 }}
+                  style={{ fontSize: FONT.size.xs, cursor: "pointer", opacity: 0.65, lineHeight: 1 }}
                 >×</span>
               </div>
             ))}
@@ -238,7 +238,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
 
           {/* Counter */}
           <div style={{
-            fontSize: "9px", color: COLOR.text.secondary, fontFamily: FONT.family.display,
+            fontSize: FONT.size.xxs, color: COLOR.text.secondary, fontFamily: FONT.family.display,
             fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em",
             marginBottom: "6px",
           }}>
@@ -266,9 +266,9 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                 width: "16px", height: "16px", borderRadius: "50%", flexShrink: 0,
                 background: COLOR.border.subtle, border: `1px solid ${COLOR.border.circle}`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "13px", color: COLOR.text.subtle, lineHeight: 1,
+                fontSize: FONT.size.base, color: COLOR.text.subtle, lineHeight: 1,
               }}>+</div>
-              <span style={{ fontSize: "12px", color: COLOR.text.subtle, fontFamily: FONT.family.display }}>
+              <span style={{ fontSize: FONT.size.md, color: COLOR.text.subtle, fontFamily: FONT.family.display }}>
                 Lägg till fond manuellt
               </span>
             </div>
@@ -310,17 +310,17 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                   }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
-                      fontSize: "12px", fontFamily: FONT.family.display,
+                      fontSize: FONT.size.md, fontFamily: FONT.family.display,
                       fontWeight: 600, color: COLOR.text.primary,
                       whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                     }}>
                       {f.name}
                       {f.isManual && (
-                        <span style={{ fontSize: "10px", color: COLOR.text.secondary, marginLeft: "5px" }}>manuell</span>
+                        <span style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, marginLeft: "5px" }}>manuell</span>
                       )}
                     </div>
                     <div style={{
-                      fontSize: "10px", color: COLOR.text.secondary, fontFamily: FONT.family.display,
+                      fontSize: FONT.size.xs, color: COLOR.text.secondary, fontFamily: FONT.family.display,
                       marginTop: "1px",
                     }}>
                       {f.category} · {fmtFee(f.fee)}
@@ -334,7 +334,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                   }}>
                     {added && (
                       hoveredId === f.id
-                        ? <span style={{ fontSize: "10px", color: "#f87171", lineHeight: 1 }}>×</span>
+                        ? <span style={{ fontSize: FONT.size.xs, color: "#f87171", lineHeight: 1 }}>×</span>
                         : <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
                             <polyline points="1,3.5 3.5,6 8,1" stroke="#6ee7b7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
@@ -353,7 +353,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
           borderTop: `1px solid ${COLOR.border.subtle}`,
           display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
-          <span style={{ fontSize: "11px", color: COLOR.text.secondary, fontFamily: FONT.family.display }}>
+          <span style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary, fontFamily: FONT.family.display }}>
             {excluded.length} {excluded.length === 1 ? "fond vald" : "fonder valda"}
           </span>
           <button
@@ -362,7 +362,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
             onMouseLeave={e => e.currentTarget.style.background = "rgba(0,24,245,0.10)"}
             style={{
               background: "rgba(0,24,245,0.10)", border: "1px solid rgba(0,24,245,0.30)",
-              color: "#7b93ff", fontSize: "12px", fontFamily: FONT.family.display,
+              color: "#7b93ff", fontSize: FONT.size.md, fontFamily: FONT.family.display,
               fontWeight: 600, padding: "8px 18px", borderRadius: "8px",
               cursor: "pointer", transition: anim(ANIM.hover),
             }}

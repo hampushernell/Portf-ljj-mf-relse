@@ -114,6 +114,7 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
         <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth="1" strokeDasharray="5 4"/>
         {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>}
         {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>}
+        {/* TODO commit 3: y-axeletiketter fontSize={isMobile ? 18 : 12} */}
         {yTicks.map(({ v, y }, i) => (
           <text key={i} x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.muted} fontSize={isMobile ? 16 : 10} fontFamily={FONT.family.body}>
             {`${(v - 100).toFixed(0)}%`}
@@ -130,11 +131,11 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
           left: tooltip.x / W * 100 > 60 ? "auto" : `calc(${tooltip.x / W * 100}% + 14px)`,
           right: tooltip.x / W * 100 > 60 ? `calc(${(1 - tooltip.x / W) * 100}% + 14px)` : "auto",
           background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.strong}`,
-          borderRadius: "8px", padding: "8px 12px", fontSize: "12px",
+          borderRadius: "8px", padding: "8px 12px", fontSize: FONT.size.md,
           fontFamily: FONT.family.display, pointerEvents: "none", zIndex: 10,
           boxShadow: SHADOW.tooltip,
         }}>
-          <div style={{ color: COLOR.text.secondary, fontSize: "10px", marginBottom: "4px" }}>
+          <div style={{ color: COLOR.text.secondary, fontSize: FONT.size.xs, marginBottom: "4px" }}>
             {tooltip.timestamp
               ? new Date(tooltip.timestamp * 1000).toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" })
               : `Dag ${tooltip.idx}`}
@@ -143,14 +144,14 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: tooltip.vB ? "3px" : 0 }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: ACCENT_A }} />
               <span style={{ color: COLOR.text.primary }}>A: <strong style={{ color: (tooltip.vA - 100) >= 0 ? COLOR.positive : COLOR.negative }}>{fmtPct(tooltip.vA - 100)}</strong></span>
-              {totalA > 0 && <span style={{ color: COLOR.text.secondary, fontSize: "11px" }}>{formatKr(totalA * (tooltip.vA - 100) / 100)}</span>}
+              {totalA > 0 && <span style={{ color: COLOR.text.secondary, fontSize: FONT.size.sm }}>{formatKr(totalA * (tooltip.vA - 100) / 100)}</span>}
             </div>
           )}
           {tooltip.vB && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: ACCENT_B }} />
               <span style={{ color: COLOR.text.primary }}>B: <strong style={{ color: (tooltip.vB - 100) >= 0 ? COLOR.positive : COLOR.negative }}>{fmtPct(tooltip.vB - 100)}</strong></span>
-              {totalB > 0 && <span style={{ color: COLOR.text.secondary, fontSize: "11px" }}>{formatKr(totalB * (tooltip.vB - 100) / 100)}</span>}
+              {totalB > 0 && <span style={{ color: COLOR.text.secondary, fontSize: FONT.size.sm }}>{formatKr(totalB * (tooltip.vB - 100) / 100)}</span>}
             </div>
           )}
         </div>

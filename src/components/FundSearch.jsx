@@ -23,10 +23,10 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
             width: "22px", height: "22px", borderRadius: "50%", flexShrink: 0,
             border: `1.5px solid rgba(${accentRgb}, 0.5)`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "15px", color: accent, lineHeight: 1,
+            fontSize: FONT.size.lg, color: accent, lineHeight: 1,
           }}>+</div>
           <span style={{
-            fontSize: "13px", fontFamily: FONT.family.display,
+            fontSize: FONT.size.base, fontFamily: FONT.family.display,
             fontWeight: 600, color: COLOR.text.secondary,
           }}>Lägg till fond</span>
         </div>
@@ -46,10 +46,10 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
             width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
             border: `1.5px solid rgba(${accentRgb}, 0.4)`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "13px", color: accent, lineHeight: 1,
+            fontSize: FONT.size.base, color: accent, lineHeight: 1,
           }}>+</div>
           <span style={{
-            fontSize: "12px", fontFamily: FONT.family.display, fontWeight: 600,
+            fontSize: FONT.size.md, fontFamily: FONT.family.display, fontWeight: 600,
             color: triggerHovered ? COLOR.text.primary : COLOR.text.secondary,
             transition: anim(ANIM.hoverColor),
           }}>Lägg till fond</span>
@@ -59,7 +59,7 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
       {failedFunds.length > 0 && (
         <div style={{
           display: "flex", alignItems: "center", gap: "5px",
-          marginTop: "6px", fontSize: "11px", color: COLOR.warning,
+          marginTop: "6px", fontSize: FONT.size.sm, color: COLOR.warning,
           fontFamily: FONT.family.display,
         }}>
           <span>⚠</span>
