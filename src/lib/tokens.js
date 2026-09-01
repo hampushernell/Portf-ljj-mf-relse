@@ -31,9 +31,9 @@ export const COLOR = {
 
   text: {
     primary:   "#f0ede8",
-    secondary: "#5a6e8a",
+    secondary: "#8494ad",
     muted:     "#94a3b8",
-    ghost:     "#1a2a36",
+    ghost:     "#55617a",
     subtle:    "#94a3b8",
   },
 
@@ -53,7 +53,7 @@ export const COLOR = {
   positive:     "#56ec8d",
   warning:      "#f59e0b",
   warningLight: "#fbbf24",
-  negative:     "#ba2d2d",
+  negative:     "#f87171",
 
   fi:       "#3a9aa8",
   fallback: "#94a3b8",

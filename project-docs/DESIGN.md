@@ -8,9 +8,9 @@ colors:
   cobalt-mist: "#7b93ff"
   arctic-sky: "#38bdf8"
   warm-chalk: "#f0ede8"
-  steel-slate: "#5a6e8a"
+  steel-slate: "#8494ad"
   neutral-slate: "#94a3b8"
-  ghost-ink: "#1e2d3a"
+  ghost-ink: "#55617a"
   positive-mint: "#6ee7b7"
   alert-coral: "#f87171"
   warning-amber: "#f59e0b"
@@ -146,14 +146,16 @@ A near-monochromatic dark field interrupted only by two precise accent signals.
 - **Abyss Navy** (`#090d1a`): The page background. Never used as a component background — only the canvas itself.
 - **Surface Night** (`#0d1120`): Elevated surfaces: modals, dropdown menus, tooltip panels. The step above Abyss Navy.
 - **Warm Chalk** (`#f0ede8`): Primary text. Slightly warm to avoid clinical harshness against the navy field.
-- **Steel Slate** (`#5a6e8a`): Secondary text: labels, captions, subordinate metadata. The most-used neutral after Warm Chalk.
+- **Steel Slate** (`#8494ad`): Secondary text: labels, captions, subordinate metadata. The most-used neutral after Warm Chalk.
 - **Neutral Slate** (`#94a3b8`): Tertiary text: modal body copy, Manuell badge color. One step lighter than Steel Slate.
-- **Ghost Ink** (`#1e2d3a`): Disclaimer text at the page bottom. Intentionally near-invisible — present for compliance, not prominence.
+- **Ghost Ink** (`#55617a`): Disclaimer text at the page bottom. Intentionally subdued — present for compliance, not prominence.
 
 ### Named Rules
 **The Two-Accent Rule.** Electric Cobalt and Arctic Sky are the only saturated colors in the system. Every other chromatic touch (Positive Mint, Alert Coral, Authority Teal) is semantic, not decorative. Adding a third decorative accent is forbidden.
 
 **The Opacity Stack Rule.** Component backgrounds are never solid colors — they are semi-transparent white layers on top of the dark field (`rgba(255,255,255,0.02–0.10)`). This ensures surfaces remain coherent at any depth without maintaining a parallel set of background color tokens.
+
+**The Contrast Floor Rule.** All text under 18px måste nå minst 4.5:1 mot bg.base. Nya textfärger valideras innan de läggs till.
 
 ## 3. Typography
 

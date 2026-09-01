@@ -153,7 +153,7 @@ function YearStepper({ years, setYears }) {
             MozAppearance: "textfield",
           }}
         />
-        <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: "#5a6e8a", flexShrink: 0 }}>år</span>
+        <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: COLOR.text.secondary, flexShrink: 0 }}>år</span>
       </div>
       <button
         style={{ ...btnStyle, borderLeft: "1px solid rgba(255,255,255,0.08)" }}
@@ -292,7 +292,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
               style={{ ...inputStyle, border: "none", background: "transparent", flex: 1, minWidth: 0, paddingRight: "4px" }}
               min={0}
             />
-            <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: "#5a6e8a", paddingRight: "12px", flexShrink: 0 }}>kr</span>
+            <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: COLOR.text.secondary, paddingRight: "12px", flexShrink: 0 }}>kr</span>
           </div>
         </div>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
@@ -307,7 +307,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
               style={{ ...inputStyle, border: "none", background: "transparent", flex: 1, minWidth: 0, paddingRight: "4px" }}
               min={0}
             />
-            <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: "#5a6e8a", paddingRight: "12px", flexShrink: 0 }}>kr</span>
+            <span style={{ fontFamily: FONT.family.display, fontSize: "10px", color: COLOR.text.secondary, paddingRight: "12px", flexShrink: 0 }}>kr</span>
           </div>
         </div>
         <div style={{ flex: "1 1 140px", minWidth: "120px" }}>

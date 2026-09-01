@@ -123,7 +123,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
         }}>
           <div>
             <div style={{
-              fontSize: "9px", color: "#5a6e8a", fontFamily: FONT.family.display,
+              fontSize: "9px", color: COLOR.text.secondary, fontFamily: FONT.family.display,
               fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em",
               marginBottom: "4px",
             }}>{label}</div>
@@ -137,7 +137,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
             style={{
               width: "28px", height: "28px", borderRadius: "50%", flexShrink: 0,
               background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-              color: "#5a6e8a", cursor: "pointer", display: "flex",
+              color: COLOR.text.secondary, cursor: "pointer", display: "flex",
               alignItems: "center", justifyContent: "center",
               fontSize: "18px", lineHeight: 1, fontFamily: FONT.family.display, padding: 0,
             }}
@@ -178,7 +178,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                   border: isFilterActive
                     ? "1px solid rgba(0,24,245,0.35)"
                     : "1px solid rgba(255,255,255,0.10)",
-                  color: isFilterActive ? "#7b93ff" : "#5a6e8a",
+                  color: isFilterActive ? "#7b93ff" : COLOR.text.secondary,
                   fontFamily: FONT.family.display, fontWeight: 600,
                   fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.04em",
                   transition: anim(ANIM.allFast),
@@ -238,7 +238,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
 
           {/* Counter */}
           <div style={{
-            fontSize: "9px", color: "#5a6e8a", fontFamily: FONT.family.display,
+            fontSize: "9px", color: COLOR.text.secondary, fontFamily: FONT.family.display,
             fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em",
             marginBottom: "6px",
           }}>
@@ -320,7 +320,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                       )}
                     </div>
                     <div style={{
-                      fontSize: "10px", color: "#5a6e8a", fontFamily: FONT.family.display,
+                      fontSize: "10px", color: COLOR.text.secondary, fontFamily: FONT.family.display,
                       marginTop: "1px",
                     }}>
                       {f.category} · {fmtFee(f.fee)}
@@ -353,7 +353,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
           borderTop: "1px solid rgba(255,255,255,0.07)",
           display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
-          <span style={{ fontSize: "11px", color: "#5a6e8a", fontFamily: FONT.family.display }}>
+          <span style={{ fontSize: "11px", color: COLOR.text.secondary, fontFamily: FONT.family.display }}>
             {excluded.length} {excluded.length === 1 ? "fond vald" : "fonder valda"}
           </span>
           <button
