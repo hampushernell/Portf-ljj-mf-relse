@@ -193,6 +193,7 @@ Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.
 - [x] Accenttint-bakgrund på fondkort — `rgba(accentRgb, 0.045)`, A cobalt / B arctic sky
 - [x] Glow borttaget från fondkort — ersatt av accenttint
 - [x] Grafkort transparent — `background: transparent`, border `1px solid rgba(255,255,255,0.10)`
+- [x] Textnivåer omgjorda till tre steg — ghost avskaffad, alla textfärger över 4.5:1
 - [ ] Animationskonsistens, tydligare skillnad Jämför/Fondläge
 
 ### Fas 5 – Fondutbud ✓

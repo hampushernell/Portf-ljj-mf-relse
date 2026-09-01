@@ -123,7 +123,7 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
           { lbl: "Investerat belopp", val: totalA > 0 ? formatKr(totalA) : "–" },
         ].map(({ lbl, val, col, sub }) => (
           <div key={lbl} style={{ background: COLOR.surface[1], borderRadius: "10px", padding: "12px 16px" }}>
-            <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px", fontFamily: FONT.family.display }}>{lbl}</div>
+            <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px", fontFamily: FONT.family.display }}>{lbl}</div>
             <div style={{ fontFamily: FONT.family.display, fontSize: FONT.size["2xl"], fontWeight: 700, color: col || COLOR.text.primary }}>{val}</div>
             {sub && <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, marginTop: "2px" }}>{sub}</div>}
           </div>

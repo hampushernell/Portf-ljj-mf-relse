@@ -146,16 +146,18 @@ A near-monochromatic dark field interrupted only by two precise accent signals.
 - **Abyss Navy** (`#090d1a`): The page background. Never used as a component background — only the canvas itself.
 - **Surface Night** (`#0d1120`): Elevated surfaces: modals, dropdown menus, tooltip panels. The step above Abyss Navy.
 - **Warm Chalk** (`#f0ede8`): Primary text. Slightly warm to avoid clinical harshness against the navy field.
-- **Steel Slate** (`#8494ad`): Secondary text: labels, captions, subordinate metadata. The most-used neutral after Warm Chalk.
-- **Neutral Slate** (`#94a3b8`): Tertiary text: modal body copy, Manuell badge color. One step lighter than Steel Slate.
-- **Ghost Ink** (`#55617a`): Disclaimer text at the page bottom. Intentionally subdued — present for compliance, not prominence.
+
+### Text color levels (tre nivåer, alla ≥ 4.5:1 mot bg.base)
+- **Primary** (`#f0ede8`, 16,4:1): Fondnamn, siffervärden, rubriker. Allt som bär information.
+- **Secondary** (`#cbd5e6`, 12,9:1): Subtext, brödtext, metadata, sekundära labels, datumsträngar.
+- **Label** (`#a9b6cc`, 9,3:1): Versala 11px-etiketter (`textTransform: uppercase`), y-axeletiketter i grafer. Avsiktligt ett steg under secondary — etikettnivån guidar ögat till värdena utan att konkurrera med dem.
 
 ### Named Rules
 **The Two-Accent Rule.** Electric Cobalt and Arctic Sky are the only saturated colors in the system. Every other chromatic touch (Positive Mint, Alert Coral, Authority Teal) is semantic, not decorative. Adding a third decorative accent is forbidden.
 
 **The Opacity Stack Rule.** Component backgrounds are never solid colors — they are semi-transparent white layers on top of the dark field (`rgba(255,255,255,0.02–0.10)`). This ensures surfaces remain coherent at any depth without maintaining a parallel set of background color tokens.
 
-**The Contrast Floor Rule.** All text under 18px måste nå minst 4.5:1 mot bg.base. Nya textfärger valideras innan de läggs till.
+**The Contrast Floor Rule.** Alla textfärger i systemet klarar 4.5:1 mot bg.base. Ghost-nivån (#55617a, 3,1:1) är avskaffad — den bröt mot regeln. Nya textfärger valideras mot bg.base innan de läggs till.
 
 ## 3. Typography
 
@@ -174,7 +176,7 @@ A near-monochromatic dark field interrupted only by two precise accent signals.
 ### Named Rules
 **The Chrome/Content Split Rule.** Syne carries all interface chrome: buttons, tabs, labels, headings, fund names, badges, tooltips. DM Sans carries all explanatory prose: modal body text, fee source descriptions. Swapping this — DM Sans on a tab label, Syne on a paragraph — breaks the system's voice.
 
-**The Label Contract.** Every data field is preceded by an uppercase Syne label at 11px with letter-spacing 0.04em and color Steel Slate. The label names the unit; the value below it names the number. This pattern is non-negotiable — unlabelled data fields are prohibited.
+**The Label Contract.** Every data field is preceded by an uppercase Syne label at 11px with letter-spacing 0.04em and color `COLOR.text.label` (`#a9b6cc`). The label names the unit; the value below it names the number. This pattern is non-negotiable — unlabelled data fields are prohibited.
 
 **The Token-Only Size Rule.** Hårdkodade fontSize-värden är förbjudna. Alla storlekar kommer från FONT.size. Ikoner och glyfer använder FONT.icon och ingår inte i typskalan.
 

@@ -23,7 +23,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
     padding: "8px 12px", outline: "none", fontFamily: FONT.family.display,
   });
   const label = (txt) => (
-    <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.04em", fontFamily: FONT.family.display, marginBottom: "5px" }}>{txt}</div>
+    <div style={{ fontSize: FONT.size.xs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em", fontFamily: FONT.family.display, marginBottom: "5px" }}>{txt}</div>
   );
 
   const handleSubmit = () => {

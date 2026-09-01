@@ -25,7 +25,7 @@ function CategoryRow({ cat, isSelected, onToggle }) {
     >
       <span style={{
         fontSize: FONT.size.md, fontFamily: FONT.family.display,
-        color: hovered ? "#f0ede8" : "#94a3b8", transition: anim(ANIM.hoverColor),
+        color: hovered ? COLOR.text.primary : COLOR.text.secondary, transition: anim(ANIM.hoverColor),
       }}>{cat}</span>
       <div style={{
         width: "14px", height: "14px", borderRadius: "3px", flexShrink: 0,

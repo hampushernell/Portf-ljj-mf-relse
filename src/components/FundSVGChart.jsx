@@ -136,7 +136,7 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
           />
         )}
         {yTicks.map(({ v, y }, i) => (
-          <text key={i} x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.muted} fontSize={isMobile ? 18 : 12} fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
+          <text key={i} x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.axis} fontSize={isMobile ? 18 : 12} fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
         ))}
         {tooltip && (
           <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>

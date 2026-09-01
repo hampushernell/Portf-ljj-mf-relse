@@ -46,7 +46,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         <div onClick={e => e.stopPropagation()}
           style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "6px" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-            <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em" }}>
               {inputMode === "pct" ? "Andel %" : "Belopp kr"}
             </label>
             <input type="number" value={inputVal}
@@ -58,7 +58,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-            <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em" }}>
               {inputMode === "pct" ? "≈ kr" : "≈ %"}
             </label>
             <div style={{ background: COLOR.surface.faint, border: `1px solid ${COLOR.border.muted}`, borderRadius: "6px", color: COLOR.text.secondary, fontSize: FONT.size.sm, padding: "5px 8px" }}>
@@ -124,7 +124,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         </div>
       </div>
       <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+        <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em" }}>
           {inputMode === "pct" ? "Andel %" : "Belopp kr"}
         </label>
         <input type="number" value={inputVal}
@@ -141,7 +141,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
         />
       </div>
       <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+        <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em" }}>
           {inputMode === "pct" ? "≈ kr" : "≈ %"}
         </label>
         <div style={{

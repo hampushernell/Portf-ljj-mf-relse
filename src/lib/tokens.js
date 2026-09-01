@@ -29,12 +29,15 @@ export const COLOR = {
     card:    "rgba(255,255,255,0.14)",
   },
 
+  // tre nivåer — primary (värden/namn), secondary (subtext/brödtext), label (etiketter/axlar). Alla klarar 4.5:1 mot COLOR.bg.base.
   text: {
-    primary:   "#f0ede8",
-    secondary: "#8494ad",
-    muted:     "#94a3b8",
-    ghost:     "#55617a",
-    subtle:    "#94a3b8",
+    primary:   "#f0ede8",   // 16,4:1
+    secondary: "#cbd5e6",   // 12,9:1
+    muted:     "#cbd5e6",   // 12,9:1 — alias för secondary
+    subtle:    "#cbd5e6",   // 12,9:1 — alias för secondary
+    label:     "#a9b6cc",   //  9,3:1 — versala 11px-etiketter
+    axis:      "#a9b6cc",   //  9,3:1 — y-axeletiketter i graferna
+    ghost:     "#a9b6cc",   //  9,3:1
   },
 
   tint: {

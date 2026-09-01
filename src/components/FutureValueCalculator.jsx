@@ -23,7 +23,7 @@ const LABEL = {
   fontWeight: 600,
   letterSpacing: "0.04em",
   textTransform: "uppercase",
-  color: COLOR.text.secondary,
+  color: COLOR.text.label,
   marginBottom: "5px",
 };
 
@@ -101,7 +101,7 @@ function YearStepper({ years, setYears }) {
     height: "38px",
     background: COLOR.surface.tab,
     border: "none",
-    color: "#94a3b8",
+    color: COLOR.text.secondary,
     cursor: "pointer",
     fontSize: FONT.size.xl,
     lineHeight: 1,
@@ -281,7 +281,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
       `}</style>
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "22px", alignItems: "flex-end" }}>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
-          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Engångsbelopp</span>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: COLOR.text.label, display: "block", marginBottom: "6px" }}>Engångsbelopp</span>
           <div style={{ ...inputStyle, display: "flex", alignItems: "center", padding: 0 }}>
             <input
               type="number"
@@ -296,7 +296,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
           </div>
         </div>
         <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
-          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Månadssparande</span>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: COLOR.text.label, display: "block", marginBottom: "6px" }}>Månadssparande</span>
           <div style={{ ...inputStyle, display: "flex", alignItems: "center", padding: 0 }}>
             <input
               type="number"
@@ -311,7 +311,7 @@ export default function FutureValueCalculator({ bundleA, bundleB, feeA, feeB }) 
           </div>
         </div>
         <div style={{ flex: "1 1 140px", minWidth: "120px" }}>
-          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: COLOR.text.secondary, display: "block", marginBottom: "6px" }}>Tidshorisont</span>
+          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xxs, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: COLOR.text.label, display: "block", marginBottom: "6px" }}>Tidshorisont</span>
           <YearStepper years={years} setYears={setYears} />
         </div>
       </div>

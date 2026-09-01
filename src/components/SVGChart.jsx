@@ -115,7 +115,7 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
         {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>}
         {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>}
         {yTicks.map(({ v, y }, i) => (
-          <text key={i} x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.muted} fontSize={isMobile ? 18 : 12} fontFamily={FONT.family.body}>
+          <text key={i} x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.axis} fontSize={isMobile ? 18 : 12} fontFamily={FONT.family.body}>
             {`${(v - 100).toFixed(0)}%`}
           </text>
         ))}

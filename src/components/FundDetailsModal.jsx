@@ -91,7 +91,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px" }}>
                 <div style={{ background: COLOR.surface[1], borderRadius: "7px", padding: "8px 10px" }}>
-                  <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px", fontFamily: FONT.family.display }}>Avgift/år</div>
+                  <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px", fontFamily: FONT.family.display }}>Avgift/år</div>
                   <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                     <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.md, fontWeight: 600, color: COLOR.text.primary }}>{fmtFee(fund.fee)}</span>
                     <FeeBadge source={fund.feeSource} period={fund.feePeriod} isManual={fund.isManual ?? false} updatedAt={fund.updatedAt} />
@@ -103,7 +103,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
                   { lbl: "Data fr.o.m.", val: oldestDate },
                 ].map(({ lbl, val, color, mono }) => (
                   <div key={lbl} style={{ background: COLOR.surface[1], borderRadius: "7px", padding: "8px 10px" }}>
-                    <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.secondary, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px", fontFamily: FONT.family.display }}>{lbl}</div>
+                    <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px", fontFamily: FONT.family.display }}>{lbl}</div>
                     <div style={{ fontFamily: mono ? "monospace" : FONT.family.display, fontSize: mono ? "10px" : "12px", fontWeight: 600, color: color || COLOR.text.primary }}>{val}</div>
                   </div>
                 ))}
