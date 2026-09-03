@@ -157,7 +157,7 @@ A near-monochromatic dark field interrupted only by two precise accent signals.
 
 **The Opacity Stack Rule.** Component backgrounds are never solid colors — they are semi-transparent white layers on top of the dark field (`rgba(255,255,255,0.02–0.20)`). This ensures surfaces remain coherent at any depth without maintaining a parallel set of background color tokens. Border tokens follow the same opacity discipline with four semantic roles: **edge** (0.34, yttre paneler ≥ 3:1 mot bg.base) → **inner** (0.26, sektionskanter inuti paneler) → **soft** (0.20, separatorer/statkort) → **hairline** (0.12, horisontella avdelare). Modaldialogs use **modal** (0.40) for maximum definition against the overlay.
 
-**The Contrast Floor Rule.** Text: alla nivåer klarar 4.5:1 mot bg.base (WCAG 1.4.3). Icke-textelement (kantkonturer, kontroller): 3:1 mot omgivande yta (WCAG 1.4.11) — undre gränsen är `border.edge` (rgba 0.34, ≈ 3.07:1 mot bg.base). Ghost-nivån (#55617a, 3,1:1) är avskaffad. Nya färger valideras mot bg.base innan de läggs till. Medvetna undantag: BriefcaseIcon-accentfärg och "+"‑glyfen i FundSearch är alltid bredvid en textlabel — de är inte ensamma informationsbärare och faller utanför 1.4.11.
+**The Contrast Floor Rule.** Text: alla nivåer klarar 4.5:1 mot bg.base (WCAG 1.4.3). Icke-textelement (kantkonturer, kontroller): 3:1 mot omgivande yta (WCAG 1.4.11) — undre gränsen är `border.edge` (rgba 0.34, ≈ 3.07:1 mot bg.base). Ghost-nivån (#55617a, 3,1:1) är avskaffad. Nya färger valideras mot bg.base innan de läggs till. Medvetna undantag: BriefcaseIcon-accentfärg är alltid bredvid en textlabel — den är inte en ensam informationsbärare och faller utanför 1.4.11.
 
 ## 3. Typography
 

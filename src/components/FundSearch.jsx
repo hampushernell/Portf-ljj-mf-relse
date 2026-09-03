@@ -20,14 +20,13 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
           }}
         >
           <div style={{
-            width: "34px", height: "34px", borderRadius: "50%", flexShrink: 0,
-            border: `2px solid ${COLOR.border.edge}`,
+            flexShrink: 0,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: FONT.size["6xl"], color: accent, lineHeight: 1,
+            fontSize: FONT.size["6xl"], color: COLOR.text.secondary, lineHeight: 1,
           }}>
             <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true">
-              <rect x="6.5" y="0" width="2" height="15" rx="1" fill={accent} />
-              <rect x="0" y="6.5" width="15" height="2" rx="1" fill={accent} />
+              <rect x="6.5" y="0" width="2" height="15" rx="1" fill={COLOR.text.secondary} />
+              <rect x="0" y="6.5" width="15" height="2" rx="1" fill={COLOR.text.secondary} />
             </svg>
           </div>
           <span style={{
@@ -48,14 +47,13 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
           }}
         >
           <div style={{
-            width: "34px", height: "34px", borderRadius: "50%", flexShrink: 0,
-            border: `2px solid ${COLOR.border.edge}`,
+            flexShrink: 0,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: FONT.size["6xl"], color: accent, lineHeight: 1,
+            fontSize: FONT.size["6xl"], color: COLOR.text.secondary, lineHeight: 1,
           }}>
             <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true">
-              <rect x="6.5" y="0" width="2" height="15" rx="1" fill={accent} />
-              <rect x="0" y="6.5" width="15" height="2" rx="1" fill={accent} />
+              <rect x="6.5" y="0" width="2" height="15" rx="1" fill={COLOR.text.secondary} />
+              <rect x="0" y="6.5" width="15" height="2" rx="1" fill={COLOR.text.secondary} />
             </svg>
           </div>
           <span style={{
