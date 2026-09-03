@@ -67,7 +67,7 @@ export const FUNDS_REGISTRY = [
   // Temafonder (tillägg)
   { id: 48, ticker: "0P00014CZ3.ST", isin: "SE0005965662", name: "Handelsbanken Hållbar Energi A1",     category: "Temafond",          fallbackFee: 1.50 },
   // Tillväxtmarknadsfonder (tillägg)
-  { id: 49, ticker: "0P0001E1JQ.ST", isin: "LU1648400262", name: "Emerging Markets Enhanced BP",        category: "Tillväxtmarknadsfond", fallbackFee: 0.65 }, // LU-fond, ej FI-täckning
+  { id: 49, ticker: "0P0001E1JQ.ST", isin: "LU1648400262", name: "Nordea Emerging Markets Enhanced BP",        category: "Tillväxtmarknadsfond", fallbackFee: 0.65 }, // LU-fond, ej FI-täckning
   // Räntefonder (tillägg)
   { id: 50, ticker: "0P0000NRW6.ST", isin: "FI4000010525", name: "Nordea Stratega Ränta",               category: "Räntefond",         fallbackFee: 0.65 }, // FI-fond, ej FI-täckning
 ];

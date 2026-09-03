@@ -106,15 +106,7 @@ Mål: varje jämförelse ska kunna delas med en URL. Produkten ska hittas via Go
 - [x] **Kopiera länk-knapp** — implementerad i `ReturnChart.jsx` och `FundReturnChart.jsx` via `navigator.clipboard.writeText(window.location.href)`
 - [ ] **SSR/prerendering** — Vite SSG eller `vite-plugin-ssr` för statiska sidor per fondkategori. Ger Google något att indexera på termer som "jämför globalfonder avgift", "bästa sverigefond historik". Kräver arkitekturellt beslut — utvärderas separat
 
-## Fas 8 – Onboarding och startläge
-
-Mål: en ny användare ska förstå produkten och nå ett aha-moment utan friktion.
-
-- [ ] **Förifyllda startexempel** — tre snabbvalsknappar på tom startskärm: "Jämför indexfonder", "Hög vs låg avgift", "Sverige vs Global". Klick fyller portföljerna direkt med relevanta fonder
-- [ ] **Tom-portfölj-state** — tydligare visuell guide i tomma PortfolioPanel: "Lägg till fonder för att se avkastning" med pil mot sökknappen, inte bara en tom yta
-- [ ] **Laddningshint** — medan fonddata hämtas: visa en kort hint om vad man kan göra, inte bara spinner
-
-## Fas 9 – Breddat fonduniversum
+## Fas 8 – Breddat fonduniversum
 
 Mål: täcka de fondtyper som saknas för en komplett bild av den svenska fondmarknaden.
 

@@ -17,8 +17,8 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
 
   const fieldStyle = (err) => ({
     width: "100%", boxSizing: "border-box",
-    background: COLOR.surface.input,
-    border: `1px solid ${err ? "rgba(248,113,113,0.55)" : COLOR.border.input}`,
+    background: COLOR.surface.sunken,
+    border: `1px solid ${err ? "rgba(248,113,113,0.55)" : COLOR.border.edge}`,
     borderRadius: "7px", color: COLOR.text.primary, fontSize: FONT.size.base,
     padding: "8px 12px", outline: "none", fontFamily: FONT.family.display,
   });
@@ -50,7 +50,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
       animation: anim(ANIM.overlayMount),
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.default}`,
+        background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.modal}`,
         borderRadius: "16px", padding: "28px 28px 24px",
         maxWidth: "520px", width: "100%", maxHeight: "92vh",
         overflow: "auto", animation: anim(ANIM.dialogMount),
@@ -146,7 +146,7 @@ export default function ManualFundModal({ onSave, onClose, initialData = null, o
               cursor: "pointer", fontSize: FONT.size.md, fontFamily: FONT.family.display, fontWeight: 600,
             }}>Avbryt</button>
             <button onClick={handleSubmit}
-              onMouseEnter={e => e.currentTarget.style.background = "rgba(0,24,245,0.28)"}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.18)"}
               onMouseLeave={e => e.currentTarget.style.background = "rgba(0,24,245,0.15)"}
               style={{
                 background: "rgba(0,24,245,0.15)", border: "1px solid rgba(0,24,245,0.4)",

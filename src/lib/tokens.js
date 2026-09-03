@@ -10,13 +10,19 @@ export const COLOR = {
   },
 
   surface: {
-    faint:  "rgba(255,255,255,0.05)",
-    0:      "rgba(255,255,255,0.04)",
-    1:      "rgba(255,255,255,0.06)",
-    hover:  "rgba(255,255,255,0.08)",
-    active: "rgba(255,255,255,0.13)",
-    tab:    "rgba(255,255,255,0.07)",
-    input:  "rgba(255,255,255,0.08)",
+    faint:   "rgba(255,255,255,0.05)",
+    0:       "rgba(255,255,255,0.04)",
+    1:       "rgba(255,255,255,0.06)",
+    hover:   "rgba(255,255,255,0.08)",
+    active:  "rgba(255,255,255,0.13)",
+    tab:     "rgba(255,255,255,0.07)",
+    input:   "rgba(255,255,255,0.08)",
+    // fas 5 — strukturerade ytor
+    panel:   "rgba(255,255,255,0.04)",  // portföljpanelens bakgrund
+    card:    "rgba(255,255,255,0.09)",  // fondkort i listor och modaler
+    section: "rgba(255,255,255,0.055)", // sektionsrutor (Fördelning, Portföljsammanfattning)
+    stat:    "rgba(255,255,255,0.11)",  // statistikkort inuti sektioner
+    sunken:  "#080d19",                 // inmatningsfält (lägre än omgivande yta)
   },
 
   border: {
@@ -27,6 +33,12 @@ export const COLOR = {
     input:   "rgba(255,255,255,0.15)",
     circle:  "rgba(255,255,255,0.24)",
     card:    "rgba(255,255,255,0.14)",
+    // fas 5 — fyra hierarkiska kantroller (WCAG 1.4.11, 3:1)
+    edge:     "rgba(255,255,255,0.34)", // yttre panelkanter — ~3.07:1 mot bg.base
+    inner:    "rgba(255,255,255,0.26)", // sektionskanter inuti paneler
+    soft:     "rgba(255,255,255,0.20)", // mjuka separatorer, statkort
+    hairline: "rgba(255,255,255,0.12)", // horisontella avdelare i modaler
+    modal:    "rgba(255,255,255,0.40)", // modaldialogkanter
   },
 
   // tre nivåer — primary (värden/namn), secondary (subtext/brödtext), label (etiketter/axlar). Alla klarar 4.5:1 mot COLOR.bg.base.

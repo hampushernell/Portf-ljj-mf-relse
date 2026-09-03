@@ -36,14 +36,20 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
       onMouseEnter={e => e.currentTarget.style.boxShadow = SHADOW.cardHover}
       onMouseLeave={e => e.currentTarget.style.boxShadow = SHADOW.card}
       style={{
-        flex: 1, minWidth: 0, background: "transparent",
-        border: `1px solid ${accent}73`, borderRadius: isMobile ? "10px" : "14px", padding: isMobile ? "14px" : "20px",
-        display: "flex", flexDirection: "column", gap: "12px",
+        flex: 1, minWidth: 0,
+        background: COLOR.surface.panel,
+        border: `1.5px solid ${COLOR.border.edge}`,
+        borderRadius: isMobile ? "10px" : "14px",
+        padding: 0,
+        display: "flex", flexDirection: "column",
         animation: anim(ANIM.panelMount),
         boxShadow: SHADOW.card,
         minHeight: funds.length === 0 && !isMobile ? "240px" : "auto",
+        overflow: "hidden",
       }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+
+      {/* Header — kant till kant med separator */}
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "15px 16px 13px", borderBottom: `1px solid ${COLOR.border.soft}` }}>
         {isMobile && (
           <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: accent, flexShrink: 0 }} />
         )}
@@ -65,135 +71,141 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
         )}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", background: COLOR.surface.tab, borderRadius: "7px", padding: "3px", gap: "2px" }}>
-          {["pct", "kr"].map(m => (
-            <button key={m} onClick={() => onInputModeChange(m)} style={{
-              background: inputMode === m ? COLOR.surface.active : "transparent",
-              border: "none", color: inputMode === m ? COLOR.text.primary : COLOR.text.secondary,
-              padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
-              fontSize: FONT.size.sm, fontFamily: FONT.family.display, fontWeight: 600,
-              transition: anim(ANIM.tab),
-            }}>{m === "pct" ? "% Procent" : "kr Kronor"}</button>
+      {/* Body */}
+      <div style={{ padding: isMobile ? "14px" : "20px", display: "flex", flexDirection: "column", gap: "12px", flex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", background: COLOR.surface.panel, border: `1px solid ${COLOR.border.soft}`, borderRadius: "7px", padding: "3px", gap: "2px" }}>
+            {["pct", "kr"].map(m => (
+              <button key={m} onClick={() => onInputModeChange(m)} style={{
+                background: inputMode === m ? "rgba(255,255,255,0.20)" : "transparent",
+                boxShadow: inputMode === m ? "0 1px 2px rgba(0,0,0,0.45)" : "none",
+                border: "none", color: inputMode === m ? COLOR.text.primary : COLOR.text.secondary,
+                padding: "5px 12px", borderRadius: "5px", cursor: "pointer",
+                fontSize: FONT.size.sm, fontFamily: FONT.family.display, fontWeight: 600,
+                transition: anim(ANIM.tab),
+              }}>{m === "pct" ? "% Procent" : "kr Kronor"}</button>
+            ))}
+          </div>
+          {inputMode === "pct" && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", animation: anim(ANIM.fadeMount) }}>
+              <input type="number" value={manualAmount || ""}
+                onChange={e => onManualAmountChange(parseFloat(e.target.value) || 0)}
+                placeholder="Belopp"
+                style={{
+                  background: COLOR.surface.sunken, border: `1px solid ${COLOR.border.edge}`,
+                  borderRadius: "6px", color: COLOR.text.primary, fontSize: FONT.size.base,
+                  padding: "5px 9px", width: "100px", outline: "none", fontFamily: FONT.family.display,
+                }}
+              />
+              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary }}>kr</span>
+            </div>
+          )}
+        </div>
+
+        <div style={{ flex: 1 }}>
+          {funds.map((f, i) => (
+            <FundRow key={f.id} fund={f}
+              allocation={allocations[f.id] || { pct: 0, kr: 0 }}
+              inputMode={inputMode} portfolioTotal={portfolioTotal}
+              onUpdate={vals => onUpdateAlloc(f.id, vals)}
+              onRemove={() => onRemoveFund(f.id)}
+              onEdit={f.isManual ? setEditingFund : undefined}
+              dotColor={viewMode === "fund" ? FUND_COLORS[i % FUND_COLORS.length] : null}
+              spanHasData={!f.isManual || f.returns?.[span] != null}
+            />
           ))}
         </div>
-        {inputMode === "pct" && (
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", animation: anim(ANIM.fadeMount) }}>
-            <input type="number" value={manualAmount || ""}
-              onChange={e => onManualAmountChange(parseFloat(e.target.value) || 0)}
-              placeholder="Belopp"
-              style={{
-                background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`,
-                borderRadius: "6px", color: COLOR.text.primary, fontSize: FONT.size.base,
-                padding: "5px 9px", width: "100px", outline: "none", fontFamily: FONT.family.display,
-              }}
-            />
-            <span style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary }}>kr</span>
+
+        <FundSearch onAdd={onAddFund} onRemove={onRemoveFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} failedFunds={failedFunds} label={label} accent={accent} accentRgb={accentRgb} accentText={accentText} hasFunds={funds.length > 0} />
+
+        {funds.length > 0 && inputMode === "pct" && (
+          <div style={{ padding: isMobile ? "12px" : "14px", background: COLOR.surface.section, border: `1px solid ${COLOR.border.inner}`, borderRadius: "10px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+              <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.04em" }}>Fördelning</div>
+              <span style={{
+                fontSize: FONT.size.xs,
+                color: pctOk ? COLOR.positive : COLOR.negative,
+                background: pctOk ? COLOR.tint.positive : COLOR.tint.negativeStrong,
+                padding: "2px 8px", borderRadius: "20px", fontFamily: FONT.family.display, fontWeight: 600,
+              }}>{totalPct.toFixed(1)}% fördelat</span>
+            </div>
+            <div style={{ display: "flex", height: "10px", borderRadius: "6px", overflow: "hidden", marginBottom: "10px", border: "1px solid rgba(0,0,0,0.35)" }}>
+              {funds.map((f, i) => {
+                const pct = allocations[f.id]?.pct || 0;
+                const shades = isB ? ALLOC_SHADES_B : ALLOC_SHADES_A;
+                const color = viewMode === "compare" ? shades[i % shades.length] : FUND_COLORS[i % FUND_COLORS.length];
+                return pct > 0 ? (
+                  <div key={f.id} style={{ width: `${pct}%`, background: color, transition: anim(ANIM.barWidth), borderLeft: i > 0 ? "1px solid rgba(10,15,28,0.9)" : "none" }} />
+                ) : null;
+              })}
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 12px" }}>
+              {funds.map((f, i) => {
+                const pct = allocations[f.id]?.pct || 0;
+                const shades = isB ? ALLOC_SHADES_B : ALLOC_SHADES_A;
+                const color = viewMode === "compare" ? shades[i % shades.length] : FUND_COLORS[i % FUND_COLORS.length];
+                const shortName = f.name.length > 20 ? f.name.slice(0, 19) + "…" : f.name;
+                return (
+                  <div key={f.id} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: color, flexShrink: 0 }} />
+                    <span style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, fontFamily: FONT.family.display }}>{shortName}</span>
+                    <span style={{ fontSize: FONT.size.xs, color: COLOR.text.primary, fontFamily: FONT.family.display, fontWeight: 600 }}>{pct.toFixed(1)}%</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
-      </div>
 
-      <div style={{ flex: 1 }}>
-        {funds.map((f, i) => (
-          <FundRow key={f.id} fund={f}
-            allocation={allocations[f.id] || { pct: 0, kr: 0 }}
-            inputMode={inputMode} portfolioTotal={portfolioTotal}
-            onUpdate={vals => onUpdateAlloc(f.id, vals)}
-            onRemove={() => onRemoveFund(f.id)}
-            onEdit={f.isManual ? setEditingFund : undefined}
-            dotColor={viewMode === "fund" ? FUND_COLORS[i % FUND_COLORS.length] : null}
-            spanHasData={!f.isManual || f.returns?.[span] != null}
-          />
-        ))}
-      </div>
-
-      <FundSearch onAdd={onAddFund} onRemove={onRemoveFund} excluded={funds.map(f => f.id)} allFunds={allFunds} loading={loading} onSaveManualFund={onSaveManualFund} failedFunds={failedFunds} label={label} accent={accent} accentRgb={accentRgb} accentText={accentText} hasFunds={funds.length > 0} />
-
-      {funds.length > 0 && inputMode === "pct" && (
-        <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-            <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.04em" }}>Fördelning</div>
-            <span style={{
-              fontSize: FONT.size.xs,
-              color: pctOk ? COLOR.positive : COLOR.negative,
-              background: pctOk ? COLOR.tint.positive : COLOR.tint.negativeStrong,
-              padding: "2px 8px", borderRadius: "20px", fontFamily: FONT.family.display, fontWeight: 600,
-            }}>{totalPct.toFixed(1)}% fördelat</span>
-          </div>
-          <div style={{ display: "flex", height: "6px", borderRadius: "20px", overflow: "hidden", marginBottom: "10px" }}>
-            {funds.map((f, i) => {
-              const pct = allocations[f.id]?.pct || 0;
-              const color = viewMode === "compare" ? (isB ? ALLOC_SHADES_B : ALLOC_SHADES_A)[i % 10] : FUND_COLORS[i % FUND_COLORS.length];
-              return pct > 0 ? (
-                <div key={f.id} style={{ width: `${pct}%`, background: color, transition: anim(ANIM.barWidth) }} />
-              ) : null;
-            })}
-          </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 12px" }}>
-            {funds.map((f, i) => {
-              const pct = allocations[f.id]?.pct || 0;
-              const color = viewMode === "compare" ? (isB ? ALLOC_SHADES_B : ALLOC_SHADES_A)[i % 10] : FUND_COLORS[i % FUND_COLORS.length];
-              const shortName = f.name.length > 20 ? f.name.slice(0, 19) + "…" : f.name;
-              return (
-                <div key={f.id} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: color, flexShrink: 0 }} />
-                  <span style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, fontFamily: FONT.family.display }}>{shortName}</span>
-                  <span style={{ fontSize: FONT.size.xs, color: COLOR.text.primary, fontFamily: FONT.family.display, fontWeight: 600 }}>{pct.toFixed(1)}%</span>
+        {funds.length > 0 && (
+          <div style={{ padding: isMobile ? "12px" : "14px", background: COLOR.surface.section, border: `1px solid ${COLOR.border.inner}`, borderRadius: "10px" }}>
+            <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, marginBottom: "12px", fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.04em" }}>Portföljsammanfattning</div>
+            <div style={{ display: "flex", gap: "12px" }}>
+              <div style={{ flex: 1, background: COLOR.surface.stat, border: `1px solid ${COLOR.border.soft}`, borderRadius: "8px", padding: "10px 12px", boxShadow: SHADOW.medium }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
+                  <span style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em" }}>Avgift/år</span>
+                  <button
+                    onClick={() => setShowFeeInfo(true)}
+                    style={{ display: "inline-flex", alignItems: "center", justifyContent: "center",
+                      width: "15px", height: "15px", borderRadius: "50%",
+                      border: `1px solid ${COLOR.border.circle}`, background: "none",
+                      color: COLOR.text.secondary, fontSize: FONT.size.xxs, cursor: "pointer", lineHeight: 1,
+                      fontFamily: FONT.family.display, flexShrink: 0, padding: 0 }}
+                  >?</button>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {funds.length > 0 && (
-        <div style={{ padding: isMobile ? "12px" : "14px", background: `rgba(${accentRgb}, 0.06)`, border: `1px solid rgba(${accentRgb}, 0.2)`, borderRadius: "10px", boxShadow: `0 6px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(${accentRgb},0.08)` }}>
-          <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, marginBottom: "12px", fontFamily: FONT.family.display, textTransform: "uppercase", letterSpacing: "0.04em" }}>Portföljsammanfattning</div>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <div style={{ flex: 1, background: COLOR.surface[1], borderRadius: "8px", padding: "10px 12px", boxShadow: SHADOW.medium }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
-                <span style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em" }}>Avgift/år</span>
-                <button
-                  onClick={() => setShowFeeInfo(true)}
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center",
-                    width: "15px", height: "15px", borderRadius: "50%",
-                    border: `1px solid ${COLOR.border.circle}`, background: "none",
-                    color: COLOR.text.secondary, fontSize: FONT.size.xxs, cursor: "pointer", lineHeight: 1,
-                    fontFamily: FONT.family.display, flexShrink: 0, padding: 0 }}
-                >?</button>
+                <div style={{ fontFamily: FONT.family.display, fontSize: FONT.size["2xl"], fontWeight: 700, color: COLOR.text.primary }}>{fmtFee(fee)}</div>
+                {portfolioTotal > 0 && <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, marginTop: "2px" }}>{formatKr(portfolioTotal * fee / 100)}</div>}
               </div>
-              <div style={{ fontFamily: FONT.family.display, fontSize: FONT.size["2xl"], fontWeight: 700, color: accentText }}>{fmtFee(fee)}</div>
-              {portfolioTotal > 0 && <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, marginTop: "2px" }}>{formatKr(portfolioTotal * fee / 100)}</div>}
-            </div>
-            <div style={{ flex: 1, background: COLOR.surface[1], borderRadius: "8px", padding: "10px 12px", boxShadow: SHADOW.medium }}>
-              <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "3px" }}>
-                {inputMode === "kr" ? "Totalt" : "Belopp"}
+              <div style={{ flex: 1, background: COLOR.surface.stat, border: `1px solid ${COLOR.border.soft}`, borderRadius: "8px", padding: "10px 12px", boxShadow: SHADOW.medium }}>
+                <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "3px" }}>
+                  {inputMode === "kr" ? "Totalt" : "Belopp"}
+                </div>
+                <div style={{ fontFamily: FONT.family.display, fontSize: FONT.size["2xl"], fontWeight: 700, color: COLOR.text.primary }}>
+                  {portfolioTotal > 0 ? formatKr(portfolioTotal) : "–"}
+                </div>
+                <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, marginTop: "2px" }}>{funds.length} fonder</div>
               </div>
-              <div style={{ fontFamily: FONT.family.display, fontSize: FONT.size["2xl"], fontWeight: 700, color: COLOR.text.primary }}>
-                {portfolioTotal > 0 ? formatKr(portfolioTotal) : "–"}
-              </div>
-              <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, marginTop: "2px" }}>{funds.length} fonder</div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {funds.length > 0 && (
-        <button
-          onClick={() => setShowDetails(true)}
-          style={{
-            width: "100%", background: `rgba(${accentRgb}, 0.07)`,
-            border: `1px solid rgba(${accentRgb}, 0.25)`, color: accent,
-            borderRadius: "8px", padding: "9px 14px", cursor: "pointer",
-            fontSize: FONT.size.md, fontFamily: FONT.family.display, fontWeight: 600,
-            transition: anim(ANIM.hover), textAlign: "center",
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.15)`}
-          onMouseLeave={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.07)`}
-        >
-          Visa fullständig historik &amp; detaljer
-        </button>
-      )}
+        {funds.length > 0 && (
+          <button
+            onClick={() => setShowDetails(true)}
+            style={{
+              width: "100%", background: "rgba(255,255,255,0.08)",
+              border: `1px solid ${COLOR.border.edge}`, color: COLOR.text.primary,
+              borderRadius: "8px", padding: "9px 14px", cursor: "pointer",
+              fontSize: FONT.size.md, fontFamily: FONT.family.display, fontWeight: 600,
+              transition: anim(ANIM.hover), textAlign: "center",
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.13)"}
+            onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
+          >
+            Visa fullständig historik &amp; detaljer
+          </button>
+        )}
+      </div>
 
       {showDetails && (
         <FundDetailsModal
@@ -214,7 +226,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.default}`,
+              background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.modal}`,
               borderRadius: "16px", padding: "24px", maxWidth: "420px", width: "100%",
               fontFamily: FONT.family.display,
             }}
@@ -237,7 +249,7 @@ export default function PortfolioPanel({ label, accent, accentRgb, accentText, f
                 <div style={{ fontSize: FONT.size.sm, fontFamily: FONT.family.body, color: COLOR.text.subtle, marginTop: "2px", lineHeight: 1.5 }}>Avgiften saknar verifierad FI-data och är manuellt angiven — antingen i fondregistret eller av dig. Kontrollera aktuell avgift via fondens faktablad.</div>
               </div>
             </div>
-            <div style={{ height: "1px", background: COLOR.border.muted, margin: "0 0 14px 0" }} />
+            <div style={{ height: "1px", background: COLOR.border.hairline, margin: "0 0 14px 0" }} />
             <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "12px" }}>Verifiera på Morningstar</div>
             {funds.map(fund => {
               const ticker = fund.ticker?.replace(".ST", "");

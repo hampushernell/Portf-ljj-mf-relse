@@ -13,7 +13,7 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
         <div
           onClick={() => setIsOpen(true)}
           style={{
-            border: `1px solid ${COLOR.border.default}`,
+            border: `1px solid ${COLOR.border.edge}`,
             borderRadius: "9px", padding: "20px 14px", background: "transparent",
             display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
             cursor: "pointer",
@@ -21,7 +21,7 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
         >
           <div style={{
             width: "22px", height: "22px", borderRadius: "50%", flexShrink: 0,
-            border: `1.5px solid rgba(${accentRgb}, 0.5)`,
+            border: `1.5px solid ${COLOR.border.edge}`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: FONT.size.lg, color: accent, lineHeight: 1,
           }}>+</div>
@@ -36,7 +36,7 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
           onMouseEnter={() => setTriggerHovered(true)}
           onMouseLeave={() => setTriggerHovered(false)}
           style={{
-            border: `1px solid ${COLOR.border.default}`,
+            border: `1px solid ${COLOR.border.edge}`,
             borderRadius: "9px", padding: "10px 12px",
             display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
             cursor: "pointer", minHeight: "60px", boxSizing: "border-box",
@@ -44,7 +44,7 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
         >
           <div style={{
             width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
-            border: `1.5px solid rgba(${accentRgb}, 0.4)`,
+            border: `1.5px solid ${COLOR.border.edge}`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: FONT.size.base, color: accent, lineHeight: 1,
           }}>+</div>

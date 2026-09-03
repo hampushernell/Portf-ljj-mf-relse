@@ -111,14 +111,14 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
         onClick={e => e.stopPropagation()}
         style={{
           background: COLOR.bg.elevated,
-          border: `1px solid ${COLOR.border.strong}`,
+          border: `1px solid ${COLOR.border.modal}`,
           borderRadius: "14px", width: "100%", maxWidth: "560px",
         }}
       >
         {/* Header */}
         <div style={{
           padding: "18px 20px 14px",
-          borderBottom: `1px solid ${COLOR.border.subtle}`,
+          borderBottom: `1px solid ${COLOR.border.hairline}`,
           display: "flex", justifyContent: "space-between", alignItems: "flex-start",
         }}>
           <div>
@@ -155,7 +155,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
             disabled={loading}
             style={{
               width: "100%", boxSizing: "border-box",
-              background: COLOR.surface.tab, border: `1px solid ${COLOR.border.strong}`,
+              background: COLOR.surface.sunken, border: `1px solid ${COLOR.border.edge}`,
               borderRadius: "8px",
               color: loading ? COLOR.text.secondary : COLOR.text.primary,
               fontSize: FONT.size.base, padding: "9px 14px", outline: "none",
@@ -200,7 +200,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
               {filterOpen && (
                 <div style={{
                   position: "absolute", top: "calc(100% + 4px)", left: 0,
-                  background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.strong}`,
+                  background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.modal}`,
                   borderRadius: "10px", zIndex: 10,
                   boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
                   minWidth: "190px", overflow: "hidden",
@@ -350,7 +350,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
         {/* Footer */}
         <div style={{
           padding: "12px 20px",
-          borderTop: `1px solid ${COLOR.border.subtle}`,
+          borderTop: `1px solid ${COLOR.border.hairline}`,
           display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
           <span style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary, fontFamily: FONT.family.display }}>

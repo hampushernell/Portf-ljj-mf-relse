@@ -16,8 +16,8 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
 
   const wrapperStyle = {
     padding: "10px 12px",
-    background: hovered ? COLOR.surface.hover : COLOR.surface.faint,
-    border: `1px solid ${COLOR.border.subtle}`, borderRadius: "9px", marginBottom: "8px",
+    background: hovered ? "rgba(255,255,255,0.13)" : COLOR.surface.card,
+    border: `1px solid ${COLOR.border.edge}`, borderRadius: "9px", marginBottom: "8px",
     animation: anim(ANIM.rowMount), boxShadow: SHADOW.subtle,
     transition: anim(ANIM.hover),
     cursor: clickable ? "pointer" : "default",
@@ -54,20 +54,20 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
                 const val = parseFloat(e.target.value) || 0;
                 onUpdate(inputMode === "pct" ? { pct: val } : { kr: val });
               }}
-              style={{ background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`, borderRadius: "6px", color: COLOR.text.primary, fontSize: FONT.size.base, padding: "5px 8px", width: "100%", outline: "none", fontFamily: FONT.family.display, boxSizing: "border-box" }}
+              style={{ background: COLOR.surface.sunken, border: `1px solid ${COLOR.border.edge}`, borderRadius: "6px", color: COLOR.text.primary, fontSize: FONT.size.base, padding: "5px 8px", width: "100%", outline: "none", fontFamily: FONT.family.display, boxSizing: "border-box" }}
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
             <label style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em" }}>
               {inputMode === "pct" ? "≈ kr" : "≈ %"}
             </label>
-            <div style={{ background: COLOR.surface.faint, border: `1px solid ${COLOR.border.muted}`, borderRadius: "6px", color: COLOR.text.secondary, fontSize: FONT.size.sm, padding: "5px 8px" }}>
+            <div style={{ background: COLOR.surface.faint, border: `1px solid ${COLOR.border.inner}`, borderRadius: "6px", color: COLOR.text.secondary, fontSize: FONT.size.sm, padding: "5px 8px" }}>
               {inputMode === "pct" ? formatKr(kr) : `${pct.toFixed(1)}%`}
             </div>
           </div>
         </div>
-        {/* Rad 3 */}
-        <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+        {/* Rad 3 — indragen 18px så den linjerar med fondnamnet */}
+        <div style={{ fontSize: FONT.size.xs, color: COLOR.text.secondary, display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", paddingLeft: "18px" }}>
           <span>{fund.category} · {fmtFee(fund.fee)} avgift/år</span>
           <FeeBadge source={fund.feeSource} period={fund.feePeriod} isManual={fund.isManual ?? false} updatedAt={fund.updatedAt} />
         </div>
@@ -93,8 +93,8 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
       style={{
         display: "grid", gridTemplateColumns: "1fr 100px 90px 26px", gap: "8px", alignItems: "center",
         padding: "10px 12px",
-        background: hovered ? COLOR.surface.hover : COLOR.surface.faint,
-        border: `1px solid ${COLOR.border.subtle}`, borderRadius: "9px", marginBottom: "8px",
+        background: hovered ? "rgba(255,255,255,0.13)" : COLOR.surface.card,
+        border: `1px solid ${COLOR.border.edge}`, borderRadius: "9px", marginBottom: "8px",
         animation: anim(ANIM.rowMount), boxShadow: SHADOW.subtle,
         transition: anim(ANIM.hover),
         cursor: clickable ? "pointer" : "default",
@@ -133,7 +133,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
             onUpdate(inputMode === "pct" ? { pct: val } : { kr: val });
           }}
           style={{
-            background: COLOR.surface.input, border: `1px solid ${COLOR.border.input}`,
+            background: COLOR.surface.sunken, border: `1px solid ${COLOR.border.edge}`,
             borderRadius: "6px", color: COLOR.text.primary, fontSize: FONT.size.base,
             padding: "5px 8px", width: "100%", outline: "none",
             fontFamily: FONT.family.display, boxSizing: "border-box",
@@ -145,7 +145,7 @@ export default function FundRow({ fund, allocation, inputMode, portfolioTotal, o
           {inputMode === "pct" ? "≈ kr" : "≈ %"}
         </label>
         <div style={{
-          background: COLOR.surface.faint, border: `1px solid ${COLOR.border.muted}`,
+          background: COLOR.surface.faint, border: `1px solid ${COLOR.border.inner}`,
           borderRadius: "6px", color: COLOR.text.secondary, fontSize: FONT.size.sm, padding: "5px 8px",
         }}>
           {inputMode === "pct" ? formatKr(kr) : `${pct.toFixed(1)}%`}

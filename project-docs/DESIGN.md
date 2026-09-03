@@ -155,9 +155,9 @@ A near-monochromatic dark field interrupted only by two precise accent signals.
 ### Named Rules
 **The Two-Accent Rule.** Electric Cobalt and Arctic Sky are the only saturated colors in the system. Every other chromatic touch (Positive Mint, Alert Coral, Authority Teal) is semantic, not decorative. Adding a third decorative accent is forbidden.
 
-**The Opacity Stack Rule.** Component backgrounds are never solid colors — they are semi-transparent white layers on top of the dark field (`rgba(255,255,255,0.02–0.10)`). This ensures surfaces remain coherent at any depth without maintaining a parallel set of background color tokens.
+**The Opacity Stack Rule.** Component backgrounds are never solid colors — they are semi-transparent white layers on top of the dark field (`rgba(255,255,255,0.02–0.20)`). This ensures surfaces remain coherent at any depth without maintaining a parallel set of background color tokens. Border tokens follow the same opacity discipline with four semantic roles: **edge** (0.34, yttre paneler ≥ 3:1 mot bg.base) → **inner** (0.26, sektionskanter inuti paneler) → **soft** (0.20, separatorer/statkort) → **hairline** (0.12, horisontella avdelare). Modaldialogs use **modal** (0.40) for maximum definition against the overlay.
 
-**The Contrast Floor Rule.** Alla textfärger i systemet klarar 4.5:1 mot bg.base. Ghost-nivån (#55617a, 3,1:1) är avskaffad — den bröt mot regeln. Nya textfärger valideras mot bg.base innan de läggs till.
+**The Contrast Floor Rule.** Text: alla nivåer klarar 4.5:1 mot bg.base (WCAG 1.4.3). Icke-textelement (kantkonturer, kontroller): 3:1 mot omgivande yta (WCAG 1.4.11) — undre gränsen är `border.edge` (rgba 0.34, ≈ 3.07:1 mot bg.base). Ghost-nivån (#55617a, 3,1:1) är avskaffad. Nya färger valideras mot bg.base innan de läggs till. Medvetna undantag: BriefcaseIcon-accentfärg och "+"‑glyfen i FundSearch är alltid bredvid en textlabel — de är inte ensamma informationsbärare och faller utanför 1.4.11.
 
 ## 3. Typography
 
@@ -195,7 +195,7 @@ No surface in this system uses a raised white-background card on a light page. A
 ~~**Cobalt glow** — removed. The accent glow on portfolio panels has been replaced by accent-tinted backgrounds (see Portfolio Panel).~~
 
 ### Named Rules
-**The Tint-Is-Identity Rule.** Portfolio panels use an accent-tinted background (`rgba(accentRgb, 0.045)`) instead of colored glows. The tint is barely perceptible but sufficient to establish identity between A and B. Colored box-shadows on panels are forbidden — elevation is handled by ambient shadows only.
+**The Tint-Is-Identity Rule.** Portföljidentiteten (A=cobalt, B=arctic sky) kommuniceras via BriefcaseIcon-accentfärgen och allokeringsbarens segmentfärger — inte via tintad bakgrund. Panelen har neutral bakgrund (COLOR.surface.panel). Accent-tintade bakgrunder och accent-färgade box-shadows på panelkort är förbjudna — elevation hanteras av ambient-skuggor och `border.edge`.
 
 **The Flat-by-Default Rule.** Elements are flat at rest unless elevation is necessary for layering context (tooltips, modals, dropdowns). Shadows and glows are a response to state or depth — not a default styling choice.
 
@@ -215,13 +215,13 @@ Grouped inside a pill-shaped container (`rgba(255,255,255,0.05)`, 7px radius). I
 ### Buttons (accent-tinted)
 Not filled buttons — opacity-tinted with accent border. The accent color bleeds through at 7% fill, border at 25% opacity. On hover, the fill deepens to 15%. Font: Syne 600 12px. Shape: 8px radius. Used for secondary CTA ("Visa fullständig historik").
 
-**The Ghost-Over-Filled Rule.** Fully filled buttons (solid Electric Cobalt background) do not exist in this system. Buttons are always tinted ghosts. The accent is strong enough at partial opacity; a filled button would overpower the dark surface.
+**The Ghost-Over-Filled Rule.** Fully filled buttons (solid Electric Cobalt background) do not exist in this system. Accent-tinted ghosts (7% fill, 25% border) are the default for accent actions. Exception: the "Visa fullständig historik" CTA inside a portfolio panel is neutral (`rgba(255,255,255,0.08)` bg, `border.edge`) — its panel context already carries the portfolio identity, so an additional accent tint is redundant.
 
 ### Fund Row
 The signature component. A grid row (`1fr 100px 90px 26px`) with a semi-transparent card feel.
-- **Background at rest:** `rgba(255,255,255,0.03)`
-- **Background on hover:** `rgba(255,255,255,0.055)`
-- **Border:** `1px solid rgba(255,255,255,0.07)`
+- **Background at rest:** COLOR.surface.card (`rgba(255,255,255,0.09)`)
+- **Background on hover:** `rgba(255,255,255,0.13)`
+- **Border:** `1px solid border.edge` (0.34 alpha, ≥ 3:1 mot bg.base)
 - **Radius:** 9px — slightly rounder than inputs to read as a "card" not a "field"
 - **Shadow:** ambient micro (`0 2px 6px rgba(0,0,0,0.2)`)
 - **Entrance animation:** `slideInLeft 0.22s ease` — translates from -8px on mount
@@ -240,7 +240,7 @@ Elevated to Surface Night (`#0d1120`), 8px radius, `rgba(255,255,255,0.13)` bord
 Elevated card on Surface Night, 8px radius, `rgba(255,255,255,0.13)` border, shadow ambient-high. Följer muspekaren/fingret vertikalt (klämt till max 70% av höjden). Flips left/right vid 60% x-axelmark. På desktop stängs via globalt `window` mousemove-lyssnare med 32px grace-zon — möjliggör att slutpunkten nås vid kant-till-kant-design. På mobil stängs via `touchEnd`. Innehåller: datum (10px Steel Slate), en rad per portfölj med färgpunkt (7px), label, returvärde (Mint/Coral), kr-värde (Steel Slate 11px). Inga cirkelmarkörer på graflinjen.
 
 ### Portfolio Panel
-The primary structural container. Accent-tinted background (`rgba(accentRgb, 0.045)`) — A gets Electric Cobalt tint, B gets Arctic Sky tint — accent-colored border (`{accent}33` — accent at 20% opacity), 14px radius, ambient-low shadow. On mouse enter, border brightens slightly; no glow. Animation: `fadeSlideUp 0.35s ease` on mount.
+The primary structural container. Neutral surface (COLOR.surface.panel), `1.5px solid border.edge` outer border, 14px radius, ambient-low shadow, `overflow: hidden`. Header row spans full width with `border-bottom: soft` separator and `padding: 15px 16px 13px`. Body content has `padding: 20px` with `gap: 12px`. Identity (A=cobalt, B=arctic sky) is carried by the BriefcaseIcon accent color and allocation bar segment colors — not background tint. On mouse enter, boxShadow brightens to cardHover. Animation: `fadeSlideUp 0.35s ease` on mount.
 
 ### Modal Overlay
 All modals share a consistent overlay pattern: `position: fixed`, `inset: 0`, `z-index: 1000`, `background: rgba(0,0,0,0.3)` (COLOR.bg.overlay), `backdropFilter: "blur(4px)"`, centered content via flex, `padding: "20px"` (edge clearance on mobile), `animation: "fadeIn 0.2s ease"`. Clicking the overlay closes the modal; the inner dialog stops propagation. This pattern applies to FundDetailsModal, ManualFundModal, and the fee info overlay in PortfolioPanel — every modal in the system.

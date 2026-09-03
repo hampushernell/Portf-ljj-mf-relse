@@ -22,7 +22,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.default}`,
+          background: COLOR.bg.elevated, border: `1px solid ${COLOR.border.modal}`,
           borderRadius: "16px", padding: "28px 28px 24px",
           maxWidth: "640px", width: "100%", maxHeight: "85vh",
           overflow: "auto", position: "relative",
@@ -42,7 +42,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
         </div>
 
         <div style={{
-          background: `rgba(${accentRgb}, 0.07)`, border: `1px solid rgba(${accentRgb}, 0.22)`,
+          background: COLOR.surface.section, border: `1px solid ${COLOR.border.inner}`,
           borderRadius: "10px", padding: "12px 16px", marginBottom: "22px",
           fontSize: FONT.size.md, color: COLOR.text.subtle, lineHeight: 1.65, fontFamily: FONT.family.body,
         }}>
@@ -66,7 +66,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
 
           return (
             <div key={fund.id} style={{
-              background: COLOR.surface.faint, border: `1px solid ${COLOR.border.subtle}`,
+              background: COLOR.surface.card, border: `1px solid ${COLOR.border.edge}`,
               borderRadius: "10px", padding: "14px 16px", marginBottom: "10px",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
@@ -77,20 +77,20 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
                 <a
                   href={morningstarUrl} target="_blank" rel="noopener noreferrer"
                   style={{
-                    fontSize: FONT.size.sm, color: accent, textDecoration: "none",
+                    fontSize: FONT.size.sm, color: COLOR.text.primary, textDecoration: "none",
                     fontFamily: FONT.family.display, fontWeight: 600,
-                    background: `rgba(${accentRgb}, 0.1)`, padding: "5px 11px",
-                    borderRadius: "6px", border: `1px solid rgba(${accentRgb}, 0.3)`,
+                    background: "rgba(255,255,255,0.08)", padding: "5px 11px",
+                    borderRadius: "6px", border: `1px solid ${COLOR.border.edge}`,
                     whiteSpace: "nowrap", transition: anim(ANIM.hover),
                   }}
-                  onMouseEnter={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.2)`}
-                  onMouseLeave={e => e.currentTarget.style.background = `rgba(${accentRgb}, 0.1)`}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.13)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
                 >
                   Visa på Morningstar ↗
                 </a>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px" }}>
-                <div style={{ background: COLOR.surface[1], borderRadius: "7px", padding: "8px 10px" }}>
+                <div style={{ background: COLOR.surface.stat, border: `1px solid ${COLOR.border.soft}`, borderRadius: "7px", padding: "8px 10px" }}>
                   <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px", fontFamily: FONT.family.display }}>Avgift/år</div>
                   <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                     <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.md, fontWeight: 600, color: COLOR.text.primary }}>{fmtFee(fund.fee)}</span>
@@ -102,7 +102,7 @@ export default function FundDetailsModal({ funds, accent, accentRgb, label, onCl
                   { lbl: "Avk. 1 år", val: ret1y !== null ? fmtPct(ret1y) : "–", color: ret1y !== null ? (ret1y >= 0 ? COLOR.positive : COLOR.negative) : COLOR.text.secondary },
                   { lbl: "Data fr.o.m.", val: oldestDate },
                 ].map(({ lbl, val, color, mono }) => (
-                  <div key={lbl} style={{ background: COLOR.surface[1], borderRadius: "7px", padding: "8px 10px" }}>
+                  <div key={lbl} style={{ background: COLOR.surface.stat, border: `1px solid ${COLOR.border.soft}`, borderRadius: "7px", padding: "8px 10px" }}>
                     <div style={{ fontSize: FONT.size.xxs, color: COLOR.text.label, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px", fontFamily: FONT.family.display }}>{lbl}</div>
                     <div style={{ fontFamily: mono ? "monospace" : FONT.family.display, fontSize: mono ? "10px" : "12px", fontWeight: 600, color: color || COLOR.text.primary }}>{val}</div>
                   </div>
