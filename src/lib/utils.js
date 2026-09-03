@@ -20,12 +20,11 @@ export const FUND_COLORS = [
 
 // Mörka nyanser (< 3:1 mot section-ytan) är borttagna — cykla med % arrayens längd
 export const ALLOC_SHADES_A = [
-  "#dce4ff","#b9c7ff","#96aaff","#7b93ff","#6070e0",
+  "#0018f5","#4257ff","#7285ff","#9aa8ff","#c0c8ff","#e3e7ff",
 ];
 
 export const ALLOC_SHADES_B = [
-  "#e0f7ff","#baeeff","#94e5ff","#6edcff","#48d3ff",
-  "#38bdf8","#22a3da","#0c89bc","#006f9e",
+  "#38bdf8","#63cffb","#88dbfc","#aae7fd","#c9f1fe","#e6f8fe",
 ];
 
 export const FUND_ISINS = Object.fromEntries(FUNDS_REGISTRY.map(f => [f.ticker, f.isin]));
