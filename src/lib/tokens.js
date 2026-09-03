@@ -93,6 +93,7 @@ export const FONT = {
     "3xl": "20px",
     "4xl": "22px",
     "5xl": "24px",
+    "6xl": "28px",
   },
 
   icon: {

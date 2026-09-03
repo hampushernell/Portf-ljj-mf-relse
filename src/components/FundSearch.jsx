@@ -20,11 +20,16 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
           }}
         >
           <div style={{
-            width: "22px", height: "22px", borderRadius: "50%", flexShrink: 0,
-            border: `1.5px solid ${COLOR.border.edge}`,
+            width: "34px", height: "34px", borderRadius: "50%", flexShrink: 0,
+            border: `2px solid ${COLOR.border.edge}`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: FONT.size.lg, color: accent, lineHeight: 1,
-          }}>+</div>
+            fontSize: FONT.size["6xl"], color: accent, lineHeight: 1,
+          }}>
+            <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true">
+              <rect x="6.5" y="0" width="2" height="15" rx="1" fill={accent} />
+              <rect x="0" y="6.5" width="15" height="2" rx="1" fill={accent} />
+            </svg>
+          </div>
           <span style={{
             fontSize: FONT.size.base, fontFamily: FONT.family.display,
             fontWeight: 600, color: COLOR.text.secondary,
@@ -43,11 +48,16 @@ export default function FundSearch({ onAdd, onRemove, excluded, allFunds, loadin
           }}
         >
           <div style={{
-            width: "18px", height: "18px", borderRadius: "50%", flexShrink: 0,
-            border: `1.5px solid ${COLOR.border.edge}`,
+            width: "34px", height: "34px", borderRadius: "50%", flexShrink: 0,
+            border: `2px solid ${COLOR.border.edge}`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: FONT.size.base, color: accent, lineHeight: 1,
-          }}>+</div>
+            fontSize: FONT.size["6xl"], color: accent, lineHeight: 1,
+          }}>
+            <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true">
+              <rect x="6.5" y="0" width="2" height="15" rx="1" fill={accent} />
+              <rect x="0" y="6.5" width="15" height="2" rx="1" fill={accent} />
+            </svg>
+          </div>
           <span style={{
             fontSize: FONT.size.md, fontFamily: FONT.family.display, fontWeight: 600,
             color: triggerHovered ? COLOR.text.primary : COLOR.text.secondary,
