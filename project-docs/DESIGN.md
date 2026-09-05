@@ -248,7 +248,14 @@ All modals share a consistent overlay pattern: `position: fixed`, `inset: 0`, `z
 ### Chart Card (ReturnChart / FundReturnChart)
 Transparent background, `1px solid rgba(255,255,255,0.10)` border, 14px radius, `overflow: hidden`. Header (titel, legend, span-knappar) har intern padding `22px 24px 16px` desktop / `14px 16px 16px` mobil. SVG-grafen blöder kant-till-kant utan horisontell padding. Footer (datumrad, jämförelsebar) har padding `10px 24px 22px` desktop. Animation: `scaleIn 0.3s ease` on mount.
 
-**SVG:** `viewBox="0 0 800 H"`, `H=330` desktop / `H=400` mobil. `PL=PR=0` — linjer och gridlinjer löper från x=0 till x=W. Y-axeletiketter inuti grafen (`x=8`, under gridlinjen), fontSize `10` desktop / `16` mobil. Strokewidth `1.5` i båda lägena.
+**SVG:** Geometri och strecktjocklek kommer från `CHART` i `tokens.js`.
+Desktop: `viewBox="0 0 800 330"`, strokeWidth 1.5, axeltext 12.
+Mobil: `viewBox="0 0 360 300"`, strokeWidth 2.25, axeltext 11 — mobilens
+viewBox är avsiktligt ungefär lika bred som grafkortet så att en viewBox-enhet
+motsvarar en CSS-pixel. Hårdkodade strokeWidth- och fontSize-värden i
+grafkomponenterna är förbjudna: skalfaktorn gör dem missvisande.
+`PL=PR=0` — linjer och gridlinjer löper från x=0 till x=W. Y-axeletiketter
+inuti grafen (`x=8`, under gridlinjen).
 
 ## 6. Animation System
 

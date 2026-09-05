@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ACCENT_A, ACCENT_B, formatKr, fmtPct } from "../lib/utils";
-import { COLOR, FONT, SHADOW } from "../lib/tokens";
+import { COLOR, FONT, SHADOW, CHART } from "../lib/tokens";
 import useBreakpoint from "../hooks/useBreakpoint";
 
 const getSVGX = (e, svgEl) => {
@@ -21,7 +21,9 @@ function downsampleForRender(series) {
 
 export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
   const { isMobile } = useBreakpoint();
-  const W = 800, H = isMobile ? 400 : 330, PL = 0, PR = 0, PT = 10, PB = 28;
+  const C = isMobile ? CHART.mobile : CHART.desktop;
+  const { W, H } = C;
+  const { PL, PR, PT, PB } = CHART;
   const chartW = W - PL - PR;
   const chartH = H - PT - PB;
 
@@ -109,18 +111,18 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
         onTouchMove={e => { e.preventDefault(); handleMouseMove(e); }}
         onTouchEnd={() => setTooltip(null)}>
         {yTicks.map(({ y }, i) => (
-          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="1"/>
+          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth={C.grid}/>
         ))}
-        <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth="1" strokeDasharray="5 4"/>
-        {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>}
-        {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>}
+        <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth={C.grid} strokeDasharray={C.dash}/>
+        {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round"/>}
+        {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round"/>}
         {yTicks.map(({ v, y }, i) => (
-          <text key={i} x={8} y={y + (isMobile ? 18 : 14)} textAnchor="start" fill={COLOR.text.axis} fontSize={isMobile ? 18 : 12} fontFamily={FONT.family.body}>
+          <text key={i} x={8} y={y + C.axisDy} textAnchor="start" fill={COLOR.text.axis} fontSize={C.axis} fontFamily={FONT.family.body}>
             {`${(v - 100).toFixed(0)}%`}
           </text>
         ))}
         {tooltip && (
-          <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+          <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth={C.grid}/>
         )}
       </svg>
       {tooltip && (
