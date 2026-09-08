@@ -1,0 +1,728 @@
+<title>MinPortföljs SEO-sidor</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap">
+<style>
+  :root {
+    /* Hämtade direkt ur src/lib/tokens.js */
+    --bg-base: #0a0f1c;
+    --bg-elevated: #141a2b;
+    --surface-panel: rgba(255,255,255,0.04);
+    --surface-card: rgba(255,255,255,0.055);
+    --surface-stat: rgba(255,255,255,0.09);
+    --surface-sunken: #080d19;
+    --border-edge: rgba(255,255,255,0.34);
+    --border-inner: rgba(255,255,255,0.26);
+    --border-soft: rgba(255,255,255,0.20);
+    --border-hairline: rgba(255,255,255,0.12);
+    --text-primary: #f0ede8;
+    --text-secondary: #cbd5e6;
+    --text-label: #a9b6cc;
+    --accent-light: #7891ff;
+    --accent-b: #38bdf8;
+    --positive: #56ec8d;
+    --negative: #f87171;
+    --warning: #fbbf24;
+    --fi: #3a9aa8;
+    --fallback: #94a3b8;
+    --tint-positive: rgba(110,231,183,0.10);
+    --tint-fi: rgba(58,154,168,0.12);
+    --tint-fallback: rgba(148,163,184,0.12);
+    --font-display: 'Syne', 'Trebuchet MS', sans-serif;
+    --font-body: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+  }
+
+  /* ── Ram och annotering ─────────────────────────────── */
+  .doc-head { display: flex; flex-direction: column; gap: 14px; }
+  .doc-eyebrow {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--accent-light); margin: 0;
+  }
+  .doc-title {
+    font-family: var(--font-display); font-size: 28px; font-weight: 800;
+    line-height: 1.1; letter-spacing: -0.02em; margin: 0; text-wrap: balance;
+  }
+  .doc-lede { margin: 0; color: var(--text-secondary); max-width: 64ch; }
+
+  .datanote {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--tint-fi);
+    border: 1px solid rgba(58,154,168,0.5);
+    border-radius: 9px; padding: 12px 14px;
+    color: var(--text-secondary); font-size: 13px; max-width: 64ch;
+  }
+  .datanote strong { color: var(--text-primary); font-weight: 500; }
+  .datanote-mark {
+    font-family: var(--font-display); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.04em; color: var(--fi); flex: none; padding-top: 2px;
+  }
+
+  .mock { display: flex; flex-direction: column; gap: 16px; }
+
+  .mock-label {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    font-family: var(--font-display); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-label);
+  }
+  .mock-label .n { color: var(--accent-light); }
+
+  .frame {
+    border: 1px solid var(--border-edge);
+    border-radius: 14px; overflow: hidden;
+    background: var(--bg-base);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  }
+  .urlbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface-sunken);
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .dots { display: flex; gap: 6px; flex: none; }
+  .dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.16); display: block; }
+  .url {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12px; color: var(--text-label);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .url b { color: var(--text-primary); font-weight: 500; }
+
+  .page { padding: 32px 34px 36px; display: flex; flex-direction: column; gap: 26px; }
+
+  /* ── Sidinnehåll ────────────────────────────────────── */
+  .crumbs { font-size: 12px; color: var(--text-label); margin: 0; }
+  .crumbs a { color: var(--text-label); text-decoration: none; border-bottom: 1px solid var(--border-hairline); }
+  .crumbs span { color: var(--text-secondary); }
+
+  h1 {
+    font-family: var(--font-display); font-weight: 800; font-size: 26px;
+    line-height: 1.12; letter-spacing: -0.02em; margin: 0; text-wrap: balance;
+  }
+  h2 {
+    font-family: var(--font-display); font-weight: 700; font-size: 17px;
+    line-height: 1.3; margin: 0 0 10px;
+  }
+  h3 {
+    font-family: var(--font-display); font-weight: 600; font-size: 14px;
+    line-height: 1.4; margin: 0 0 4px;
+  }
+  .prose { max-width: 66ch; color: var(--text-secondary); }
+  .prose p { margin: 0 0 12px; }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose strong { color: var(--text-primary); font-weight: 500; }
+
+  .stamp {
+    font-size: 12px; color: var(--text-label); margin: 0;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .stamp em { font-style: normal; color: var(--text-secondary); }
+
+  /* Tabell */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--border-inner); border-radius: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 560px; }
+  thead th {
+    font-family: var(--font-display); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label);
+    text-align: left; padding: 11px 14px; background: rgba(255,255,255,0.045);
+    border-bottom: 1px solid var(--border-soft); white-space: nowrap;
+  }
+  thead th.num, tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  thead th .sortmark { color: var(--accent-light); margin-left: 5px; }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid var(--border-hairline); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr.lead td { background: rgba(120,145,255,0.07); }
+  .fundname { color: var(--text-primary); text-decoration: none; border-bottom: 1px solid rgba(120,145,255,0.45); }
+  .fee { color: var(--text-primary); font-weight: 500; }
+  .cagr { color: var(--positive); font-weight: 500; }
+  tbody td.dim { color: var(--text-secondary); }
+  tbody tr.softrow td { background: rgba(255,255,255,0.03); }
+  .rowtag {
+    font-family: var(--font-display); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.04em; color: var(--text-label); margin-left: 8px;
+    padding: 2px 7px; border-radius: 20px; border: 1px solid var(--border-hairline);
+    vertical-align: 1px;
+  }
+
+  .badge {
+    display: inline-block; font-family: var(--font-display); font-size: 10px;
+    font-weight: 600; letter-spacing: 0.04em; padding: 2px 7px; border-radius: 20px;
+    vertical-align: 1px;
+  }
+  .badge.fi { color: var(--fi); background: var(--tint-fi); border: 1px solid rgba(58,154,168,0.45); }
+  .badge.man { color: var(--fallback); background: var(--tint-fallback); border: 1px solid rgba(148,163,184,0.42); }
+
+  /* Faktaruta */
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    gap: 1px; background: var(--border-hairline);
+    border: 1px solid var(--border-inner); border-radius: 10px; overflow: hidden;
+  }
+  .fact { background: var(--bg-base); padding: 13px 15px; display: flex; flex-direction: column; gap: 3px; }
+  .fact dt {
+    font-family: var(--font-display); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label);
+  }
+  .fact dd {
+    margin: 0; font-size: 15px; color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .fact dd.mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px; }
+
+  /* Kostnadsblock — den ena tunga ytan på sidan */
+  .cost {
+    background: var(--bg-elevated); border: 1px solid var(--border-inner);
+    border-radius: 14px; padding: 20px 22px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .cost-kicker {
+    font-family: var(--font-display); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-label); margin: 0;
+  }
+  .cost-figure {
+    font-family: var(--font-display); font-weight: 800; font-size: 34px;
+    line-height: 1; letter-spacing: -0.02em; color: var(--positive);
+    font-variant-numeric: tabular-nums;
+  }
+  .cost-figure-sub {
+    font-size: 15px; font-weight: 600; color: var(--text-secondary);
+    letter-spacing: 0; margin-left: 4px;
+  }
+  .cost-sub { color: var(--text-secondary); font-size: 13px; max-width: 58ch; margin: 0; }
+  .cost-foot {
+    color: var(--text-label); font-size: 12.5px; max-width: 60ch; margin: 2px 0 0;
+    border-top: 1px solid var(--border-hairline); padding-top: 12px;
+  }
+  .cost-foot b { color: var(--text-secondary); font-weight: 500; }
+  .inline-link { color: var(--accent-light); text-decoration: none; border-bottom: 1px solid rgba(120,145,255,0.45); }
+
+  .datawindow {
+    font-size: 12.5px; color: var(--text-label); margin: 0; max-width: 66ch;
+    border-left: 2px solid var(--border-soft); padding-left: 14px;
+  }
+
+  .verdictline {
+    margin: 0; font-size: 13px; color: var(--text-secondary);
+    background: var(--surface-card); border: 1px solid var(--border-soft);
+    border-radius: 9px; padding: 12px 14px;
+  }
+  .verdictline b { color: var(--text-primary); font-weight: 500; }
+  .verdictline .sep { color: var(--border-edge); margin: 0 6px; }
+  .cost-row { display: flex; gap: 26px; flex-wrap: wrap; }
+  .cost-row div { display: flex; flex-direction: column; gap: 2px; }
+  .cost-row .k {
+    font-family: var(--font-display); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label);
+  }
+  .cost-row .v { font-size: 15px; font-variant-numeric: tabular-nums; }
+
+  /* Graf */
+  .chartcard { border: 1px solid var(--border-inner); border-radius: 10px; padding: 16px 16px 10px; }
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .chart-head .t { font-family: var(--font-display); font-size: 13px; font-weight: 600; }
+  .chart-head .v { font-size: 13px; color: var(--positive); font-variant-numeric: tabular-nums; }
+  svg.spark { display: block; width: 100%; height: auto; }
+
+  /* CTA */
+  .cta {
+    display: inline-flex; align-items: center; gap: 9px; align-self: flex-start;
+    font-family: var(--font-display); font-size: 13px; font-weight: 600;
+    color: var(--accent-light); text-decoration: none;
+    background: rgba(0,24,245,0.14); border: 1px solid rgba(120,145,255,0.55);
+    border-radius: 6px; padding: 10px 16px;
+  }
+  .cta .arrow { color: var(--accent-b); }
+  .cta-note { font-size: 12px; color: var(--text-label); margin: 6px 0 0; }
+  .cta-note code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11px;
+    color: var(--text-secondary); background: var(--surface-sunken);
+    border: 1px solid var(--border-hairline); border-radius: 4px; padding: 1px 5px;
+  }
+
+  /* FAQ */
+  .faq { display: flex; flex-direction: column; gap: 14px; }
+  .faq-item { border-left: 2px solid var(--border-soft); padding-left: 14px; }
+  .faq-item p { margin: 0; color: var(--text-secondary); font-size: 13px; max-width: 62ch; }
+
+  /* Peers */
+  .peers-note { font-size: 12px; color: var(--text-label); margin: -4px 0 12px; }
+  .peers { display: flex; flex-direction: column; gap: 8px; }
+  .peer {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: center;
+    background: var(--surface-card); border: 1px solid var(--border-soft);
+    border-radius: 9px; padding: 10px 14px; font-size: 13px;
+  }
+  .peer .pname { color: var(--text-primary); }
+  .peer .pfee, .peer .pcagr { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .peer .pcagr { color: var(--positive); }
+  .peer.self { border-color: rgba(120,145,255,0.6); background: rgba(120,145,255,0.09); }
+  .peer.self .pname::after {
+    content: 'denna sida'; font-family: var(--font-display); font-size: 10px;
+    font-weight: 600; letter-spacing: 0.04em; color: var(--accent-light);
+    margin-left: 9px; padding: 2px 7px; border-radius: 20px;
+    background: rgba(120,145,255,0.16); vertical-align: 1px;
+  }
+
+  .disclaimer {
+    font-size: 12px; color: var(--text-label); border-top: 1px solid var(--border-hairline);
+    padding-top: 14px; margin: 0; max-width: 66ch;
+  }
+
+  /* Designnoter under varje mock */
+  .notes {
+    border: 1px dashed var(--border-soft); border-radius: 10px;
+    padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+    background: var(--surface-panel);
+  }
+  .notes h3 {
+    font-family: var(--font-display); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-label); margin: 0;
+  }
+  .notes ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 7px; }
+  .notes li { color: var(--text-secondary); font-size: 13px; }
+  .notes li b { color: var(--text-primary); font-weight: 500; }
+  .notes code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11.5px;
+    color: var(--accent-light); background: var(--surface-sunken);
+    border: 1px solid var(--border-hairline); border-radius: 4px; padding: 1px 5px;
+  }
+
+  a:focus-visible, .cta:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+
+  @media (max-width: 640px) {
+    .page { padding: 24px 18px 28px; }
+    h1 { font-size: 22px; }
+    .cost-figure { font-size: 28px; }
+    .peer { grid-template-columns: 1fr auto; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="doc-head">
+    <p class="doc-eyebrow">Mock · Fas B i project-docs/SEO.md</p>
+    <h1 class="doc-title">Statiska SEO-sidor för minportfölj.se</h1>
+    <p class="doc-lede">
+      Två sidmallar som genereras vid byggtid ur <code>funds-registry.js</code>, <code>fi-fees.json</code>
+      och prissnapshotten. Ren HTML, ingen React — de länkar in i appen i stället för att vara den.
+      Alla tokens är hämtade ur <code>src/lib/tokens.js</code>.
+    </p>
+    <p class="doc-lede">
+      <strong>Bärande princip:</strong> avkastningen är redan efter avgift, så sidorna dömer på
+      nettoutfall. Frågan de svarar på är <em>"finns en fond i samma kategori som gett mer?"</em> — inte
+      <em>"vilken är billigast?"</em>. Avgiften står kvar som förklaring till gapet och som det
+      enda som är känt i förväg.
+    </p>
+    <div class="datanote">
+      <span class="datanote-mark">DATA</span>
+      <span>
+        <strong>Alla siffror är riktiga</strong> — avgifterna ur FI-registret, avkastning och risk ur
+        <code>src/data/seo-snapshot.json</code> per 2026-09-03. Perioderna är 1 och 3 år eftersom
+        Yahoo-datan för de flesta fonder börjar i mars 2022.
+      </span>
+    </div>
+  </header>
+
+  <!-- ══════════════ MOCK 1: KATEGORISIDA ══════════════ -->
+  <section class="mock">
+    <p class="mock-label"><span class="n">Mall 1</span> Kategorisida · 9 sidor · den som ska ranka</p>
+
+    <div class="frame">
+      <div class="urlbar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="url">minportfolj.se<b>/fonder/globalfonder</b></span>
+      </div>
+
+      <article class="page">
+        <p class="crumbs"><a href="#">Fonder</a> › <span>Globalfonder</span></p>
+
+        <h1>Globalfonder – jämför avkastning efter avgift</h1>
+
+        <p class="stamp">
+          <em>12 fonder</em> · Avgifter per <em>2026-08-20</em> (FI 2026Q2) · Avkastning per <em>2026-09-07</em>
+        </p>
+
+        <div class="prose">
+          <p>
+            De tolv globalfonderna nedan äger till stor del samma bolag. Ändå skiljer det
+            <strong>9 procentenheter</strong> i avkastning efter avgift de senaste tre åren — och
+            skillnaden följer inte avgiften. Kategorins billigaste fond ligger elva av tolv, och den
+            dyraste slår den.
+          </p>
+          <p>
+            Förklaringen är att fonderna följer olika index. Några är breda världsindexfonder, andra
+            är screenade för hållbarhet eller har en uttalad inriktning, och över en så här kort period
+            påverkar det utfallet mer än avgiften gör. <strong>Listan är alltså ingen kvalitetsordning</strong>
+            — kontrollera vilket index en fond följer innan du byter.
+          </p>
+          <p>
+            Avkastningen i tabellen är <strong>efter avgift</strong>, precis som i verktyget. Du behöver
+            alltså inte dra bort avgiften själv. Att avgiften ändå står med beror på att den är det
+            enda som är känt i förväg: hur en fond går de kommande tre åren vet ingen, men avgiften
+            står i avtalet.
+          </p>
+        </div>
+
+        <p class="verdictline">
+          <b>Högst efter avgift 3 år:</b> Swedbank Robur Access Global, +52,6 % till 0,20 % i avgift.
+          <span class="sep">·</span>
+          <b>Lägst avgift:</b> Avanza Global, 0,08 % — men +46,3 %, elva av tolv.
+          <span class="sep">·</span>
+          På ett års sikt toppar Nordea Global Dividend A i stället.
+        </p>
+
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Fond</th>
+                <th class="num">1 år</th>
+                <th class="num">3 år <span class="sortmark">▼</span></th>
+                <th class="num">Avgift</th>
+                <th>Källa</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a class="fundname" href="#">Swedbank Robur Access Global</a></td>
+                <td class="num dim">+23,8 %</td>
+                <td class="num cagr">+52,6 %</td>
+                <td class="num fee">0,20 %</td>
+                <td><span class="badge fi">FI</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">Nordea Global Enhanced Growth</a></td>
+                <td class="num dim">+23,9 %</td>
+                <td class="num cagr">+52,0 %</td>
+                <td class="num fee">0,60 %</td>
+                <td><span class="badge man">Manuell</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">Storebrand Global All Countries</a></td>
+                <td class="num dim">+25,8 %</td>
+                <td class="num cagr">+51,2 %</td>
+                <td class="num fee">0,30 %</td>
+                <td><span class="badge fi">FI</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">Nordea Global Dividend A</a></td>
+                <td class="num dim">+29,7 %</td>
+                <td class="num cagr">+50,5 %</td>
+                <td class="num fee">0,80 %</td>
+                <td><span class="badge man">Manuell</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">Nordea Global Index Select</a></td>
+                <td class="num dim">+22,6 %</td>
+                <td class="num cagr">+50,3 %</td>
+                <td class="num fee">0,19 %</td>
+                <td><span class="badge man">Manuell</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">DNB Global Indeks S</a></td>
+                <td class="num dim">+23,2 %</td>
+                <td class="num cagr">+50,0 %</td>
+                <td class="num fee">0,20 %</td>
+                <td><span class="badge man">Manuell</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">Länsförsäkringar Global Index</a></td>
+                <td class="num dim">+21,2 %</td>
+                <td class="num cagr">+49,4 %</td>
+                <td class="num fee">0,20 %</td>
+                <td><span class="badge fi">FI</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">Handelsbanken Global Index</a></td>
+                <td class="num dim">+23,8 %</td>
+                <td class="num cagr">+49,2 %</td>
+                <td class="num fee">0,40 %</td>
+                <td><span class="badge fi">FI</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">Swedbank Robur Globalfond A</a></td>
+                <td class="num dim">+22,6 %</td>
+                <td class="num cagr">+48,7 %</td>
+                <td class="num fee">1,25 %</td>
+                <td><span class="badge fi">FI</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">Nordnet Global Index</a></td>
+                <td class="num dim">+23,0 %</td>
+                <td class="num cagr">+47,3 %</td>
+                <td class="num fee">0,20 %</td>
+                <td><span class="badge man">Manuell</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">Avanza Global</a></td>
+                <td class="num dim">+22,2 %</td>
+                <td class="num cagr">+46,3 %</td>
+                <td class="num fee">0,08 %</td>
+                <td><span class="badge fi">FI</span></td>
+              </tr>
+              <tr>
+                <td><a class="fundname" href="#">AMF Aktiefond Global</a></td>
+                <td class="num dim">+23,0 %</td>
+                <td class="num cagr">+43,6 %</td>
+                <td class="num fee">0,40 %</td>
+                <td><span class="badge fi">FI</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="datawindow">
+          Perioderna är 1 och 3 år för att alla tolv fonderna ska mätas över exakt samma tidsspann.
+          Prisdatan från Yahoo Finance börjar för de flesta svenska fonder i mars 2022, och startdatumet
+          skiljer sig mellan fonder — en ranking "sedan start" hade jämfört olika tidsperioder med
+          varandra. I verktyget kan du köra varje fond över hela sin egen historik.
+        </p>
+
+        <div>
+          <a class="cta" href="#">Sätt ihop dem till en portfölj och jämför <span class="arrow">→</span></a>
+          <p class="cta-note">
+            Det tabellen inte kan: blanda flera fonder, sätta egna andelar och ställa två portföljer
+            mot varandra. Går till <code>/?a=1:34&amp;a=4:33&amp;a=3:33&amp;span=3y&amp;mode=compare</code>.
+          </p>
+        </div>
+
+        <section>
+          <h2>Vanliga frågor om globalfonder</h2>
+          <div class="faq">
+            <div class="faq-item">
+              <h3>Vilken globalfond har gett mest?</h3>
+              <p>Swedbank Robur Access Global, +52,6 % efter avgift de senaste tre åren. På ett års sikt ligger Nordea Global Dividend A först i stället, på +29,7 %. Tre år är en kort period och säger mer om vilket index som gått bra än om vem som är skickligast.</p>
+            </div>
+            <div class="faq-item">
+              <h3>Vilken globalfond är billigast?</h3>
+              <p>Avanza Global med 0,08 % i årlig förvaltningsavgift, följt av Nordea Global Index Select på 0,19 % och en grupp fonder på 0,20 %. Billigast är dock inte samma sak som bäst: Avanza Global ligger elva av tolv på tre års avkastning efter avgift, eftersom den följer ett annat index än flera av de andra.</p>
+            </div>
+            <div class="faq-item">
+              <h3>Ska jag välja fonden med lägst avgift?</h3>
+              <p>Inte automatiskt — avkastningen ovan är redan efter avgift, så en dyrare fond som gett mer har gett mer på riktigt. Kategorins dyraste fond ligger faktiskt före den billigaste på tre år. Men avgiften är det enda du vet i förväg: två fonder som följer samma index kommer att göra ungefär samma sak, och då är avgiften det som skiljer dem åt framåt.</p>
+            </div>
+            <div class="faq-item">
+              <h3>Varför har vissa fonder märkningen "Manuell"?</h3>
+              <p>Fonden saknas i Finansinspektionens register, oftast för att den är registrerad utomlands. Avgiften är då inlagd från fondbolagets publika information och bör betraktas som indikativ.</p>
+            </div>
+          </div>
+        </section>
+
+        <p class="disclaimer">
+          Historisk avkastning är ingen garanti för framtida avkastning. Ingenting på den här sidan
+          utgör finansiell rådgivning. <a href="#" style="color:var(--text-secondary)">Om datakällorna</a>
+        </p>
+      </article>
+    </div>
+
+    <div class="notes">
+      <h3>Designnoter</h3>
+      <ul>
+        <li><b>Sorterad på avkastning efter avgift</b>, inte på avgift. Utfallet är domen; avgiften är en förklaring till utfallet och en prognos framåt. Avgiftskolumnen ligger kvar men läses bredvid resultatet, inte i stället för det.</li>
+        <li><b>Ingen klassificering av fonder.</b> Den hade varit sajtens enda uppgift utan källa — allt annat kommer från FI eller Yahoo. Den riktiga datan gör den överflödig: billigaste fonden ligger elva av tolv och den dyraste slår den, så tabellen motbevisar "dyrt = dåligt" helt på egen hand.</li>
+        <li><b>Brasklappen i stycke två är obligatorisk.</b> Fonderna följer olika index — Avanza Global ett hållbarhetsscreenat, Swedbank Robur Access Global brett världsindex — och det förklarar gapet på 9 pp bättre än avgiften gör. Utan den meningen påstår rankingen indirekt att en screenad fond är sämre. Den ska stå ovanför tabellen, inte under.</li>
+        <li><b>Prosan står före tabellen, inte efter.</b> Google behöver ~300 ord unik text; att lägga dem sist där ingen läser är en SEO-fälla. Två stycken som faktiskt svarar på frågan räcker.</li>
+        <li><b>Verdict-raden</b> namnger två vinnare, inte en: bäst totalt och bäst bland indexfonderna. Det är ärligare än en enda vinnare och täcker båda avsikterna en besökare kan ha.</li>
+        <li><b>1 och 3 år, inte 5.</b> Yahoo-datan börjar för de flesta fonder i mars 2022 — en femårskolumn hade varit påhittad. Att båda perioderna står bredvid varandra gör dessutom bruset synligt: fonden som toppar på tre år ligger näst sist på ett, och tvärtom längst ner. En enda kolumn hade lästs som en prognos.</li>
+        <li><b>Rankingen kräver fasta fönster.</b> Fonderna har olika startdatum i datan, så "sedan start" hade jämfört olika tidsperioder med varandra. Därför äger appen maxhistoriken och tabellen bara de fönster alla fonder täcker — det är också den ärliga anledningen att klicka vidare.</li>
+        <li><b>Fonder yngre än tre år</b> behöver en regel: visa "–" i 3-årskolumnen, sortera dem sist och skriv ut startdatumet. Aldrig tomt fält, och aldrig med i rankingen.</li>
+        <li><b>FAQ-blocket</b> är källan till <code>FAQPage</code>-JSON-LD och kan ge utökade sökresultat. Frågorna ska vara sådana folk faktiskt googlar, inte fyllnad.</li>
+        <li><b>Datumstämpeln</b> högst upp gör två saker: signalerar färskhet till Google och bygger förtroende hos läsaren.</li>
+        <li><b>Källbadgarna</b> återanvänder FI/Manuell-mönstret från FundRow, så en besökare känner igen sig när hen kommer in i appen.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════ MOCK 2: FONDSIDA ══════════════ -->
+  <section class="mock">
+    <p class="mock-label"><span class="n">Mall 2</span> Fondsida · 52 sidor · long tail</p>
+
+    <div class="frame">
+      <div class="urlbar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="url">minportfolj.se<b>/fond/avanza-global</b></span>
+      </div>
+
+      <article class="page">
+        <p class="crumbs"><a href="#">Fonder</a> › <a href="#">Globalfonder</a> › <span>Avanza Global</span></p>
+
+        <h1>Avanza Global</h1>
+
+        <p class="stamp"><em>Globalfond</em> · Avgift per <em>2026-08-20</em> · Avkastning per <em>2026-09-07</em></p>
+
+        <dl class="facts">
+          <div class="fact"><dt>Avgift</dt><dd>0,08 %</dd></div>
+          <div class="fact"><dt>Kategori</dt><dd style="font-size:14px">Globalfond</dd></div>
+          <div class="fact"><dt>ISIN</dt><dd class="mono">SE0011527613</dd></div>
+          <div class="fact"><dt>Avgiftskälla</dt><dd style="font-size:14px"><span class="badge fi">FI</span> 2026Q2</dd></div>
+        </dl>
+
+        <div class="prose">
+          <p>
+            Avanza Global är den billigaste globalfonden i registret, 0,08 % om året. De senaste tre
+            åren har den gett <strong>+46,3 % efter avgift</strong> — elva av tolv i kategorin.
+            Den låga avgiften har alltså inte gett högst avkastning under perioden.
+          </p>
+        </div>
+
+        <div class="chartcard">
+          <div class="chart-head">
+            <span class="t">Utveckling 3 år</span>
+            <span class="v">+46,3 %</span>
+          </div>
+          <svg class="spark" viewBox="0 0 600 150" role="img" aria-label="Utveckling för Avanza Global över tre år, från index 100 till index 146">
+            <defs>
+              <linearGradient id="fillA" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#7891ff" stop-opacity="0.28"/>
+                <stop offset="100%" stop-color="#7891ff" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line x1="34" y1="20" x2="592" y2="20" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+            <line x1="34" y1="70" x2="592" y2="70" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+            <line x1="34" y1="120" x2="592" y2="120" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+            <text x="0" y="24" fill="#a9b6cc" font-family="'DM Sans', sans-serif" font-size="11">150</text>
+            <text x="0" y="74" fill="#a9b6cc" font-family="'DM Sans', sans-serif" font-size="11">125</text>
+            <text x="0" y="124" fill="#a9b6cc" font-family="'DM Sans', sans-serif" font-size="11">100</text>
+            <path fill="url(#fillA)" stroke="none"
+              d="M34,120 L90,113 L146,122 L202,101 L258,107 L314,86 L370,92 L426,66 L482,73 L538,47 L592,28 L592,120 Z"/>
+            <polyline fill="none" stroke="#7891ff" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"
+              points="34,120 90,113 146,122 202,101 258,107 314,86 370,92 426,66 482,73 538,47 592,28"/>
+            <circle cx="592" cy="28" r="3.5" fill="#7891ff" stroke="#0a0f1c" stroke-width="1.5"/>
+            <text x="34" y="145" fill="#a9b6cc" font-family="'DM Sans', sans-serif" font-size="11">sep 2023</text>
+            <text x="524" y="145" fill="#a9b6cc" font-family="'DM Sans', sans-serif" font-size="11">sep 2026</text>
+          </svg>
+        </div>
+
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th class="num">Avkastning</th>
+                <th class="num">CAGR</th>
+                <th class="num">Max nedgång</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1 år</td><td class="num cagr">+22,2 %</td><td class="num">22,2 %</td><td class="num">−7,1 %</td></tr>
+              <tr><td>3 år</td><td class="num cagr">+46,3 %</td><td class="num">13,5 %</td><td class="num">−24,2 %</td></tr>
+              <tr class="softrow">
+                <td>Sedan 2022-03-07 <span class="rowtag">hela datan</span></td>
+                <td class="num cagr">+76,5 %</td><td class="num">13,5 %</td><td class="num">−24,2 %</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cost">
+          <p class="cost-kicker">Finns det något bättre?</p>
+          <div class="cost-figure" style="color:var(--warning)">11 av 12 <span class="cost-figure-sub">globalfonder</span></div>
+          <p class="cost-sub">
+            Tio globalfonder har gett mer efter avgift de senaste tre åren. Mest gav
+            <a href="#" class="inline-link">Swedbank Robur Access Global</a>, +52,6 % till 0,20 %
+            i avgift. Skillnaden ligger inte i avgiften utan i vilket index fonderna följer —
+            kontrollera det innan du byter.
+          </p>
+          <div class="cost-row">
+            <div><span class="k">100 000 kr för 3 år sedan är idag</span><span class="v">146 300 kr</span></div>
+            <div><span class="k">I den bästa</span><span class="v" style="color:var(--positive)">152 600 kr</span></div>
+            <div><span class="k">I den sämsta</span><span class="v" style="color:var(--negative)">143 600 kr</span></div>
+          </div>
+          <p class="cost-foot">
+            Siffrorna är <b>efter avgift</b> — avgiften är alltså redan avdragen, inte något du ska
+            räkna bort igen. Det den låga avgiften ger dig är säkerhet framåt: 0,08 % mot kategorisnittets
+            0,40 % är 0,32 procentenheter per år som du behåller oavsett hur marknaden går. Vad indexet
+            gör vet ingen i förväg.
+          </p>
+        </div>
+
+        <section>
+          <h2>Andra globalfonder</h2>
+          <p class="peers-note">De tre som gett mest på tre år, plus denna fond. <a href="#" class="inline-link">Se hela kategorin</a>.</p>
+          <div class="peers">
+            <div class="peer">
+              <span class="pname">Swedbank Robur Access Global</span>
+              <span class="pcagr">+52,6 %</span>
+              <span class="pfee">0,20 %</span>
+            </div>
+            <div class="peer">
+              <span class="pname">Nordea Global Enhanced Growth</span>
+              <span class="pcagr">+52,0 %</span>
+              <span class="pfee">0,60 %</span>
+            </div>
+            <div class="peer">
+              <span class="pname">Storebrand Global All Countries</span>
+              <span class="pcagr">+51,2 %</span>
+              <span class="pfee">0,30 %</span>
+            </div>
+            <div class="peer self">
+              <span class="pname">Avanza Global</span>
+              <span class="pcagr">+46,3 %</span>
+              <span class="pfee">0,08 %</span>
+            </div>
+          </div>
+        </section>
+
+        <div>
+          <a class="cta" href="#">Ställ Avanza Global mot en annan fond <span class="arrow">→</span></a>
+          <p class="cta-note">
+            I verktyget kan du lägga två fonder i samma graf, blanda flera i en portfölj och köra
+            hela den tillgängliga historiken. Går till <code>/?a=1:100&amp;span=max&amp;mode=funds</code>.
+          </p>
+        </div>
+
+        <p class="disclaimer">
+          Prisdata från Yahoo Finance, avgift från Finansinspektionens öppna register.
+          Historisk avkastning är ingen garanti för framtida avkastning.
+          <a href="#" style="color:var(--text-secondary)">Om datakällorna</a>
+        </p>
+      </article>
+    </div>
+
+    <div class="notes">
+      <h3>Designnoter</h3>
+      <ul>
+        <li><b>Mallen måste tåla ett dåligt svar.</b> Avanza Global ligger elva av tolv, så blocket säger det rakt ut med gul siffra i stället för grön. En mall som bara ser bra ut när fonden vinner är oanvändbar på 52 sidor.</li>
+        <li><b>Blocket svarar på "finns det något bättre?", inte "vad kostar avgiften?".</b> Rankningen är rubriken, närmaste bättre alternativ namnges med länk, och kronorna visar <b>slutvärde</b> — inte avgift. Att visa avgiften i kronor bredvid en nettoavkastning får läsaren att dra av den två gånger.</li>
+        <li><b>Avgiften finns kvar, men som prognos.</b> Fotnoten säger vad den låga avgiften faktiskt ger: en känd fördel framåt, till skillnad från femårsavkastning som ingen kan lova om. Det är den enda ärliga anledningen att lyfta avgiften på en sida där avkastningen redan är netto.</li>
+        <li><b>Fortfarande sidans enda tunga yta.</b> Bara det här blocket får <code>bg.elevated</code> och 34px-siffra. Allt annat är hairlines och text.</li>
+        <li><b>Grafen är statisk SVG</b>, ingen chart-lib och ingen hydration. ~1,5 kB inline. Den finns för att sidan annars inte känns som MinPortfölj — inte för att den bär beslutet.</li>
+        <li><b>Peers-listan är intern länkstruktur</b> förklädd till innehåll — den ger Google en väg mellan alla 52 fondsidor utan en länkfot. Den visar bara de fyra närmaste och länkar vidare till kategorisidan, så den blir inte en andra kategoritabell.</li>
+        <li><b>"Denna sida"-markören</b> i peers gör att listan går att läsa som en ranking utan att man tappar var man står.</li>
+        <li><b>Prosastycket är kort med flit.</b> 60 ord som säger något sant och specifikt slår 250 ord genererad utfyllnad — Google straffar det senare numera.</li>
+        <li><b>Max nedgång i periodtabellen</b> återanvänder RiskPanel-datan och är det som skiljer sidan från fondbolagets egen produktsida.</li>
+        <li><b>"Sedan 2022-03-14"-raden finns bara här</b>, inte i kategoritabellen. På en enskild fondsida jämförs ingenting mellan fonder, så det faktiska startdatumet är ärligt att visa — och det gör datafönstret konkret i stället för att gömma det i en brödtext.</li>
+        <li><b>CTA:n lovar inte "längre historik".</b> Appen har bara några månader mer, så det vore en tunn morot. Det appen faktiskt kan och sidan inte är att blanda fonder, sätta andelar och ställa två portföljer mot varandra — det är den ärliga anledningen att klicka.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="notes" style="border-style:solid;">
+    <h3>Öppna frågor till dig</h3>
+    <ul>
+      <li><b>Fonder yngre än 3 år</b> — visa "–" och sortera sist, eller utelämna dem helt ur kategoritabellen? Jag lutar åt att visa dem: de finns i registret och en besökare som söker på fondens namn ska hitta sidan.</li>
+      <li><b>"Sedan 2022-03-14"-raden på fondsidan</b> — behålla eller stryka? Den är ärlig men gör tabellen ojämn mellan fonder med olika startdatum.</li>
+      <li><b>Sortering på kategorisidan</b> — vanilla JS eller helt statisk tabell? Google bryr sig inte, men besökaren vill nog kunna byta mellan 1 år, 3 år och avgift.</li>
+      <li><b>Grafen på fondsidan</b> — behålla, eller låta appen äga all visualisering?</li>
+      <li><b>Duellsidan</b> (mall 3) — skissas efter att Fas B är indexerad, när GSC visar vilka par folk faktiskt söker på.</li>
+    </ul>
+  </section>
+
+</div>
