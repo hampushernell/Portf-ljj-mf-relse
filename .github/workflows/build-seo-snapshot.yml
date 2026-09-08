@@ -1,0 +1,41 @@
+name: Build SEO Snapshot
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+jobs:
+  build-snapshot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installera beroenden
+        run: npm ci
+
+      - name: Bygg seo-snapshot.json
+        run: npm run build-snapshot
+
+      - name: Committa om seo-snapshot.json ändrades
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet src/data/seo-snapshot.json; then
+            echo "Ingen ändring i seo-snapshot.json – hoppar över commit"
+          else
+            ASOF=$(jq -r '._meta.asOf // ""' src/data/seo-snapshot.json)
+            git add src/data/seo-snapshot.json
+            git commit -m "chore: update SEO snapshot ${ASOF}"
+            git push
+          fi
