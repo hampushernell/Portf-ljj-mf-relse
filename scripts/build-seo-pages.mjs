@@ -22,7 +22,7 @@
  * Körning: node scripts/build-seo-pages.mjs (eller via npm run build)
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { FUNDS_REGISTRY } from "../src/lib/funds-registry.js";
@@ -807,10 +807,28 @@ function renderFundsIndexPage(funds, fiMeta, asOf) {
 }
 
 // ─── sitemap.xml — genererad ur de faktiskt skrivna sidorna ────────────────────
+// Startsidan (dist/index.html, byggd av vite build innan det här skriptet körs)
+// ingår med priority 1.0 — den räknas som en genererad sida precis som de
+// statiska SEO-sidorna, och ska därför finnas med i sitemapen.
 
-function buildSitemap(pages, lastmod) {
-  const urls = pages.map(p => `  <url>\n    <loc>${p.canonical}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`).join("\n");
+function buildSitemap(entries) {
+  const urls = entries.map(e => {
+    const priorityTag = e.priority ? `\n    <priority>${e.priority}</priority>` : "";
+    return `  <url>\n    <loc>${e.loc}</loc>\n    <lastmod>${e.lastmod}</lastmod>${priorityTag}\n  </url>`;
+  }).join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}
+
+// Räknar alla index.html rekursivt under dist/, inklusive den vite skriver i
+// roten — den oberoende sanningen som sitemap.xml verifieras mot.
+function countIndexHtmlFiles(dir) {
+  let count = 0;
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) count += countIndexHtmlFiles(full);
+    else if (entry.name === "index.html") count++;
+  }
+  return count;
 }
 
 // ─── Verifiering — körs sist, avslutar med felkod om något brister ─────────────
@@ -855,14 +873,17 @@ function verifyBuild(pages, funds) {
     console.log(`  ✓ Alla interna länkar motsvarar en genererad sida`);
   }
 
-  // 3. sitemap.xml — antal URL:er === antal genererade sidor.
+  // 3. sitemap.xml — antal URL:er === antal index.html-filer på disk, räknat
+  // oberoende av hur sidorna skrevs (fångar t.ex. att vite build's dist/index.html
+  // glöms bort, inte bara att skriptets egen bokföring stämmer mot sig själv).
   const sitemapContent = readFileSync(join(DIST, "sitemap.xml"), "utf8");
   const sitemapCount = [...sitemapContent.matchAll(/<loc>/g)].length;
-  if (sitemapCount !== pages.length) {
+  const diskCount = countIndexHtmlFiles(DIST);
+  if (sitemapCount !== diskCount) {
     ok = false;
-    console.log(`  ✗ sitemap.xml har ${sitemapCount} URL:er, men ${pages.length} sidor genererades`);
+    console.log(`  ✗ sitemap.xml har ${sitemapCount} URL:er, men ${diskCount} index.html-filer finns i dist/`);
   } else {
-    console.log(`  ✓ sitemap.xml har exakt ${sitemapCount} URL:er, matchar antalet genererade sidor`);
+    console.log(`  ✓ sitemap.xml har exakt ${sitemapCount} URL:er, matchar ${diskCount} index.html-filer i dist/`);
   }
 
   // 4. Ingen <title> eller <meta description> identisk på två sidor.
@@ -930,11 +951,15 @@ function main() {
   writePage("om", renderOmPage(join(ROOT, "project-docs/OM_SIDAN.md")));
   console.log(`  ✓ /om`);
 
-  console.log(`\n📄 ${pages.length} sidor skrivna till dist/`);
+  console.log(`\n📄 ${pages.length} sidor skrivna till dist/ (plus startsidan, byggd av vite build)`);
 
-  const sitemapXml = buildSitemap(pages, asOf);
+  const sitemapEntries = [
+    { loc: `${BASE_URL}/`, lastmod: asOf, priority: "1.0" },
+    ...pages.map(p => ({ loc: p.canonical, lastmod: asOf })),
+  ];
+  const sitemapXml = buildSitemap(sitemapEntries);
   writeFileSync(join(DIST, "sitemap.xml"), sitemapXml);
-  console.log(`🗺️  sitemap.xml skriven med ${pages.length} URL:er (lastmod ${asOf})\n`);
+  console.log(`🗺️  sitemap.xml skriven med ${sitemapEntries.length} URL:er (lastmod ${asOf})\n`);
 
   if (amfOutcome) {
     console.log("─────────────────────────────────────────────────────");
