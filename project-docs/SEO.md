@@ -1,6 +1,7 @@
 # SEO – MinPortfölj
 
-Status: **utkast/skiss**. Inget av detta är implementerat ännu utöver metataggarna i `index.html`.
+Status: **Fas A och B levererade 2026-09-08.** 64 sidor i produktion, sitemap inskickad till
+Search Console. Fas C och D återstår.
 Ersätter den ensamma raden om SEO/prerendering i ROADMAP.md Fas 7.
 
 ---
@@ -317,28 +318,29 @@ Hämtningen sker sekventiellt med kort paus mellan anropen (samma försiktighet 
 
 ## 9. Faser
 
-**Fas A – hygien (1–2 h).** `og:image`, JSON-LD `WebApplication`, ta bort `meta keywords`,
+**Fas A – hygien. ✓ Klar.** `og:image`, JSON-LD `WebApplication`, ta bort `meta keywords`,
 `summary_large_image`. Oberoende av allt annat, ingen trafikeffekt, men fixar delningsutseendet.
 Gör den först för att den är klar samma kväll.
 
-**Fas B1 – registerfältet.** `slug` för alla 52 fonder i `funds-registry.js`, plus utökad utskrift
+**Fas B1 – registerfältet. ✓ Klar.** `slug` för alla 52 fonder i `funds-registry.js`, plus utökad utskrift
 i `add-fund.mjs`. Blockerar allt annat. Slugs genereras ur namnen men skrivs in en gång och fryses.
 
-**Fas B2 – snapshotten.** `scripts/build-seo-snapshot.mjs` + veckovis GitHub Action.
+**Fas B2 – snapshotten. ✓ Klar.** Alla 52 fonder har minst tre års historik, så
+3-årsfönstret håller och regeln för yngre fonder är vilande tills nästa tillägg. `scripts/build-seo-snapshot.mjs` + veckovis GitHub Action.
 Kör och läs igenom resultatet **innan** någon sidmall byggs — annars byggs mallar på data som
 inte finns. Här upptäcks vilka fonder som saknar 3 års historik.
 
-**Fas B3 – en sida av varje.** Generatorn byggs för exakt en kategorisida och en fondsida.
+**Fas B3 – en sida av varje. ✓ Klar.** Generatorn byggs för exakt en kategorisida och en fondsida.
 Öppna dem i webbläsaren, kontrollera mot mocken. Först när de stämmer skalas det till alla 61.
 
-**Fas B4 – skala och publicera.** Alla kategorier och fonder, sitemap-generering, `/om`,
+**Fas B4 – skala och publicera. ✓ Klar 2026-09-08.** 64 URL:er: startsidan, 9 kategorisidor,
+52 fondsidor, `/fonder/` och `/om`. Alla kategorier och fonder, sitemap-generering, `/om`,
 build-steget i `package.json`, deploy. Verifiera i Search Console att sidorna hittas.
 
 **Fas C – duellsidor.** Först när Fas B är indexerad. Då visar GSC vilka par folk faktiskt söker
 på, i stället för att listan gissas fram.
 
-**Fas D – mät och iterera.** GSC efter 6–8 veckor: vilka frågor ger visningar men inga klick?
-Skriv om de titles och descriptions. Vilka kategorier presterar? Fördjupa dem.
+**Fas D – mät och iterera.** Se avsnitt 11.
 
 ### Beslut som är stängda
 
@@ -359,3 +361,52 @@ tillräckligt — målgruppen är smal och köpintentionen (dvs. beslutsintentio
 
 Nyckeltal att följa i GSC: antal indexerade sidor, visningar per kategorisida, CTR per fondsida.
 Inte total trafik.
+
+---
+
+## 11. Fas D — vad som mäts och när
+
+Utgångsläge: 64 sidor publicerade 2026-09-08, sitemap inskickad, ett par sidor manuellt köade
+för indexering.
+
+### Tidslinje
+
+**Vecka 1–2 — titta bara på om Google kan läsa sajten.**
+Sitemaps-rapporten (upptäckta URL:er, senast läst) och Indexering → Sidor (fel). Ingenting annat.
+Prestandarapporten är tom eller missvisande så här tidigt. Noll trafik är förväntat, inte ett
+problem.
+
+**Vecka 3–4 — ett enda nyckeltal: antal indexerade sidor.**
+Mål: klar majoritet av de 64. Diagnosen som betyder något är statusen
+*"Genomsökt – för närvarande inte indexerad"*:
+
+- Ligger **kategorisidor** där är prosan för tunn. Åtgärd: bygg ut till 500+ ord med innehåll som
+  inte går att generera — hur kategorin skiljer sig från närliggande, vad man faktiskt bör titta på.
+- Ligger **fondsidor** där är mallarna för lika varandra. Åtgärd: öka variationen i title och
+  description, t.ex. genom att väva in placering och avgiftsläge i stället för bara fondnamnet.
+
+**Vecka 6–8 — prestandarapporten blir läsbar.**
+
+| Mätvärde | Var | Vad det betyder |
+|---|---|---|
+| Visningar per sidtyp | Sidor-fliken | Kategorisidor ska slå fondsidor per sida. Gör de inte det fungerar inte kategoriprosan |
+| Frågor med visningar men ~0 klick | Frågor-fliken | Title/description matchar inte avsikten. Skriv om dem — snabbaste vinsten som finns |
+| Genomsnittlig position 5–20 | Frågor-fliken | Sidor värda att förbättra. Där ger små ändringar utslag |
+| Position > 50 | Frågor-fliken | Rör inte. Där hjälper inte copy, bara tid eller mer innehåll |
+
+### Vad som är brus
+
+Dagliga variationer. Totala klick första månaden. Att en enskild sida rör sig några placeringar.
+Frågor som innehåller "minportfölj" — den trafiken hade kommit ändå och säger inget om SEO-arbetet.
+
+### Ingång till Fas C
+
+Duellsidorna byggs när Frågor-fliken visar vad folk faktiskt söker på. Leta efter frågor som
+innehåller "eller", "vs", "jämför" plus två fondnamn. Kurera ~30 par ur den listan i stället för
+att gissa. Finns inga sådana frågor efter åtta veckor är duellsidor fel satsning — lägg kraften på
+att fördjupa de kategorisidor som redan får visningar.
+
+### Underhåll som rullar av sig självt
+
+Snapshotten uppdateras veckovis av GitHub-jobbet och sidorna byggs om vid deploy. Enda manuella
+momentet är `slug` när en ny fond läggs till, plus 300–400 ord om en ny kategori någonsin dyker upp.
