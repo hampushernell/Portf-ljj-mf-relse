@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/build-seo-pages.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "add-fund": "node scripts/add-fund.mjs"
+    "add-fund": "node scripts/add-fund.mjs",
+    "build-snapshot": "node scripts/build-seo-snapshot.mjs"
   },
   "dependencies": {
     "avanza": "^3.0.0",
