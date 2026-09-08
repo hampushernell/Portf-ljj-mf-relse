@@ -94,11 +94,21 @@ function nextId(ids) {
   return ids.length ? Math.max(...ids) + 1 : 1;
 }
 
+// Samma regel som SEO.md avsnitt 4: gemener, å/ä→a, ö→o, mellanslag→bindestreck
+function slugify(name) {
+  return name
+    .toLowerCase()
+    .replace(/å|ä/g, "a")
+    .replace(/ö/g, "o")
+    .replace(/\s+/g, "-");
+}
+
 function formatEntry(id, ticker, isin, name, fee, feeSource) {
   const feeComment = feeSource === "fi"
     ? `// avgift från FI – uppdateras automatiskt`
     : `// avgift: verifiera mot Morningstar/fondbolaget`;
-  return `  { id: ${id}, ticker: "${ticker}", isin: "${isin}", name: "${name}", category: "???", fallbackFee: ${fee} }, ${feeComment}`;
+  const slug = slugify(name);
+  return `  { id: ${id}, ticker: "${ticker}", isin: "${isin}", name: "${name}", category: "???", fallbackFee: ${fee}, slug: "${slug}" }, ${feeComment}`;
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
