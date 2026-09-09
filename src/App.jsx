@@ -19,6 +19,7 @@ import {
 } from "./lib/utils";
 import { COLOR, FONT } from "./lib/tokens";
 import { ANIM, anim } from "./lib/animations";
+import { BENCHMARKS } from "./lib/benchmarks";
 import PortfolioPanel from "./components/PortfolioPanel";
 import ComparePlaceholder from "./components/ComparePlaceholder";
 import ReturnChart from "./components/ReturnChart";
@@ -29,13 +30,15 @@ import AboutModal from "./components/AboutModal";
 import { parseUrl, serializeUrl } from "./hooks/useUrlSync";
 
 export default function App() {
-  const { allFunds, failedFunds, loading, error } = useFundData();
+  const { allFunds, failedFunds, benchmarks, loading, error } = useFundData();
   const [manualFundsDb, setManualFundsDb] = useState(loadManualFunds);
   const portfolioA = usePortfolio(manualFundsDb);
   const portfolioB = usePortfolio(manualFundsDb);
   const [viewMode, setViewMode] = useState("fund");
   const [span, setSpan]         = useState("Max");
   const [showAbout, setShowAbout] = useState(false);
+  const [activeIdx, setActiveIdx] = useState([]);
+  const toggleIndex = () => setActiveIdx(prev => prev.length ? [] : BENCHMARKS.map(b => b.id));
 
   // URL sync — parsed once at mount; urlInitReady gates serialization until init is done.
   const [urlInitState] = useState(() => parseUrl());
@@ -147,9 +150,10 @@ export default function App() {
   // Apply URL params once allFunds has loaded.
   useEffect(() => {
     if (urlInitReady || loading || !urlInitState) return;
-    const { fundsA, fundsB, span: urlSpan, mode } = urlInitState;
+    const { fundsA, fundsB, span: urlSpan, mode, idx } = urlInitState;
     setSpan(urlSpan);
     setViewMode(mode);
+    if (idx?.length) setActiveIdx(idx);
     const match = (list) => list.flatMap(({ id, pct }) => {
       const fund = allFunds.find(f => f.id === id);
       return fund ? [{ fund, pct }] : [];
@@ -164,8 +168,8 @@ export default function App() {
   // Serialize state to URL whenever it changes (but not before init is complete).
   useEffect(() => {
     if (!urlInitReady) return;
-    serializeUrl(portfolioA, portfolioB, span, viewMode);
-  }, [portfolioA.funds, portfolioA.allocs, portfolioB.funds, portfolioB.allocs, span, viewMode, urlInitReady]); // eslint-disable-line react-hooks/exhaustive-deps
+    serializeUrl(portfolioA, portfolioB, span, viewMode, activeIdx);
+  }, [portfolioA.funds, portfolioA.allocs, portfolioB.funds, portfolioB.allocs, span, viewMode, activeIdx, urlInitReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ minHeight: "100vh", background: COLOR.bg.base, color: COLOR.text.primary, fontFamily: FONT.family.body }}>
@@ -272,6 +276,7 @@ export default function App() {
                 selectedSpan={span} spanMonths={spanMonths} onSpanChange={setSpan}
                 totalA={totalA} fee1={fee1} oldestTsA={oldestTsA}
                 latestNavTs={latestNavTs}
+                benchmarks={benchmarks} activeIdx={activeIdx} onToggleIndex={toggleIndex}
               />
             )}
 
@@ -283,6 +288,7 @@ export default function App() {
                 totalA={totalA} totalB={totalB}
                 oldestTsA={oldestTsA} oldestTsB={oldestTsB}
                 latestNavTs={latestNavTs}
+                benchmarks={benchmarks} activeIdx={activeIdx} onToggleIndex={toggleIndex}
               />
             )}
 

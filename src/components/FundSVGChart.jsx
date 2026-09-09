@@ -19,7 +19,7 @@ function downsampleForRender(series) {
   return out;
 }
 
-export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true }) {
+export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine = true, benchmarkSeries = [] }) {
   const { isMobile } = useBreakpoint();
   const C = isMobile ? CHART.mobile : CHART.desktop;
   const { W, H } = C;
@@ -27,7 +27,7 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
   const chartW = W - PL - PR;
   const chartH = H - PT - PB;
 
-  const allVals = [...lines.flatMap(l => l.series.map(d => d.value)), ...portfolioSeries.map(d => d.value)];
+  const allVals = [...lines.flatMap(l => l.series.map(d => d.value)), ...portfolioSeries.map(d => d.value), ...benchmarkSeries.map(d => d.value)];
   if (!allVals.length) return null;
 
   const minV = Math.min(...allVals, 95);
@@ -63,25 +63,30 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
       const idx = Math.round((mx / chartW) * (refSeries.length - 1));
       const ci = Math.max(0, Math.min(refSeries.length - 1, idx));
       const isLast = ci === refSeries.length - 1;
+      const ts = refSeries[ci]?.timestamp;
       setTooltip({
         x: toX(ci, refSeries.length),
         yPct: pyPct,
-        timestamp: refSeries[ci]?.timestamp,
+        timestamp: ts,
         portfolio: portfolioSeries[ci]?.value,
         funds: lines.map(l => {
           const s = l.series;
-          const ts = refSeries[ci]?.timestamp;
           const fi = ts != null
             ? s.reduce((best, p, i) => Math.abs(p.timestamp - ts) < Math.abs(s[best].timestamp - ts) ? i : best, 0)
             : Math.min(ci, s.length - 1);
           const value = isLast ? (100 + l.returnValue) : s[fi]?.value;
           return { name: l.name, color: l.color, value };
         }),
+        benchmark: benchmarkSeries.length
+          ? benchmarkSeries[ts != null
+              ? benchmarkSeries.reduce((best, p, i) => Math.abs(p.timestamp - ts) < Math.abs(benchmarkSeries[best].timestamp - ts) ? i : best, 0)
+              : Math.min(ci, benchmarkSeries.length - 1)]?.value
+          : null,
       });
     };
     window.addEventListener("mousemove", handleGlobalMove);
     return () => window.removeEventListener("mousemove", handleGlobalMove);
-  }, [isMobile, refSeries, portfolioSeries, lines]);
+  }, [isMobile, refSeries, portfolioSeries, lines, benchmarkSeries]);
 
   const handleMouseMove = useCallback(e => {
     if (!isMobile || !svgRef.current || !refSeries.length) return;
@@ -92,22 +97,27 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
     const idx  = Math.round(((mx - PL) / chartW) * (refSeries.length - 1));
     const ci   = Math.max(0, Math.min(refSeries.length - 1, idx));
     const isLast = ci === refSeries.length - 1;
+    const ts = refSeries[ci]?.timestamp;
     setTooltip({
       x: toX(ci, refSeries.length),
       yPct: pyPct,
-      timestamp: refSeries[ci]?.timestamp,
+      timestamp: ts,
       portfolio: portfolioSeries[ci]?.value,
       funds: lines.map(l => {
         const s = l.series;
-        const ts = refSeries[ci]?.timestamp;
         const idx = ts != null
           ? s.reduce((best, p, i) => Math.abs(p.timestamp - ts) < Math.abs(s[best].timestamp - ts) ? i : best, 0)
           : Math.min(ci, s.length - 1);
         const value = isLast ? (100 + l.returnValue) : s[idx]?.value;
         return { name: l.name, color: l.color, value };
       }),
+      benchmark: benchmarkSeries.length
+        ? benchmarkSeries[ts != null
+            ? benchmarkSeries.reduce((best, p, i) => Math.abs(p.timestamp - ts) < Math.abs(benchmarkSeries[best].timestamp - ts) ? i : best, 0)
+            : Math.min(ci, benchmarkSeries.length - 1)]?.value
+        : null,
     });
-  }, [refSeries, portfolioSeries, lines]);
+  }, [refSeries, portfolioSeries, lines, benchmarkSeries]);
 
   const yTicks = Array.from({ length: 5 }, (_, i) => ({ v: yMin + (i / 4) * (yMax - yMin) })).map(t => ({ ...t, y: toY(t.v) }));
 
@@ -122,6 +132,9 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
           <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth={C.grid}/>
         ))}
         <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth={C.grid} strokeDasharray={C.dash}/>
+        {benchmarkSeries.length > 1 && (
+          <path d={makePath(downsampleForRender(benchmarkSeries))} fill="none" stroke={COLOR.text.label} strokeWidth={C.stroke} strokeDasharray={C.dash} strokeLinecap="round" strokeLinejoin="round"/>
+        )}
         {lines.map(l => {
           if (l.series.length <= 1) return null;
           return (
@@ -172,6 +185,14 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
               </span>
             </div>
           ))}
+          {tooltip.benchmark != null && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "2px" }}>
+              <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: COLOR.text.label, flexShrink: 0 }} />
+              <span style={{ color: COLOR.text.secondary, fontSize: FONT.size.xs }}>
+                Index: <strong style={{ color: COLOR.text.secondary }}>{fmtPct(tooltip.benchmark - 100)}</strong>
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>

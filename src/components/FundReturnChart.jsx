@@ -1,17 +1,22 @@
 import { useState } from "react";
-import { portfolioReturn, computePortfolioContext } from "../lib/calculations";
+import { portfolioReturn, computePortfolioContext, computeBenchmarkSeries } from "../lib/calculations";
 import { TIME_SPANS, formatKr, fmtFee, fmtPct } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
 import { ANIM, anim } from "../lib/animations";
 import FundSVGChart from "./FundSVGChart";
 import useBreakpoint from "../hooks/useBreakpoint";
 
-export default function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths, oldestTsA, onSpanChange, totalA, fee1, latestNavTs }) {
+export default function FundReturnChart({ fundLines, portfolioSeries, selectedSpan, spanMonths, oldestTsA, onSpanChange, totalA, fee1, latestNavTs, benchmarks = [], activeIdx = [], onToggleIndex }) {
   const retPortfolio = portfolioReturn(portfolioSeries);
   const { isMobile } = useBreakpoint();
   const [copied, setCopied] = useState(false);
   const { refNow, startTs, endTs, spanHasFullData, isIncomplete, actualFromStr } =
     computePortfolioContext({ latestNavTs, spanMonths, oldestTs: oldestTsA, allSeries: [portfolioSeries] });
+
+  const indexOn = activeIdx.length > 0;
+  const activeBenchmark = indexOn ? benchmarks.find(b => activeIdx.includes(b.id)) : null;
+  const benchmarkSeries = activeBenchmark ? computeBenchmarkSeries(activeBenchmark, startTs, endTs) : [];
+  const benchmarkReturn = benchmarkSeries.length ? portfolioReturn(benchmarkSeries) : null;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
@@ -37,6 +42,25 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <button
+              onClick={onToggleIndex}
+              aria-pressed={indexOn}
+              title="Visa jämförelseindex"
+              style={{
+                display: "flex", alignItems: "center", gap: "6px",
+                background: indexOn ? "rgba(169,182,204,0.13)" : COLOR.surface[1],
+                border: `1px solid ${indexOn ? "rgba(169,182,204,0.38)" : COLOR.border.card}`,
+                borderRadius: "6px", padding: "5px 9px", cursor: "pointer",
+                fontSize: FONT.size.sm, fontFamily: FONT.family.display, fontWeight: 600,
+                color: indexOn ? COLOR.text.primary : COLOR.text.secondary,
+                transition: anim(ANIM.tab), whiteSpace: "nowrap",
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M1 10L4.5 6L7 8.5L13 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Index
+            </button>
             <div style={{ overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch" }}>
               <div style={{ display: "flex", gap: "3px", background: COLOR.surface[1], borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
                 {TIME_SPANS.map(ts => {
@@ -80,7 +104,7 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
 
       </div>
 
-      <FundSVGChart lines={fundLines} portfolioSeries={portfolioSeries} showPortfolioLine={fundLines.length > 1} />
+      <FundSVGChart lines={fundLines} portfolioSeries={portfolioSeries} showPortfolioLine={fundLines.length > 1} benchmarkSeries={benchmarkSeries} />
 
       <div style={{ padding: isMobile ? "10px 16px 14px" : "10px 24px 22px" }}>
       {portfolioSeries.length > 0 && (() => {
@@ -113,6 +137,13 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
               <span style={{ fontSize: FONT.size.sm, color: l.returnValue >= 0 ? COLOR.positive : COLOR.negative, fontWeight: 700, fontFamily: FONT.family.display }}>{fmtPct(l.returnValue)}</span>
             </div>
           ))}
+          {indexOn && activeBenchmark && benchmarkSeries.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={COLOR.text.label} strokeWidth="1.5" strokeDasharray="5 4" strokeLinecap="round"/></svg>
+              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.subtle, fontFamily: FONT.family.body }}>{activeBenchmark.name}</span>
+              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary, fontWeight: 700, fontFamily: FONT.family.display }}>{fmtPct(benchmarkReturn)}</span>
+            </div>
+          )}
         </div>
       )}
 
