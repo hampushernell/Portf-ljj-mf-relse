@@ -1,10 +1,12 @@
 import { FUNDS_REGISTRY } from "../lib/funds-registry";
+import { BENCHMARKS } from "../lib/benchmarks";
 
 const SPAN_TO_URL = { "1 mån": "1m", "3 mån": "3m", "1 år": "1y", "3 år": "3y", "Max": "max" };
 const URL_TO_SPAN = Object.fromEntries(Object.entries(SPAN_TO_URL).map(([k, v]) => [v, k]));
 const REGISTRY_BY_ID = Object.fromEntries(FUNDS_REGISTRY.map(f => [String(f.id), f]));
+const BENCHMARK_IDS = new Set(BENCHMARKS.map(b => b.id));
 
-// Returns { fundsA: [{id, pct}], fundsB: [{id, pct}], span, mode } or null.
+// Returns { fundsA: [{id, pct}], fundsB: [{id, pct}], span, mode, idx: [id] } or null.
 // Called once at mount — does not depend on allFunds (price data not yet loaded).
 export function parseUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -12,8 +14,9 @@ export function parseUrl() {
   const bStr   = params.get("b");
   const spanStr = params.get("span");
   const modeStr = params.get("mode");
+  const idxStr  = params.get("idx");
 
-  if (!aStr && !bStr && !spanStr && !modeStr) return null;
+  if (!aStr && !bStr && !spanStr && !modeStr && !idxStr) return null;
 
   const parseFundList = str => {
     if (!str) return [];
@@ -27,16 +30,24 @@ export function parseUrl() {
     });
   };
 
+  // Kommaseparerad lista av benchmark-id:n, aldrig en boolesk flagga — se BENCHMARKS.md.
+  // split(",") fungerar redan för flerval även om v1 bara ger en post.
+  const parseIdxList = str => {
+    if (!str) return [];
+    return str.split(",").filter(id => BENCHMARK_IDS.has(id));
+  };
+
   return {
     fundsA: parseFundList(aStr),
     fundsB: parseFundList(bStr),
     span:   URL_TO_SPAN[spanStr] ?? "Max",
     mode:   modeStr === "compare" ? "compare" : "fund",
+    idx:    parseIdxList(idxStr),
   };
 }
 
 // Serializes current app state into the URL via replaceState.
-export function serializeUrl(portfolioA, portfolioB, span, viewMode) {
+export function serializeUrl(portfolioA, portfolioB, span, viewMode, activeIdx = []) {
   const spanParam = SPAN_TO_URL[span] ?? "max";
 
   const serializeFunds = (funds, allocs) => {
@@ -54,6 +65,7 @@ export function serializeUrl(portfolioA, portfolioB, span, viewMode) {
   if (bStr) params.set("b", bStr);
   if (spanParam !== "max") params.set("span", spanParam);
   if (viewMode !== "fund") params.set("mode", viewMode);
+  if (activeIdx.length) params.set("idx", activeIdx.join(","));
 
   const query = params.toString();
   history.replaceState(null, "", query ? `?${query}` : window.location.pathname);

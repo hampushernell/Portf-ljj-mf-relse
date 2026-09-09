@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { portfolioReturn, computePortfolioContext } from "../lib/calculations";
+import { portfolioReturn, computePortfolioContext, computeBenchmarkSeries } from "../lib/calculations";
 import { ACCENT_A, ACCENT_B, TIME_SPANS, formatKr, fmtPct } from "../lib/utils";
 import { COLOR, FONT } from "../lib/tokens";
 import { ANIM, anim } from "../lib/animations";
 import SVGChart from "./SVGChart";
 import useBreakpoint from "../hooks/useBreakpoint";
 
-export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldestTsA, oldestTsB, onSpanChange, totalA, totalB, latestNavTs }) {
+export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spanMonths, oldestTsA, oldestTsB, onSpanChange, totalA, totalB, latestNavTs, benchmarks = [], activeIdx = [], onToggleIndex }) {
   const retA = portfolioReturn(seriesA);
   const retB = portfolioReturn(seriesB);
   const { isMobile } = useBreakpoint();
@@ -22,6 +22,11 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
   const oldestTs = [oldestTsA, oldestTsB].filter(Boolean).reduce((a, b) => Math.max(a, b), 0);
   const { refNow, startTs, endTs, spanHasFullData, isIncomplete, actualFromStr } =
     computePortfolioContext({ latestNavTs, spanMonths, oldestTs, allSeries: [seriesA, seriesB] });
+
+  const indexOn = activeIdx.length > 0;
+  const activeBenchmark = indexOn ? benchmarks.find(b => activeIdx.includes(b.id)) : null;
+  const benchmarkSeries = activeBenchmark ? computeBenchmarkSeries(activeBenchmark, startTs, endTs) : [];
+  const benchmarkReturn = benchmarkSeries.length ? portfolioReturn(benchmarkSeries) : null;
 
   return (
     <div style={{ background: "transparent", border: `1px solid ${COLOR.border.card}`, borderRadius: isMobile ? "10px" : "14px", overflow: "hidden", animation: anim(ANIM.cardMount) }}>
@@ -48,10 +53,37 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
                 {totalB > 0 && <span style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary }}>({formatKr(totalB * retB / 100)})</span>}
               </div>
             )}
+            {indexOn && activeBenchmark && benchmarkSeries.length > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={COLOR.text.label} strokeWidth="1.5" strokeDasharray="5 4" strokeLinecap="round"/></svg>
+                <span style={{ fontSize: FONT.size.base, color: COLOR.text.primary, fontFamily: FONT.family.display }}>
+                  {activeBenchmark.name}: <span style={{ color: COLOR.text.secondary, fontWeight: 700 }}>{fmtPct(benchmarkReturn)}</span>
+                </span>
+              </div>
+            )}
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <button
+              onClick={onToggleIndex}
+              aria-pressed={indexOn}
+              title="Visa jämförelseindex"
+              style={{
+                display: "flex", alignItems: "center", gap: "6px",
+                background: indexOn ? "rgba(169,182,204,0.13)" : COLOR.surface[1],
+                border: `1px solid ${indexOn ? "rgba(169,182,204,0.38)" : COLOR.border.card}`,
+                borderRadius: "6px", padding: "5px 9px", cursor: "pointer",
+                fontSize: FONT.size.sm, fontFamily: FONT.family.display, fontWeight: 600,
+                color: indexOn ? COLOR.text.primary : COLOR.text.secondary,
+                transition: anim(ANIM.tab), whiteSpace: "nowrap",
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M1 10L4.5 6L7 8.5L13 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Index
+            </button>
             <div style={{ overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch" }}>
               <div style={{ display: "flex", gap: "3px", background: COLOR.surface[1], borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
                 {TIME_SPANS.map(ts => {
@@ -96,7 +128,7 @@ export default function ReturnChart({ seriesA, seriesB, showB, selectedSpan, spa
 
       </div>
 
-      <SVGChart seriesA={seriesA} seriesB={seriesB} showB={showB} totalA={totalA} totalB={totalB} />
+      <SVGChart seriesA={seriesA} seriesB={seriesB} showB={showB} totalA={totalA} totalB={totalB} benchmarkSeries={benchmarkSeries} />
 
       <div style={{ padding: isMobile ? "10px 16px 14px" : "10px 24px 22px" }}>
       {(seriesA.length > 0 || seriesB.length > 0) && (() => {

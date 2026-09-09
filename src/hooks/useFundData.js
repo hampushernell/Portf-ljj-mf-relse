@@ -15,6 +15,7 @@ const FUND_FEES = Object.fromEntries(FUNDS_REGISTRY.map(f => [f.ticker, f.fallba
 export default function useFundData() {
   const [allFunds, setAllFunds]       = useState([]);
   const [failedFunds, setFailedFunds] = useState([]);
+  const [benchmarks, setBenchmarks]   = useState([]);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState(null);
 
@@ -41,8 +42,11 @@ export default function useFundData() {
         const failed = data.funds
           .filter(f => f.error || !f.prices?.length)
           .map(f => f.name ?? f.ticker ?? "Okänd fond");
+        const benchmarkSeries = (data.benchmarks || [])
+          .filter(b => !b.error && b.prices?.length > 0);
         setAllFunds(funds);
         setFailedFunds(failed);
+        setBenchmarks(benchmarkSeries);
         setLoading(false);
       })
       .catch(() => {
@@ -51,5 +55,5 @@ export default function useFundData() {
       });
   }, []);
 
-  return { allFunds, failedFunds, loading, error };
+  return { allFunds, failedFunds, benchmarks, loading, error };
 }

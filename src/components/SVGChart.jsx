@@ -19,7 +19,7 @@ function downsampleForRender(series) {
   return out;
 }
 
-export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
+export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB, benchmarkSeries = [] }) {
   const { isMobile } = useBreakpoint();
   const C = isMobile ? CHART.mobile : CHART.desktop;
   const { W, H } = C;
@@ -27,7 +27,7 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
   const chartW = W - PL - PR;
   const chartH = H - PT - PB;
 
-  const allVals = [...seriesA.map(d => d.value), ...(showB ? seriesB.map(d => d.value) : [])];
+  const allVals = [...seriesA.map(d => d.value), ...(showB ? seriesB.map(d => d.value) : []), ...benchmarkSeries.map(d => d.value)];
   if (!allVals.length) return null;
 
   const minV = Math.min(...allVals, 95);
@@ -43,6 +43,7 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
 
   const pathA = seriesA.length > 1 ? makePath(downsampleForRender(seriesA)) : null;
   const pathB = showB && seriesB.length > 1 ? makePath(downsampleForRender(seriesB)) : null;
+  const pathBenchmark = benchmarkSeries.length > 1 ? makePath(downsampleForRender(benchmarkSeries)) : null;
 
   const yTicks = Array.from({ length: 5 }, (_, i) => {
     const v = yMin + (i / 4) * (yMax - yMin);
@@ -70,6 +71,7 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
       const idx = Math.round((mx / chartW) * (seriesA.length - 1));
       const clamped = Math.max(0, Math.min(seriesA.length - 1, idx));
       const bIdx = showB && seriesB.length ? Math.min(clamped, seriesB.length - 1) : null;
+      const idxBench = benchmarkSeries.length ? Math.min(clamped, benchmarkSeries.length - 1) : null;
       setTooltip({
         x: toX(clamped, seriesA.length),
         yPct: pyPct,
@@ -77,11 +79,12 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
         timestamp: seriesA[clamped]?.timestamp,
         vA: seriesA[clamped]?.value,
         vB: bIdx !== null ? seriesB[bIdx]?.value : null,
+        vBenchmark: idxBench !== null ? benchmarkSeries[idxBench]?.value : null,
       });
     };
     window.addEventListener("mousemove", handleGlobalMove);
     return () => window.removeEventListener("mousemove", handleGlobalMove);
-  }, [isMobile, seriesA, seriesB, showB]);
+  }, [isMobile, seriesA, seriesB, showB, benchmarkSeries]);
 
   const handleMouseMove = useCallback(e => {
     if (isMobile) {
@@ -93,6 +96,7 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
       const idx = Math.round(((mx - PL) / chartW) * (seriesA.length - 1));
       const clamped = Math.max(0, Math.min(seriesA.length - 1, idx));
       const bIdx = showB && seriesB.length ? Math.min(clamped, seriesB.length - 1) : null;
+      const idxBench = benchmarkSeries.length ? Math.min(clamped, benchmarkSeries.length - 1) : null;
       setTooltip({
         x: toX(clamped, seriesA.length),
         yPct: pyPct,
@@ -100,9 +104,10 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
         timestamp: seriesA[clamped]?.timestamp,
         vA: seriesA[clamped]?.value,
         vB: bIdx !== null ? seriesB[bIdx]?.value : null,
+        vBenchmark: idxBench !== null ? benchmarkSeries[idxBench]?.value : null,
       });
     }
-  }, [isMobile, seriesA, seriesB, showB]);
+  }, [isMobile, seriesA, seriesB, showB, benchmarkSeries]);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
@@ -114,6 +119,7 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
           <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth={C.grid}/>
         ))}
         <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth={C.grid} strokeDasharray={C.dash}/>
+        {pathBenchmark && <path d={pathBenchmark} fill="none" stroke={COLOR.text.label} strokeWidth={C.stroke} strokeDasharray={C.dash} strokeLinecap="round" strokeLinejoin="round"/>}
         {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round"/>}
         {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round"/>}
         {yTicks.map(({ v, y }, i) => (
@@ -149,10 +155,16 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB }) {
             </div>
           )}
           {tooltip.vB && (
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: tooltip.vBenchmark ? "3px" : 0 }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: ACCENT_B }} />
               <span style={{ color: COLOR.text.primary }}>B: <strong style={{ color: (tooltip.vB - 100) >= 0 ? COLOR.positive : COLOR.negative }}>{fmtPct(tooltip.vB - 100)}</strong></span>
               {totalB > 0 && <span style={{ color: COLOR.text.secondary, fontSize: FONT.size.sm }}>{formatKr(totalB * (tooltip.vB - 100) / 100)}</span>}
+            </div>
+          )}
+          {tooltip.vBenchmark != null && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: COLOR.text.label }} />
+              <span style={{ color: COLOR.text.secondary }}>Index: <strong style={{ color: COLOR.text.secondary }}>{fmtPct(tooltip.vBenchmark - 100)}</strong></span>
             </div>
           )}
         </div>

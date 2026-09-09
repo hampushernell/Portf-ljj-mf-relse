@@ -87,17 +87,18 @@ största begränsningen i funktionen och ska inte döljas för användaren.
 
 ## Byggordning — två steg
 
-Funktionen byggs i två steg. **Steg 1 får inte deployas.**
+Funktionen byggs i två steg, och **steg 1 driftsätts** medan steg 2 förbereds.
+Beslutat av Hampus 2026-09-09, med siffrorna nedan kända.
 
 **Steg 1 — allt utom valutan.** Chip, indexlinje, legend, tooltip, URL-parameter och tester,
-kört mot `^SP500TR` rakt av i USD. Syftet är att få maskineriet på plats och felsökt utan att
-valutaomräkningen är en möjlig felkälla. Legendnamnet ska i det här steget stå som
-**"S&P 500 TR (USD)"** — så att det syns direkt om bygget skulle råka nå produktion.
+kört mot `^SP500TR` rakt av i USD. Legendnamnet **måste** stå som **"S&P 500 TR (USD)"** så länge
+det här steget är i drift — valutamärkningen är det enda som skiljer en tydligt märkt serie från
+en missvisande. Ta aldrig bort parentesen förrän omräkningen finns på plats.
 
 **Steg 2 — valutan.** `SEK=X` hämtas, `toSek()` kopplas in, legendnamnet blir
-"S&P 500 TR (SEK)". Cirka trettio rader plus ett test. Först därefter deploy.
+"S&P 500 TR (SEK)". Cirka trettio rader plus ett test.
 
-### Varför steg 1 inte får nå produktion
+### Varför steg 2 inte får bli liggande
 
 Uppmätt 2026-09-08, tre år tillbaka:
 
@@ -117,12 +118,11 @@ skyddar inte mot det här, eftersom gapet är ritat och inte skrivet.
 Att ett USD-index visas i USD hos Dagens Industri och andra är riktigt, men där står siffran för
 sig själv. Missvisningen uppstår först när serien läggs på samma axel som en SEK-noterad fond.
 
-Om USD-varianten ändå ska finnas kvar för den som vill ha den publicerade siffran: lägg den som
-en **egen post** i registret med namnet "S&P 500 TR (USD)", vid sidan av SEK-varianten. Aldrig som
-standardvalet.
+Så länge steg 1 är i drift bärs hela skillnaden av valutamärkningen i legendnamnet. Det är därför
+den inte är kosmetisk.
 
-**Repot deployar från GitHub till Vercel på `main`.** Steg 1 ska därför byggas på egen branch och
-inte slås ihop förrän steg 2 är klart.
+När steg 2 är klart kan USD-varianten behållas för den som vill ha den publicerade siffran — men då
+som en **egen post** i registret vid sidan av SEK-varianten, aldrig som standardvalet.
 
 ---
 

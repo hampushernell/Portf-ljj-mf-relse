@@ -111,6 +111,25 @@ export function computeReturnBundle({ funds, allocs, inputMode, portfolioTotal, 
   return { portfolioSeries, fundLines, portfolioReturn: portfolioReturn(portfolioSeries), oldestTs };
 }
 
+// Benchmarkserien går ALDRIG genom blendPortfolio() — indexet är inte en del av
+// portföljen, bara en referenslinje. Se project-docs/BENCHMARKS.md.
+// benchmark: rådata från /api/funds, samma form som en fond ({ prices: [{timestamp, value}], currency, ... }).
+// startTs/endTs: portföljens egna, så att indexet klipps till samma fönster och
+// rebaseras till 100 på samma startpunkt som portföljen — annars startar linjerna
+// inte tillsammans och grafen blir felläst.
+export function computeBenchmarkSeries(benchmark, startTs, endTs) {
+  if (!benchmark?.prices?.length || startTs == null || endTs == null) return [];
+  const normalized = normalizeToCalendar(benchmark.prices, startTs, endTs);
+  if (!normalized.length) return [];
+
+  // STEG 2 (valutaomräkning, ej implementerad): här kopplas SEK=X in. Normalisera
+  // FX-serien till samma kalenderaxel som `normalized` ovan, multiplicera punktvis
+  // (index_valuta(d) × fx(d)) — aldrig råserier mot varandra — och rebasera
+  // resultatet i stället för `normalized` nedan.
+
+  return rebaseSeries(normalized);
+}
+
 export function portfolioKrTotal(funds, allocs) {
   return funds.reduce((acc, f) => acc + (allocs[f.id]?.kr || 0), 0);
 }
