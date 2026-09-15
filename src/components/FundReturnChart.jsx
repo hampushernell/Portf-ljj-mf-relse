@@ -28,17 +28,9 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
   return (
     <div style={{ background: "transparent", border: `1px solid ${COLOR.border.card}`, borderRadius: isMobile ? "10px" : "14px", overflow: "hidden", animation: anim(ANIM.cardMount) }}>
       <div style={{ padding: isMobile ? "14px 16px 16px" : "22px 24px 16px" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "12px", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
         <div>
-          <h3 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3, color: COLOR.text.primary, margin: "0 0 8px" }}>Historisk avkastning</h3>
-          {fundLines.length > 1 && portfolioSeries.length > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke="rgba(255,255,255,0.85)" strokeWidth="2.5" strokeLinecap="round"/></svg>
-              <span style={{ fontSize: FONT.size.base, color: COLOR.text.primary, fontFamily: FONT.family.display }}>
-                Portfölj: <span style={{ color: retPortfolio >= 0 ? COLOR.positive : COLOR.negative, fontWeight: 700 }}>{fmtPct(retPortfolio)}</span>
-              </span>
-            </div>
-          )}
+          <h3 style={{ fontFamily: FONT.family.display, fontSize: FONT.size.xl, fontWeight: 700, lineHeight: 1.3, color: COLOR.text.primary, margin: "0" }}>Historisk avkastning</h3>
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -102,6 +94,32 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
         </div>
       </div>
 
+      {fundLines.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          {fundLines.length > 1 && portfolioSeries.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div style={{ width: "18px", height: "2.5px", background: "rgba(255,255,255,0.85)", borderRadius: "2px" }} />
+              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.subtle, fontFamily: FONT.family.body }}>Portfölj</span>
+              <span style={{ fontSize: FONT.size.sm, color: retPortfolio >= 0 ? COLOR.positive : COLOR.negative, fontWeight: 700, fontFamily: FONT.family.display }}>{fmtPct(retPortfolio)}</span>
+            </div>
+          )}
+          {fundLines.map(l => (
+            <div key={l.name} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div style={{ width: "18px", height: "2px", background: l.color, borderRadius: "2px", opacity: 0.75 }} />
+              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.subtle, fontFamily: FONT.family.body }}>{l.name}</span>
+              <span style={{ fontSize: FONT.size.sm, color: l.returnValue >= 0 ? COLOR.positive : COLOR.negative, fontWeight: 700, fontFamily: FONT.family.display }}>{fmtPct(l.returnValue)}</span>
+            </div>
+          ))}
+          {indexOn && activeBenchmark && benchmarkSeries.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={COLOR.text.label} strokeWidth="1.5" strokeDasharray="5 4" strokeLinecap="round"/></svg>
+              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.subtle, fontFamily: FONT.family.body }}>{activeBenchmark.name}</span>
+              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary, fontWeight: 700, fontFamily: FONT.family.display }}>{fmtPct(benchmarkReturn)}</span>
+            </div>
+          )}
+        </div>
+      )}
+
       </div>
 
       <FundSVGChart lines={fundLines} portfolioSeries={portfolioSeries} showPortfolioLine={fundLines.length > 1} benchmarkSeries={benchmarkSeries} />
@@ -121,31 +139,6 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
           </div>
         );
       })()}
-
-      {fundLines.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "14px" }}>
-          {fundLines.length > 1 && (
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <div style={{ width: "18px", height: "2.5px", background: "rgba(255,255,255,0.85)", borderRadius: "2px" }} />
-              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.subtle, fontFamily: FONT.family.body }}>Portfölj</span>
-            </div>
-          )}
-          {fundLines.map(l => (
-            <div key={l.name} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <div style={{ width: "18px", height: "2px", background: l.color, borderRadius: "2px", opacity: 0.75 }} />
-              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.subtle, fontFamily: FONT.family.body }}>{l.name}</span>
-              <span style={{ fontSize: FONT.size.sm, color: l.returnValue >= 0 ? COLOR.positive : COLOR.negative, fontWeight: 700, fontFamily: FONT.family.display }}>{fmtPct(l.returnValue)}</span>
-            </div>
-          ))}
-          {indexOn && activeBenchmark && benchmarkSeries.length > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <svg width="22" height="10"><line x1="0" y1="5" x2="22" y2="5" stroke={COLOR.text.label} strokeWidth="1.5" strokeDasharray="5 4" strokeLinecap="round"/></svg>
-              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.subtle, fontFamily: FONT.family.body }}>{activeBenchmark.name}</span>
-              <span style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary, fontWeight: 700, fontFamily: FONT.family.display }}>{fmtPct(benchmarkReturn)}</span>
-            </div>
-          )}
-        </div>
-      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginTop: "16px" }}>
         {[
