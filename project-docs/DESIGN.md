@@ -246,7 +246,7 @@ The primary structural container. Neutral surface (COLOR.surface.panel), `1.5px 
 All modals share a consistent overlay pattern: `position: fixed`, `inset: 0`, `z-index: 1000`, `background: rgba(0,0,0,0.3)` (COLOR.bg.overlay), `backdropFilter: "blur(4px)"`, centered content via flex, `padding: "20px"` (edge clearance on mobile), `animation: "fadeIn 0.2s ease"`. Clicking the overlay closes the modal; the inner dialog stops propagation. This pattern applies to FundDetailsModal, ManualFundModal, and the fee info overlay in PortfolioPanel — every modal in the system.
 
 ### Chart Card (ReturnChart / FundReturnChart)
-Transparent background, `1px solid rgba(255,255,255,0.10)` border, 14px radius, `overflow: hidden`. Header (titel, legend, span-knappar) har intern padding `22px 24px 16px` desktop / `14px 16px 16px` mobil. SVG-grafen blöder kant-till-kant utan horisontell padding. Footer (datumrad, jämförelsebar) har padding `10px 24px 22px` desktop. Animation: `scaleIn 0.3s ease` on mount.
+Transparent background, `1px solid rgba(255,255,255,0.10)` border, 14px radius, `overflow: hidden`. Header (titel, Dela-knapp, legend) har intern padding `22px 24px 16px` desktop / `14px 16px 16px` mobil — rubrikraden är alltid `flexDirection: row` med Dela i högerkanten, även på mobil. SVG-grafen blöder kant-till-kant utan horisontell padding. Footer (kontrollrad med span-knappar och Index, datumrad, jämförelsebar) har padding `10px 24px 22px` desktop. Kontrollraden ligger överst i footern, direkt under grafen. Animation: `scaleIn 0.3s ease` on mount.
 
 **SVG:** Geometri och strecktjocklek kommer från `CHART` i `tokens.js`.
 Desktop: `viewBox="0 0 800 330"`, strokeWidth 1.5, axeltext 12.
