@@ -27,33 +27,11 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB, benc
   const chartW = W - PL - PR;
   const chartH = H - PT - PB;
 
-  const allVals = [...seriesA.map(d => d.value), ...(showB ? seriesB.map(d => d.value) : []), ...benchmarkSeries.map(d => d.value)];
-  if (!allVals.length) return null;
-
-  const minV = Math.min(...allVals, 95);
-  const maxV = Math.max(...allVals, 105);
-  const pad  = (maxV - minV) * 0.12;
-  const yMin = minV - pad;
-  const yMax = maxV + pad;
-
   const toX = (i, len) => PL + (i / Math.max(len - 1, 1)) * chartW;
-  const toY = v => PT + chartH - ((v - yMin) / (yMax - yMin)) * chartH;
+  const GRACE = isMobile ? 0 : 32;
 
-  const makePath = series => series.map((d, i) => `${i === 0 ? "M" : "L"}${toX(i, series.length).toFixed(1)},${toY(d.value).toFixed(1)}`).join(" ");
-
-  const pathA = seriesA.length > 1 ? makePath(downsampleForRender(seriesA)) : null;
-  const pathB = showB && seriesB.length > 1 ? makePath(downsampleForRender(seriesB)) : null;
-  const pathBenchmark = benchmarkSeries.length > 1 ? makePath(downsampleForRender(benchmarkSeries)) : null;
-
-  const yTicks = Array.from({ length: 5 }, (_, i) => {
-    const v = yMin + (i / 4) * (yMax - yMin);
-    return { v, y: toY(v) };
-  });
-
-  const baselineY = toY(100);
   const [tooltip, setTooltip] = useState(null);
   const svgRef = useRef(null);
-  const GRACE = isMobile ? 0 : 32;
 
   useEffect(() => {
     if (isMobile) return;
@@ -108,6 +86,40 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB, benc
       });
     }
   }, [isMobile, seriesA, seriesB, showB, benchmarkSeries]);
+
+  const allVals = [...seriesA.map(d => d.value), ...(showB ? seriesB.map(d => d.value) : []), ...benchmarkSeries.map(d => d.value)];
+  if (!allVals.length) {
+    return (
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        width: "100%", height: H, textAlign: "center", padding: "0 16px",
+        color: COLOR.text.secondary, fontSize: FONT.size.sm, fontFamily: FONT.family.body,
+      }}>
+        Ange andel för minst en fond för att se grafen
+      </div>
+    );
+  }
+
+  const minV = Math.min(...allVals, 95);
+  const maxV = Math.max(...allVals, 105);
+  const pad  = (maxV - minV) * 0.12;
+  const yMin = minV - pad;
+  const yMax = maxV + pad;
+
+  const toY = v => PT + chartH - ((v - yMin) / (yMax - yMin)) * chartH;
+
+  const makePath = series => series.map((d, i) => `${i === 0 ? "M" : "L"}${toX(i, series.length).toFixed(1)},${toY(d.value).toFixed(1)}`).join(" ");
+
+  const pathA = seriesA.length > 1 ? makePath(downsampleForRender(seriesA)) : null;
+  const pathB = showB && seriesB.length > 1 ? makePath(downsampleForRender(seriesB)) : null;
+  const pathBenchmark = benchmarkSeries.length > 1 ? makePath(downsampleForRender(benchmarkSeries)) : null;
+
+  const yTicks = Array.from({ length: 5 }, (_, i) => {
+    const v = yMin + (i / 4) * (yMax - yMin);
+    return { v, y: toY(v) };
+  });
+
+  const baselineY = toY(100);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>

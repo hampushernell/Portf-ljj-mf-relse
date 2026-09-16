@@ -27,25 +27,12 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
   const chartW = W - PL - PR;
   const chartH = H - PT - PB;
 
-  const allVals = [...lines.flatMap(l => l.series.map(d => d.value)), ...portfolioSeries.map(d => d.value), ...benchmarkSeries.map(d => d.value)];
-  if (!allVals.length) return null;
-
-  const minV = Math.min(...allVals, 95);
-  const maxV = Math.max(...allVals, 105);
-  const pad  = (maxV - minV) * 0.12;
-  const yMin = minV - pad;
-  const yMax = maxV + pad;
-
   const toX = (i, len) => PL + (i / Math.max(len - 1, 1)) * chartW;
-  const toY = v => PT + chartH - ((v - yMin) / (yMax - yMin)) * chartH;
-  const makePath = s => s.map((d, i) => `${i === 0 ? "M" : "L"}${toX(i, s.length).toFixed(1)},${toY(d.value).toFixed(1)}`).join(" ");
+  const GRACE = isMobile ? 0 : 32;
+  const refSeries = portfolioSeries.length ? portfolioSeries : lines[0]?.series ?? [];
 
-  const baselineY = toY(100);
   const [tooltip, setTooltip] = useState(null);
   const svgRef = useRef(null);
-  const GRACE = isMobile ? 0 : 32;
-
-  const refSeries = portfolioSeries.length ? portfolioSeries : lines[0]?.series ?? [];
 
   useEffect(() => {
     if (isMobile) return;
@@ -119,6 +106,29 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
     });
   }, [refSeries, portfolioSeries, lines, benchmarkSeries]);
 
+  const allVals = [...lines.flatMap(l => l.series.map(d => d.value)), ...portfolioSeries.map(d => d.value), ...benchmarkSeries.map(d => d.value)];
+  if (!allVals.length) {
+    return (
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        width: "100%", height: H, textAlign: "center", padding: "0 16px",
+        color: COLOR.text.secondary, fontSize: FONT.size.sm, fontFamily: FONT.family.body,
+      }}>
+        Ange andel för minst en fond för att se grafen
+      </div>
+    );
+  }
+
+  const minV = Math.min(...allVals, 95);
+  const maxV = Math.max(...allVals, 105);
+  const pad  = (maxV - minV) * 0.12;
+  const yMin = minV - pad;
+  const yMax = maxV + pad;
+
+  const toY = v => PT + chartH - ((v - yMin) / (yMax - yMin)) * chartH;
+  const makePath = s => s.map((d, i) => `${i === 0 ? "M" : "L"}${toX(i, s.length).toFixed(1)},${toY(d.value).toFixed(1)}`).join(" ");
+
+  const baselineY = toY(100);
   const yTicks = Array.from({ length: 5 }, (_, i) => ({ v: yMin + (i / 4) * (yMax - yMin) })).map(t => ({ ...t, y: toY(t.v) }));
 
   return (

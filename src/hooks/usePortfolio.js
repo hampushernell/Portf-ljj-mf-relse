@@ -10,13 +10,19 @@ export default function usePortfolio(_manualFundsDb) {
   const addFund = f => {
     const newFunds = [...funds, f];
     setFunds(newFunds);
-    if (inputMode === "pct" && !hasManualEdit) {
-      const even = parseFloat((100 / newFunds.length).toFixed(2));
-      setAllocs(prev => {
-        const n = { ...prev };
-        newFunds.forEach(fund => { n[fund.id] = { ...n[fund.id], pct: even }; });
-        return n;
-      });
+    if (inputMode === "pct") {
+      if (!hasManualEdit) {
+        const even = parseFloat((100 / newFunds.length).toFixed(2));
+        setAllocs(prev => {
+          const n = { ...prev };
+          newFunds.forEach(fund => { n[fund.id] = { ...n[fund.id], pct: even }; });
+          return n;
+        });
+      } else {
+        const existingSum = funds.reduce((sum, fund) => sum + (allocs[fund.id]?.pct ?? 0), 0);
+        const remaining = Math.max(0, 100 - existingSum);
+        setAllocs(prev => ({ ...prev, [f.id]: { ...prev[f.id], pct: remaining } }));
+      }
     }
   };
 
