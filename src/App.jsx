@@ -252,7 +252,9 @@ export default function App() {
                 />
               </div>
               {!compareMode && (
-                <ComparePlaceholder onClick={() => setViewMode("compare")} />
+                <div style={{ flex: 1, minWidth: 0, alignSelf: isMobile ? "stretch" : "flex-start" }}>
+                  <ComparePlaceholder onClick={() => setViewMode("compare")} />
+                </div>
               )}
               {compareMode && (
                 <div style={{ flex: 1, minWidth: 0, alignSelf: isMobile ? "stretch" : "flex-start" }}>

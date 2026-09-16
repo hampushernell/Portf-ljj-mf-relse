@@ -10,7 +10,7 @@ export default function ComparePlaceholder({ onClick }) {
     <button
       onClick={onClick}
       style={{
-        flex: 1, minWidth: 0, minHeight: isMobile ? "120px" : "240px", alignSelf: isMobile ? "stretch" : "flex-start",
+        width: "100%", minHeight: isMobile ? "120px" : "240px",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
         gap: "10px", padding: "28px 16px",
         background: "transparent",
