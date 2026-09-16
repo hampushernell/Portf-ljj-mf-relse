@@ -139,11 +139,11 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
         onTouchEnd={() => setTooltip(null)}>
 
         {yTicks.map(({ y }, i) => (
-          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth={C.grid}/>
+          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth={C.grid} vectorEffect="non-scaling-stroke"/>
         ))}
-        <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth={C.grid} strokeDasharray={C.dash}/>
+        <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth={C.grid} strokeDasharray={C.dash} vectorEffect="non-scaling-stroke"/>
         {benchmarkSeries.length > 1 && (
-          <path d={makePath(downsampleForRender(benchmarkSeries))} fill="none" stroke={COLOR.text.label} strokeWidth={C.stroke} strokeDasharray={C.dash} strokeLinecap="round" strokeLinejoin="round"/>
+          <path d={makePath(downsampleForRender(benchmarkSeries))} fill="none" stroke={COLOR.text.label} strokeWidth={C.stroke} strokeDasharray={C.dash} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"/>
         )}
         {lines.map(l => {
           if (l.series.length <= 1) return null;
@@ -151,20 +151,20 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
             <path key={l.color + l.name}
               d={makePath(downsampleForRender(l.series))} fill="none" stroke={l.color}
               strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round"
-              opacity="0.80"
+              opacity="0.80" vectorEffect="non-scaling-stroke"
             />
           );
         })}
         {showPortfolioLine && portfolioSeries.length > 1 && (
           <path d={makePath(downsampleForRender(portfolioSeries))} fill="none" stroke="rgba(255,255,255,0.88)" strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round"
-            opacity="1"
+            opacity="1" vectorEffect="non-scaling-stroke"
           />
         )}
         {yTicks.map(({ v, y }, i) => (
           <text key={i} x={8} y={y + C.axisDy} textAnchor="start" fill={COLOR.text.axis} fontSize={C.axis} fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
         ))}
         {tooltip && (
-          <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth={C.grid}/>
+          <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth={C.grid} vectorEffect="non-scaling-stroke"/>
         )}
       </svg>
       {tooltip && (

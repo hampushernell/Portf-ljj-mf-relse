@@ -143,7 +143,7 @@ export const SHADOW = {
 // viewBox-enhet ≈ en CSS-pixel och strokeWidth/fontSize renderas som de säger.
 export const CHART = {
   desktop: { W: 800, H: 330, stroke: 1.5,  axis: 12, axisDy: 14, grid: 1, dash: "5 4" },
-  mobile:  { W: 360, H: 300, stroke: 2.25, axis: 11, axisDy: 15, grid: 1, dash: "5 4" },
+  mobile:  { W: 360, H: 300, stroke: 1.75, axis: 11, axisDy: 15, grid: 1, dash: "5 4" },
   PL: 0, PR: 0, PT: 10, PB: 28,
 };
 

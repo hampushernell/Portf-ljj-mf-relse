@@ -250,10 +250,13 @@ Transparent background, `1px solid rgba(255,255,255,0.10)` border, 14px radius, 
 
 **SVG:** Geometri och strecktjocklek kommer från `CHART` i `tokens.js`.
 Desktop: `viewBox="0 0 800 330"`, strokeWidth 1.5, axeltext 12.
-Mobil: `viewBox="0 0 360 300"`, strokeWidth 2.25, axeltext 11 — mobilens
+Mobil: `viewBox="0 0 360 300"`, strokeWidth 1.75, axeltext 11 — mobilens
 viewBox är avsiktligt ungefär lika bred som grafkortet så att en viewBox-enhet
-motsvarar en CSS-pixel. Hårdkodade strokeWidth- och fontSize-värden i
-grafkomponenterna är förbjudna: skalfaktorn gör dem missvisande.
+motsvarar en CSS-pixel. Alla `<path>` och `<line>` har
+`vectorEffect="non-scaling-stroke"`, så strokeWidth är fasta CSS-pixlar på
+båda brytpunkterna oavsett kortbredd. Hårdkodade strokeWidth- och
+fontSize-värden i grafkomponenterna är förbjudna: skalfaktorn gör dem
+missvisande.
 `PL=PR=0` — linjer och gridlinjer löper från x=0 till x=W. Y-axeletiketter
 inuti grafen (`x=8`, under gridlinjen).
 

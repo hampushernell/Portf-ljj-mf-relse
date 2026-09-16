@@ -128,19 +128,19 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB, benc
         onTouchMove={e => { e.preventDefault(); handleMouseMove(e); }}
         onTouchEnd={() => setTooltip(null)}>
         {yTicks.map(({ y }, i) => (
-          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth={C.grid}/>
+          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth={C.grid} vectorEffect="non-scaling-stroke"/>
         ))}
-        <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth={C.grid} strokeDasharray={C.dash}/>
-        {pathBenchmark && <path d={pathBenchmark} fill="none" stroke={COLOR.text.label} strokeWidth={C.stroke} strokeDasharray={C.dash} strokeLinecap="round" strokeLinejoin="round"/>}
-        {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round"/>}
-        {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round"/>}
+        <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth={C.grid} strokeDasharray={C.dash} vectorEffect="non-scaling-stroke"/>
+        {pathBenchmark && <path d={pathBenchmark} fill="none" stroke={COLOR.text.label} strokeWidth={C.stroke} strokeDasharray={C.dash} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"/>}
+        {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"/>}
+        {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"/>}
         {yTicks.map(({ v, y }, i) => (
           <text key={i} x={8} y={y + C.axisDy} textAnchor="start" fill={COLOR.text.axis} fontSize={C.axis} fontFamily={FONT.family.body}>
             {`${(v - 100).toFixed(0)}%`}
           </text>
         ))}
         {tooltip && (
-          <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth={C.grid}/>
+          <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth={C.grid} vectorEffect="non-scaling-stroke"/>
         )}
       </svg>
       {tooltip && (
