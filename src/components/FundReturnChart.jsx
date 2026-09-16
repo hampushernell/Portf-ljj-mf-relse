@@ -75,7 +75,7 @@ export default function FundReturnChart({ fundLines, portfolioSeries, selectedSp
       <FundSVGChart lines={fundLines} portfolioSeries={portfolioSeries} showPortfolioLine={fundLines.length > 1} benchmarkSeries={benchmarkSeries} />
 
       <div style={{ padding: isMobile ? "10px 16px 14px" : "10px 24px 22px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+      <div style={{ display: "flex", justifyContent: isMobile ? "space-between" : "flex-start", alignItems: "center", gap: "8px", marginTop: "4px" }}>
         <div style={{ overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch" }}>
           <div style={{ display: "flex", gap: "3px", background: COLOR.surface[1], borderRadius: "8px", padding: "3px", flexWrap: isMobile ? "nowrap" : "wrap", minWidth: isMobile ? "max-content" : undefined }}>
             {TIME_SPANS.map(ts => {
