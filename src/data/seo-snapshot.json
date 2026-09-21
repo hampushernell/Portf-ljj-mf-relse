@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "asOf": "2026-09-10",
-    "generatedAt": "2026-09-14T10:26:27.002Z",
+    "asOf": "2026-09-17",
+    "generatedAt": "2026-09-21T10:31:53.319Z",
     "fundsTotal": 52,
     "fundsOk": 52,
     "fundsStale": 0,
@@ -11,84 +11,84 @@
     "1": {
       "isin": "SE0011527613",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 20.8,
-        "cagr": 20.8,
+        "return": 22.3,
+        "cagr": 22.4,
         "maxDrawdown": -7.1,
-        "volatility": 9.4
+        "volatility": 9.5
       },
       "threeYear": {
-        "return": 45.5,
-        "cagr": 13.3,
+        "return": 46.9,
+        "cagr": 13.7,
         "maxDrawdown": -24.2,
         "volatility": 11.7
       },
       "sinceStart": {
-        "return": 74.3,
-        "cagr": 13.1,
+        "return": 77.9,
+        "cagr": 13.6,
         "maxDrawdown": -24.2,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "2": {
       "isin": "FI4000261326",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 22.2,
-        "cagr": 22.2,
+        "return": 24.3,
+        "cagr": 24.3,
         "maxDrawdown": -5.3,
-        "volatility": 8.4
+        "volatility": 8.5
       },
       "threeYear": {
-        "return": 51.4,
-        "cagr": 14.8,
+        "return": 52,
+        "cagr": 15,
         "maxDrawdown": -23.5,
         "volatility": 11.2
       },
       "sinceStart": {
-        "return": 80.4,
-        "cagr": 14,
+        "return": 83.9,
+        "cagr": 14.4,
         "maxDrawdown": -23.5,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "3": {
       "isin": "SE0005188836",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 19.3,
-        "cagr": 19.2,
+        "return": 21.3,
+        "cagr": 21.3,
         "maxDrawdown": -7.8,
-        "volatility": 9.7
+        "volatility": 9.8
       },
       "threeYear": {
-        "return": 48.8,
-        "cagr": 14.2,
+        "return": 50.9,
+        "cagr": 14.7,
         "maxDrawdown": -24.1,
         "volatility": 12.1
       },
       "sinceStart": {
-        "return": 80.2,
-        "cagr": 14,
+        "return": 84.4,
+        "cagr": 14.5,
         "maxDrawdown": -24.1,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "4": {
       "isin": "FI4000046685",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 21.3,
-        "cagr": 21.2,
+        "return": 23,
+        "cagr": 23,
         "maxDrawdown": -4.7,
-        "volatility": 8.3
+        "volatility": 8.4
       },
       "threeYear": {
         "return": 50.1,
@@ -97,233 +97,233 @@
         "volatility": 11.2
       },
       "sinceStart": {
-        "return": 77.1,
-        "cagr": 13.5,
+        "return": 79.8,
+        "cagr": 13.8,
         "maxDrawdown": -23.9,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "5": {
       "isin": "SE0011309707",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 22.5,
-        "cagr": 22.4,
+        "return": 23.7,
+        "cagr": 23.7,
         "maxDrawdown": -5.8,
         "volatility": 9.2
       },
       "threeYear": {
-        "return": 50.1,
+        "return": 50,
         "cagr": 14.5,
         "maxDrawdown": -23.1,
         "volatility": 11
       },
       "sinceStart": {
-        "return": 77,
-        "cagr": 13.5,
+        "return": 79.3,
+        "cagr": 13.8,
         "maxDrawdown": -23.1,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "6": {
       "isin": "NO0010827280",
       "dataFrom": "2022-12-14",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 21.7,
-        "cagr": 21.7,
+        "return": 23.5,
+        "cagr": 23.5,
         "maxDrawdown": -5.2,
         "volatility": 9.1
       },
       "threeYear": {
-        "return": 49.6,
-        "cagr": 14.4,
+        "return": 50.8,
+        "cagr": 14.7,
         "maxDrawdown": -23.3,
         "volatility": 11.4
       },
       "sinceStart": {
-        "return": 79.9,
-        "cagr": 17,
+        "return": 83.4,
+        "cagr": 17.5,
         "maxDrawdown": -23.3,
-        "years": 3.74
+        "years": 3.76
       },
       "stale": false
     },
     "7": {
       "isin": "SE0000671919",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 24.2,
-        "cagr": 24.2,
+        "return": 25.5,
+        "cagr": 25.5,
         "maxDrawdown": -5.4,
-        "volatility": 8.9
+        "volatility": 9
       },
       "threeYear": {
-        "return": 51.3,
-        "cagr": 14.8,
+        "return": 52.2,
+        "cagr": 15,
         "maxDrawdown": -22.3,
         "volatility": 10.8
       },
       "sinceStart": {
-        "return": 75.8,
-        "cagr": 13.3,
+        "return": 78.7,
+        "cagr": 13.7,
         "maxDrawdown": -22.3,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "8": {
       "isin": "SE0001718388",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 25.5,
-        "cagr": 25.5,
+        "return": 27.7,
+        "cagr": 27.7,
         "maxDrawdown": -10.6,
-        "volatility": 11.9
+        "volatility": 12
       },
       "threeYear": {
-        "return": 62.1,
-        "cagr": 17.5,
+        "return": 62.8,
+        "cagr": 17.6,
         "maxDrawdown": -19.9,
         "volatility": 12.3
       },
       "sinceStart": {
-        "return": 88.4,
-        "cagr": 15.1,
+        "return": 90.9,
+        "cagr": 15.4,
         "maxDrawdown": -19.9,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "9": {
       "isin": "LU2122930915",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 23.6,
-        "cagr": 23.6,
+        "return": 25.1,
+        "cagr": 25.1,
         "maxDrawdown": -11.5,
         "volatility": 12.4
       },
       "threeYear": {
-        "return": 56.3,
-        "cagr": 16,
+        "return": 57,
+        "cagr": 16.2,
         "maxDrawdown": -21.6,
         "volatility": 13.1
       },
       "sinceStart": {
-        "return": 66.1,
-        "cagr": 11.9,
+        "return": 67.9,
+        "cagr": 12.1,
         "maxDrawdown": -21.6,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "10": {
       "isin": "SE0000739195",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-15",
       "oneYear": {
-        "return": 18.3,
-        "cagr": 18.3,
+        "return": 16.2,
+        "cagr": 16.2,
         "maxDrawdown": -10.2,
-        "volatility": 12.9
+        "volatility": 13
       },
       "threeYear": {
-        "return": 48.5,
-        "cagr": 14.1,
+        "return": 44.2,
+        "cagr": 13,
         "maxDrawdown": -22.4,
         "volatility": 13.8
       },
       "sinceStart": {
-        "return": 46.7,
-        "cagr": 8.9,
+        "return": 44,
+        "cagr": 8.4,
         "maxDrawdown": -25.7,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "11": {
       "isin": "SE0001466368",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 19.7,
-        "cagr": 19.7,
+        "return": 21.3,
+        "cagr": 21.2,
         "maxDrawdown": -10.9,
-        "volatility": 12.8
+        "volatility": 13
       },
       "threeYear": {
-        "return": 52,
-        "cagr": 15,
+        "return": 52.4,
+        "cagr": 15.1,
         "maxDrawdown": -21.8,
         "volatility": 13.4
       },
       "sinceStart": {
-        "return": 54.8,
-        "cagr": 10.2,
+        "return": 56.7,
+        "cagr": 10.4,
         "maxDrawdown": -24.5,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "12": {
       "isin": "SE0004297927",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 23.8,
-        "cagr": 23.8,
+        "return": 26.7,
+        "cagr": 26.7,
         "maxDrawdown": -12.1,
-        "volatility": 13.6
+        "volatility": 13.7
       },
       "threeYear": {
-        "return": 57.9,
-        "cagr": 16.4,
+        "return": 58.4,
+        "cagr": 16.6,
         "maxDrawdown": -23.6,
         "volatility": 14
       },
       "sinceStart": {
-        "return": 67.6,
-        "cagr": 12.1,
+        "return": 69.5,
+        "cagr": 12.3,
         "maxDrawdown": -24.3,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "13": {
       "isin": "SE0002656611",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 22.4,
-        "cagr": 22.4,
+        "return": 23.7,
+        "cagr": 23.7,
         "maxDrawdown": -11.4,
-        "volatility": 12.3
+        "volatility": 12.4
       },
       "threeYear": {
-        "return": 58.1,
-        "cagr": 16.5,
+        "return": 57.9,
+        "cagr": 16.4,
         "maxDrawdown": -20.4,
         "volatility": 12.6
       },
       "sinceStart": {
-        "return": 64.2,
-        "cagr": 11.6,
+        "return": 65.2,
+        "cagr": 11.7,
         "maxDrawdown": -23.7,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "14": {
       "isin": "SE0002152140",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
         "return": 2.8,
         "cagr": 2.8,
@@ -331,8 +331,8 @@
         "volatility": 0.3
       },
       "threeYear": {
-        "return": 14.6,
-        "cagr": 4.7,
+        "return": 14.3,
+        "cagr": 4.6,
         "maxDrawdown": -1.2,
         "volatility": 0.7
       },
@@ -340,221 +340,221 @@
         "return": 18.6,
         "cagr": 3.8,
         "maxDrawdown": -1.8,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "15": {
       "isin": "SE0000739187",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-15",
       "oneYear": {
-        "return": 1,
-        "cagr": 1,
+        "return": 0.4,
+        "cagr": 0.4,
         "maxDrawdown": -2.3,
-        "volatility": 1.9
+        "volatility": 2
       },
       "threeYear": {
-        "return": 13.4,
-        "cagr": 4.3,
+        "return": 12.5,
+        "cagr": 4,
         "maxDrawdown": -2.3,
         "volatility": 2
       },
       "sinceStart": {
-        "return": 7.7,
-        "cagr": 1.7,
+        "return": 7,
+        "cagr": 1.5,
         "maxDrawdown": -7.2,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "16": {
       "isin": "SE0002793943",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 18.6,
-        "cagr": 18.6,
+        "return": 20.9,
+        "cagr": 20.9,
         "maxDrawdown": -10.2,
-        "volatility": 11.6
+        "volatility": 11.7
       },
       "threeYear": {
-        "return": 52.4,
-        "cagr": 15.1,
+        "return": 55.8,
+        "cagr": 15.9,
         "maxDrawdown": -26.8,
         "volatility": 14.8
       },
       "sinceStart": {
-        "return": 87,
-        "cagr": 14.9,
+        "return": 92,
+        "cagr": 15.5,
         "maxDrawdown": -26.8,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "17": {
       "isin": "SE0004139780",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 21,
-        "cagr": 21,
+        "return": 23.8,
+        "cagr": 23.8,
         "maxDrawdown": -8.7,
-        "volatility": 9.9
+        "volatility": 10
       },
       "threeYear": {
-        "return": 53.2,
-        "cagr": 15.3,
+        "return": 55.4,
+        "cagr": 15.8,
         "maxDrawdown": -26.3,
-        "volatility": 12.1
+        "volatility": 12.2
       },
       "sinceStart": {
-        "return": 84.2,
-        "cagr": 14.5,
+        "return": 88.3,
+        "cagr": 15,
         "maxDrawdown": -26.3,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "18": {
       "isin": "SE0012741163",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 21.2,
-        "cagr": 21.2,
+        "return": 22.8,
+        "cagr": 22.8,
         "maxDrawdown": -9.2,
-        "volatility": 11.3
+        "volatility": 11.5
       },
       "threeYear": {
-        "return": 42.7,
-        "cagr": 12.6,
+        "return": 45.2,
+        "cagr": 13.2,
         "maxDrawdown": -27.1,
         "volatility": 14.3
       },
       "sinceStart": {
-        "return": 67.4,
-        "cagr": 12.1,
+        "return": 71.4,
+        "cagr": 12.6,
         "maxDrawdown": -27.1,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "19": {
       "isin": "SE0000538944",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 37.6,
-        "cagr": 37.6,
-        "maxDrawdown": -15.6,
-        "volatility": 21.2
+        "return": 39,
+        "cagr": 39,
+        "maxDrawdown": -15.5,
+        "volatility": 21.3
       },
       "threeYear": {
-        "return": 94.6,
-        "cagr": 24.8,
+        "return": 95.9,
+        "cagr": 25.1,
         "maxDrawdown": -34.5,
         "volatility": 20.5
       },
       "sinceStart": {
-        "return": 164.5,
-        "cagr": 24.1,
+        "return": 166.6,
+        "cagr": 24.2,
         "maxDrawdown": -34.5,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "20": {
       "isin": "SE0000709123",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 16.1,
-        "cagr": 16.1,
+        "return": 16.2,
+        "cagr": 16.2,
         "maxDrawdown": -15.9,
-        "volatility": 18.9
+        "volatility": 19
       },
       "threeYear": {
-        "return": 21.5,
-        "cagr": 6.7,
+        "return": 24.1,
+        "cagr": 7.5,
         "maxDrawdown": -28.1,
         "volatility": 17
       },
       "sinceStart": {
-        "return": -4.1,
-        "cagr": -0.9,
+        "return": -3.3,
+        "cagr": -0.7,
         "maxDrawdown": -41.6,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "21": {
       "isin": "SE0005796331",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 23.2,
-        "cagr": 23.2,
+        "return": 18.2,
+        "cagr": 18.2,
         "maxDrawdown": -14.4,
         "volatility": 17.3
       },
       "threeYear": {
-        "return": 43.9,
-        "cagr": 12.9,
+        "return": 38.8,
+        "cagr": 11.6,
         "maxDrawdown": -18.9,
         "volatility": 14.2
       },
       "sinceStart": {
-        "return": 47.3,
-        "cagr": 9,
+        "return": 45.2,
+        "cagr": 8.6,
         "maxDrawdown": -18.9,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "22": {
       "isin": "SE0002756973",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 22.7,
-        "cagr": 22.7,
+        "return": 24.4,
+        "cagr": 24.4,
         "maxDrawdown": -11.7,
-        "volatility": 12.4
+        "volatility": 12.5
       },
       "threeYear": {
-        "return": 55.4,
-        "cagr": 15.8,
+        "return": 55.8,
+        "cagr": 15.9,
         "maxDrawdown": -22.2,
         "volatility": 12.8
       },
       "sinceStart": {
-        "return": 65.5,
-        "cagr": 11.8,
+        "return": 67.3,
+        "cagr": 12,
         "maxDrawdown": -22.2,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "23": {
       "isin": "IE00BMTD2G30",
-      "dataFrom": "2021-09-14",
-      "dataTo": "2026-09-10",
+      "dataFrom": "2021-09-21",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 21,
-        "cagr": 21,
+        "return": 22.9,
+        "cagr": 22.9,
         "maxDrawdown": -8.1,
-        "volatility": 10
+        "volatility": 10.1
       },
       "threeYear": {
-        "return": 46.5,
-        "cagr": 13.6,
+        "return": 48.6,
+        "cagr": 14.1,
         "maxDrawdown": -24.4,
         "volatility": 11.9
       },
       "sinceStart": {
-        "return": 84.4,
-        "cagr": 13.1,
+        "return": 90.8,
+        "cagr": 13.8,
         "maxDrawdown": -24.4,
         "years": 4.99
       },
@@ -562,23 +562,23 @@
     },
     "24": {
       "isin": "IE00BMTD2V80",
-      "dataFrom": "2021-09-14",
-      "dataTo": "2026-09-10",
+      "dataFrom": "2021-09-21",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 21.9,
-        "cagr": 21.9,
+        "return": 23.9,
+        "cagr": 23.9,
         "maxDrawdown": -10.4,
-        "volatility": 12.3
+        "volatility": 12.4
       },
       "threeYear": {
-        "return": 49.7,
-        "cagr": 14.4,
+        "return": 52.7,
+        "cagr": 15.2,
         "maxDrawdown": -26.3,
         "volatility": 14.4
       },
       "sinceStart": {
-        "return": 104.3,
-        "cagr": 15.4,
+        "return": 112,
+        "cagr": 16.3,
         "maxDrawdown": -26.3,
         "years": 4.99
       },
@@ -587,228 +587,228 @@
     "25": {
       "isin": "SE0013718699",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 17.3,
-        "cagr": 17.3,
+        "return": 18.8,
+        "cagr": 18.8,
         "maxDrawdown": -10.2,
         "volatility": 9.5
       },
       "threeYear": {
-        "return": 29.3,
+        "return": 29,
         "cagr": 8.9,
         "maxDrawdown": -17.1,
         "volatility": 10.1
       },
       "sinceStart": {
-        "return": 56.2,
-        "cagr": 10.4,
+        "return": 58.3,
+        "cagr": 10.7,
         "maxDrawdown": -17.1,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "26": {
       "isin": "SE0012454338",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 42.4,
-        "cagr": 42.4,
+        "return": 35.4,
+        "cagr": 35.4,
         "maxDrawdown": -13.4,
         "volatility": 19
       },
       "threeYear": {
-        "return": 65.7,
-        "cagr": 18.3,
+        "return": 58.5,
+        "cagr": 16.6,
         "maxDrawdown": -18.8,
         "volatility": 17.3
       },
       "sinceStart": {
-        "return": 71.6,
-        "cagr": 12.7,
+        "return": 67.4,
+        "cagr": 12,
         "maxDrawdown": -18.8,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "27": {
       "isin": "SE0007074075",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 21.5,
-        "cagr": 21.5,
+        "return": 23.6,
+        "cagr": 23.6,
         "maxDrawdown": -11.3,
-        "volatility": 12.2
+        "volatility": 12.3
       },
       "threeYear": {
-        "return": 53.5,
+        "return": 53.7,
         "cagr": 15.4,
         "maxDrawdown": -21.5,
         "volatility": 12.9
       },
       "sinceStart": {
-        "return": 58.5,
-        "cagr": 10.7,
+        "return": 60.3,
+        "cagr": 11,
         "maxDrawdown": -22.8,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "28": {
       "isin": "SE0007074059",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 21.5,
-        "cagr": 21.5,
+        "return": 23.5,
+        "cagr": 23.5,
         "maxDrawdown": -5.9,
-        "volatility": 9.1
+        "volatility": 9.2
       },
       "threeYear": {
-        "return": 51.8,
-        "cagr": 14.9,
+        "return": 52.3,
+        "cagr": 15,
         "maxDrawdown": -23.9,
         "volatility": 11.2
       },
       "sinceStart": {
-        "return": 80.9,
-        "cagr": 14.1,
+        "return": 84.5,
+        "cagr": 14.5,
         "maxDrawdown": -23.9,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "29": {
       "isin": "SE0007074083",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 21.4,
-        "cagr": 21.4,
+        "return": 23.7,
+        "cagr": 23.7,
         "maxDrawdown": -8.3,
-        "volatility": 11.1
+        "volatility": 11.2
       },
       "threeYear": {
-        "return": 55,
-        "cagr": 15.7,
+        "return": 56.4,
+        "cagr": 16.1,
         "maxDrawdown": -26.1,
         "volatility": 13
       },
       "sinceStart": {
-        "return": 83.4,
-        "cagr": 14.4,
+        "return": 87.4,
+        "cagr": 14.9,
         "maxDrawdown": -26.1,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "30": {
       "isin": "SE0001696857",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 14.7,
-        "cagr": 14.7,
+        "return": 16.2,
+        "cagr": 16.2,
         "maxDrawdown": -11.2,
-        "volatility": 12.6
+        "volatility": 12.7
       },
       "threeYear": {
-        "return": 37.3,
-        "cagr": 11.1,
+        "return": 37.6,
+        "cagr": 11.2,
         "maxDrawdown": -22,
         "volatility": 13.2
       },
       "sinceStart": {
-        "return": 30.6,
-        "cagr": 6.1,
+        "return": 31.9,
+        "cagr": 6.3,
         "maxDrawdown": -27.1,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "31": {
       "isin": "SE0001185000",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": -0.1,
-        "cagr": -0.1,
+        "return": 0.3,
+        "cagr": 0.3,
         "maxDrawdown": -17.8,
-        "volatility": 13.1
+        "volatility": 13.3
       },
       "threeYear": {
-        "return": 22,
-        "cagr": 6.8,
+        "return": 22.8,
+        "cagr": 7.1,
         "maxDrawdown": -22.2,
         "volatility": 14.6
       },
       "sinceStart": {
-        "return": 0,
-        "cagr": 0,
+        "return": 0.2,
+        "cagr": 0.1,
         "maxDrawdown": -38,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "32": {
       "isin": "SE0008585459",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": -1.5,
-        "cagr": -1.5,
+        "return": -1.2,
+        "cagr": -1.2,
         "maxDrawdown": -17.6,
         "volatility": 13.1
       },
       "threeYear": {
-        "return": 21.5,
-        "cagr": 6.7,
+        "return": 21.1,
+        "cagr": 6.6,
         "maxDrawdown": -22.9,
         "volatility": 13.8
       },
       "sinceStart": {
-        "return": 3.5,
-        "cagr": 0.8,
+        "return": 3,
+        "cagr": 0.7,
         "maxDrawdown": -30.9,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "33": {
       "isin": "SE0000602302",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 1.3,
-        "cagr": 1.3,
-        "maxDrawdown": -14.2,
+        "return": 2.8,
+        "cagr": 2.8,
+        "maxDrawdown": -13.9,
         "volatility": 12.7
       },
       "threeYear": {
-        "return": 30.2,
-        "cagr": 9.2,
+        "return": 32.3,
+        "cagr": 9.8,
         "maxDrawdown": -19.9,
-        "volatility": 13.8
+        "volatility": 13.7
       },
       "sinceStart": {
-        "return": 14.7,
-        "cagr": 3.1,
+        "return": 15.7,
+        "cagr": 3.3,
         "maxDrawdown": -32.5,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "34": {
       "isin": "FI0008813365",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 7.7,
-        "cagr": 7.7,
+        "return": 7.1,
+        "cagr": 7.1,
         "maxDrawdown": -8.8,
-        "volatility": 10.1
+        "volatility": 10.2
       },
       "threeYear": {
         "return": 42,
@@ -817,442 +817,442 @@
         "volatility": 10.9
       },
       "sinceStart": {
-        "return": 44.4,
+        "return": 44.9,
         "cagr": 8.5,
         "maxDrawdown": -21.7,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "35": {
       "isin": "SE0004392025",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 17.7,
-        "cagr": 17.7,
+        "return": 18.1,
+        "cagr": 18.1,
         "maxDrawdown": -10,
-        "volatility": 12.8
+        "volatility": 12.9
       },
       "threeYear": {
-        "return": 84.5,
-        "cagr": 22.7,
+        "return": 85.6,
+        "cagr": 22.9,
         "maxDrawdown": -16.2,
         "volatility": 13.1
       },
       "sinceStart": {
-        "return": 81.4,
-        "cagr": 14.1,
+        "return": 83,
+        "cagr": 14.3,
         "maxDrawdown": -27.3,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "36": {
       "isin": "SE0001114976",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 10.5,
-        "cagr": 10.5,
+        "return": 10.6,
+        "cagr": 10.6,
         "maxDrawdown": -5.1,
         "volatility": 5.6
       },
       "threeYear": {
-        "return": 25.2,
-        "cagr": 7.8,
+        "return": 24.4,
+        "cagr": 7.5,
         "maxDrawdown": -13.8,
         "volatility": 6.2
       },
       "sinceStart": {
-        "return": 26.1,
+        "return": 26.2,
         "cagr": 5.3,
         "maxDrawdown": -13.8,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "37": {
       "isin": "SE0000434359",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 10.6,
-        "cagr": 10.6,
+        "return": 11.1,
+        "cagr": 11.1,
         "maxDrawdown": -6.7,
         "volatility": 6.7
       },
       "threeYear": {
-        "return": 31.3,
-        "cagr": 9.5,
+        "return": 30.8,
+        "cagr": 9.4,
         "maxDrawdown": -11.2,
         "volatility": 6.8
       },
       "sinceStart": {
-        "return": 30.6,
+        "return": 30.8,
         "cagr": 6.1,
         "maxDrawdown": -14.3,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "38": {
       "isin": "SE0000500407",
       "dataFrom": "2022-03-04",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 10.8,
-        "cagr": 10.8,
+        "return": 11.7,
+        "cagr": 11.7,
         "maxDrawdown": -7.3,
         "volatility": 7.5
       },
       "threeYear": {
-        "return": 30.2,
-        "cagr": 9.2,
+        "return": 30.6,
+        "cagr": 9.3,
         "maxDrawdown": -12.7,
         "volatility": 7.4
       },
       "sinceStart": {
-        "return": 28.3,
-        "cagr": 5.7,
+        "return": 29.1,
+        "cagr": 5.8,
         "maxDrawdown": -15,
-        "years": 4.52
+        "years": 4.54
       },
       "stale": false
     },
     "39": {
       "isin": "SE0001192618",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 11.2,
-        "cagr": 11.2,
+        "return": 11,
+        "cagr": 11,
         "maxDrawdown": -4.1,
         "volatility": 4.7
       },
       "threeYear": {
-        "return": 23.6,
-        "cagr": 7.3,
+        "return": 23.2,
+        "cagr": 7.2,
         "maxDrawdown": -12,
         "volatility": 5.2
       },
       "sinceStart": {
-        "return": 28,
+        "return": 28.1,
         "cagr": 5.6,
         "maxDrawdown": -12,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "40": {
       "isin": "SE0000739179",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-15",
       "oneYear": {
-        "return": 13.5,
-        "cagr": 13.5,
-        "maxDrawdown": -6.2,
-        "volatility": 7.3
+        "return": 12.6,
+        "cagr": 12.6,
+        "maxDrawdown": -6.3,
+        "volatility": 7.4
       },
       "threeYear": {
-        "return": 34.3,
-        "cagr": 10.3,
+        "return": 32.1,
+        "cagr": 9.7,
         "maxDrawdown": -14.4,
         "volatility": 7.7
       },
       "sinceStart": {
-        "return": 36.5,
-        "cagr": 7.1,
+        "return": 35.3,
+        "cagr": 6.9,
         "maxDrawdown": -14.4,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "41": {
       "isin": "SE0006963518",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 11.4,
-        "cagr": 11.4,
+        "return": 11.3,
+        "cagr": 11.3,
         "maxDrawdown": -5,
         "volatility": 4.9
       },
       "threeYear": {
-        "return": 30.7,
-        "cagr": 9.3,
-        "maxDrawdown": -11.2,
+        "return": 30.2,
+        "cagr": 9.2,
+        "maxDrawdown": -11.3,
         "volatility": 4.9
       },
       "sinceStart": {
-        "return": 37.3,
+        "return": 37.5,
         "cagr": 7.3,
         "maxDrawdown": -11.2,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "42": {
       "isin": "SE0000862278",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-15",
       "oneYear": {
-        "return": 21.7,
-        "cagr": 21.7,
+        "return": 22.5,
+        "cagr": 22.5,
         "maxDrawdown": -5.8,
-        "volatility": 9
+        "volatility": 9.1
       },
       "threeYear": {
-        "return": 43.6,
-        "cagr": 12.8,
+        "return": 42.6,
+        "cagr": 12.6,
         "maxDrawdown": -23.2,
         "volatility": 11.9
       },
       "sinceStart": {
-        "return": 70.4,
-        "cagr": 12.5,
+        "return": 71.9,
+        "cagr": 12.7,
         "maxDrawdown": -23.2,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "43": {
       "isin": "SE0000542979",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 19.6,
-        "cagr": 19.6,
+        "return": 21.2,
+        "cagr": 21.2,
         "maxDrawdown": -8,
         "volatility": 9.6
       },
       "threeYear": {
-        "return": 47.6,
-        "cagr": 13.9,
+        "return": 47.3,
+        "cagr": 13.8,
         "maxDrawdown": -26.3,
         "volatility": 12.4
       },
       "sinceStart": {
-        "return": 79.4,
-        "cagr": 13.8,
+        "return": 81.9,
+        "cagr": 14.1,
         "maxDrawdown": -26.3,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "44": {
       "isin": "FI4000064076",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 27.4,
-        "cagr": 27.4,
+        "return": 28.6,
+        "cagr": 28.6,
         "maxDrawdown": -5.1,
         "volatility": 7.3
       },
       "threeYear": {
-        "return": 50.1,
-        "cagr": 14.5,
+        "return": 48.3,
+        "cagr": 14,
         "maxDrawdown": -17.3,
         "volatility": 9.2
       },
       "sinceStart": {
-        "return": 67,
-        "cagr": 12,
+        "return": 68.3,
+        "cagr": 12.2,
         "maxDrawdown": -17.3,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "45": {
       "isin": "SE0002591016",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 22.1,
-        "cagr": 22.1,
+        "return": 22.9,
+        "cagr": 22.9,
         "maxDrawdown": -10.7,
-        "volatility": 12.7
+        "volatility": 12.8
       },
       "threeYear": {
-        "return": 53.2,
-        "cagr": 15.3,
+        "return": 52.4,
+        "cagr": 15.1,
         "maxDrawdown": -21.1,
-        "volatility": 13.1
+        "volatility": 13.2
       },
       "sinceStart": {
-        "return": 63.4,
-        "cagr": 11.5,
+        "return": 64.3,
+        "cagr": 11.6,
         "maxDrawdown": -21.1,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "46": {
       "isin": "SE0000594111",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 20.9,
-        "cagr": 20.9,
+        "return": 23.2,
+        "cagr": 23.2,
         "maxDrawdown": -8.7,
         "volatility": 11.2
       },
       "threeYear": {
-        "return": 48.7,
-        "cagr": 14.1,
+        "return": 52.1,
+        "cagr": 15,
         "maxDrawdown": -26.2,
         "volatility": 14
       },
       "sinceStart": {
-        "return": 75.1,
-        "cagr": 13.2,
+        "return": 79.4,
+        "cagr": 13.8,
         "maxDrawdown": -26.2,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "47": {
       "isin": "SE0000531881",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-09",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 20.6,
-        "cagr": 20.6,
+        "return": 22.1,
+        "cagr": 22.1,
         "maxDrawdown": -9.5,
         "volatility": 9.1
       },
       "threeYear": {
-        "return": 44.5,
-        "cagr": 13.1,
+        "return": 43.7,
+        "cagr": 12.9,
         "maxDrawdown": -16.4,
         "volatility": 9.6
       },
       "sinceStart": {
-        "return": 81.2,
-        "cagr": 14.1,
+        "return": 83.6,
+        "cagr": 14.4,
         "maxDrawdown": -16.4,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "48": {
       "isin": "SE0005965662",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 26.6,
-        "cagr": 26.6,
+        "return": 25.7,
+        "cagr": 25.7,
         "maxDrawdown": -24.7,
-        "volatility": 22.7
+        "volatility": 22.8
       },
       "threeYear": {
-        "return": 3.4,
-        "cagr": 1.1,
-        "maxDrawdown": -41,
+        "return": 2.2,
+        "cagr": 0.7,
+        "maxDrawdown": -40.9,
         "volatility": 19.5
       },
       "sinceStart": {
-        "return": -7.1,
-        "cagr": -1.6,
+        "return": -6,
+        "cagr": -1.4,
         "maxDrawdown": -53.5,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "49": {
       "isin": "LU1648400262",
       "dataFrom": "2022-03-08",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 41.1,
-        "cagr": 41.1,
+        "return": 35.2,
+        "cagr": 35.2,
         "maxDrawdown": -12.4,
         "volatility": 18.2
       },
       "threeYear": {
-        "return": 73.5,
-        "cagr": 20.2,
+        "return": 66.6,
+        "cagr": 18.5,
         "maxDrawdown": -17.9,
-        "volatility": 14.6
+        "volatility": 14.7
       },
       "sinceStart": {
-        "return": 81.9,
-        "cagr": 14.2,
+        "return": 78.1,
+        "cagr": 13.6,
         "maxDrawdown": -17.9,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "50": {
       "isin": "FI4000010525",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": -1,
-        "cagr": -1,
+        "return": -1.2,
+        "cagr": -1.2,
         "maxDrawdown": -3.2,
         "volatility": 2.4
       },
       "threeYear": {
-        "return": 10.2,
-        "cagr": 3.3,
+        "return": 10,
+        "cagr": 3.2,
         "maxDrawdown": -3.2,
         "volatility": 2.3
       },
       "sinceStart": {
-        "return": 3.3,
+        "return": 3.1,
         "cagr": 0.7,
         "maxDrawdown": -10.3,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "51": {
       "isin": "SE0009779671",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 12.5,
-        "cagr": 12.5,
+        "return": 13,
+        "cagr": 12.9,
         "maxDrawdown": -4.8,
         "volatility": 5.5
       },
       "threeYear": {
-        "return": 30.8,
+        "return": 31.1,
         "cagr": 9.4,
         "maxDrawdown": -13.5,
         "volatility": 5.8
       },
       "sinceStart": {
-        "return": 31.5,
-        "cagr": 6.3,
+        "return": 32.6,
+        "cagr": 6.4,
         "maxDrawdown": -13.5,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     },
     "52": {
       "isin": "SE0009779705",
       "dataFrom": "2022-03-07",
-      "dataTo": "2026-09-10",
+      "dataTo": "2026-09-17",
       "oneYear": {
-        "return": 22,
-        "cagr": 22,
+        "return": 23,
+        "cagr": 23,
         "maxDrawdown": -7.5,
-        "volatility": 9.3
+        "volatility": 9.4
       },
       "threeYear": {
-        "return": 44.3,
-        "cagr": 13,
+        "return": 44.6,
+        "cagr": 13.1,
         "maxDrawdown": -23.7,
         "volatility": 10.2
       },
       "sinceStart": {
-        "return": 56.3,
-        "cagr": 10.4,
+        "return": 58.3,
+        "cagr": 10.7,
         "maxDrawdown": -23.7,
-        "years": 4.51
+        "years": 4.53
       },
       "stale": false
     }
