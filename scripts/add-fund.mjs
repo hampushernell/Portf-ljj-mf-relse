@@ -1,41 +1,45 @@
 /**
- * add-fund.mjs — Hitta och validera en ny fond för FUNDS_REGISTRY
+ * add-fund.mjs — Hitta och validera nya fonder för FUNDS_REGISTRY
  *
  * Användning:
- *   node scripts/add-fund.mjs <ISIN>
- *   node scripts/add-fund.mjs SE0011527613
+ *   node scripts/add-fund.mjs <ISIN>                      Lägg till en fond
+ *   node scripts/add-fund.mjs <ISIN> <ISIN> <ISIN> ...     Lägg till flera fonder i en körning
+ *   node scripts/add-fund.mjs kandidater.txt               Läs ISIN-lista från fil (en per rad, # för kommentar)
  *
- * Gör:
- *   1. Söker Yahoo Finance efter tickers för angiven ISIN
+ * Exempel:
+ *   node scripts/add-fund.mjs SE0011527613
+ *   node scripts/add-fund.mjs SE0011527613 FI4000261326 NO0010827280
+ *   npm run add-fund -- kandidater.txt
+ *
+ * Gör, per ISIN:
+ *   1. Söker Yahoo Finance efter tickers
  *   2. Testar varje träff och hämtar 5 år prisdata
  *   3. Kollar om ISIN täcks av fi-fees.json (FI-källa)
- *   4. Räknar ut nästa lediga ID i registret
+ *   4. Räknar ut nästa lediga ID i registret (unikt även inom samma körning)
  *   5. Skriver ut ett färdigt registry-objekt att klistra in i funds-registry.js
+ *
+ * Vid flera ISIN samlas alla lyckade träffar i ett gemensamt block på slutet,
+ * redo att klistras in i ett svep. En kort paus (400ms) läggs mellan Yahoo-anrop
+ * för att inte spamma API:t.
  */
 
-import { readFileSync } from "fs";
+import { readFileSync, existsSync, statSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { createRequire } from "module";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 
 // ─── Läs befintligt register ────────────────────────────────────────────────
 
-const require = createRequire(import.meta.url);
-let existingFunds = [];
+let existingIds = [];
+let existingIsins = [];
+let existingTickers = [];
 try {
-  // Läs filen som text och parsa manuellt (undviker ESM/CJS-konflikter)
   const raw = readFileSync(join(ROOT, "src/lib/funds-registry.js"), "utf8");
-  const ids = [...raw.matchAll(/id:\s*(\d+)/g)].map(m => parseInt(m[1]));
-  existingFunds = ids;
-
-  // Kolla om ISIN redan finns
-  const isins = [...raw.matchAll(/isin:\s*["']([^"']+)["']/g)].map(m => m[1]);
-  const tickers = [...raw.matchAll(/ticker:\s*["']([^"']+)["']/g)].map(m => m[1]);
-  globalThis._existingIsins = isins;
-  globalThis._existingTickers = tickers;
+  existingIds = [...raw.matchAll(/id:\s*(\d+)/g)].map(m => parseInt(m[1]));
+  existingIsins = [...raw.matchAll(/isin:\s*["']([^"']+)["']/g)].map(m => m[1]);
+  existingTickers = [...raw.matchAll(/ticker:\s*["']([^"']+)["']/g)].map(m => m[1]);
 } catch (e) {
   console.warn("⚠️  Kunde inte läsa funds-registry.js:", e.message);
 }
@@ -59,6 +63,8 @@ const HEADERS = {
   "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
   "Accept": "application/json",
 };
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 async function searchYahoo(query) {
   const url = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=10&newsCount=0&enableFuzzyQuery=false&enableCb=false`;
@@ -90,8 +96,8 @@ async function fetchPriceData(ticker) {
   };
 }
 
-function nextId(ids) {
-  return ids.length ? Math.max(...ids) + 1 : 1;
+function nextId(usedIds) {
+  return usedIds.length ? Math.max(...usedIds) + 1 : 1;
 }
 
 // Samma regel som SEO.md avsnitt 4: gemener, å/ä→a, ö→o, mellanslag→bindestreck
@@ -111,54 +117,67 @@ function formatEntry(id, ticker, isin, name, fee, feeSource) {
   return `  { id: ${id}, ticker: "${ticker}", isin: "${isin}", name: "${name}", category: "???", fallbackFee: ${fee}, slug: "${slug}" }, ${feeComment}`;
 }
 
-// ─── Main ────────────────────────────────────────────────────────────────────
+// ─── Input-parsning ─────────────────────────────────────────────────────────
 
-async function main() {
-  const isin = process.argv[2]?.trim();
+function parseIsinList(args) {
+  if (args.length === 0) return [];
 
-  if (!isin) {
-    console.error("Användning: node scripts/add-fund.mjs <ISIN>");
-    console.error("Exempel:   node scripts/add-fund.mjs SE0011527613");
-    process.exit(1);
+  // Ett argument som pekar på en existerande fil → läs ISIN-lista från filen
+  if (args.length === 1 && existsSync(args[0])) {
+    try {
+      if (statSync(args[0]).isFile()) {
+        const raw = readFileSync(args[0], "utf8");
+        return raw
+          .split("\n")
+          .map(line => line.split("#")[0].trim())   // tillåt kommentarer efter #
+          .filter(Boolean);
+      }
+    } catch {
+      // föll igenom till ISIN-tolkning nedan
+    }
   }
 
-  console.log(`\n🔍 Söker efter ISIN: ${isin}\n`);
+  return args.map(a => a.trim()).filter(Boolean);
+}
 
-  // Kolla om den redan finns i registret
-  if (globalThis._existingIsins?.includes(isin)) {
-    console.log(`ℹ️  ISIN ${isin} finns redan i funds-registry.js`);
-    process.exit(0);
+// ─── Bearbeta ett ISIN ──────────────────────────────────────────────────────
+
+async function processIsin(isin, usedIds, seenIsins) {
+  console.log(`\n🔍 Söker efter ISIN: ${isin}`);
+
+  if (existingIsins.includes(isin) || seenIsins.has(isin)) {
+    const dubblett = seenIsins.has(isin) ? " (angavs dubbelt i listan)" : "";
+    console.log(`ℹ️  ISIN ${isin} finns redan i funds-registry.js${dubblett}`);
+    return { status: "exists", isin };
   }
+  seenIsins.add(isin);
 
-  // ── 1. Sök Yahoo Finance ──────────────────────────────────────────────────
   let quotes;
   try {
     quotes = await searchYahoo(isin);
   } catch (e) {
     console.error("❌ Yahoo search misslyckades:", e.message);
-    process.exit(1);
+    return { status: "error", isin, message: e.message };
   }
 
   if (!quotes.length) {
     console.log("❌ Inga träffar på Yahoo Finance för detta ISIN.");
     console.log("   Tips: Kontrollera att ISIN är korrekt på morningstar.se");
-    process.exit(1);
+    return { status: "not-found", isin };
   }
 
-  console.log(`Hittade ${quotes.length} Yahoo-träffar:`);
+  console.log(`   Hittade ${quotes.length} Yahoo-träffar:`);
   quotes.forEach((q, i) => {
-    const already = globalThis._existingTickers?.includes(q.symbol) ? " (redan i registret)" : "";
-    console.log(`  [${i + 1}] ${q.symbol.padEnd(22)} ${(q.shortname || q.longname || "").slice(0, 50)}${already}`);
+    const already = existingTickers.includes(q.symbol) ? " (redan i registret)" : "";
+    console.log(`     [${i + 1}] ${q.symbol.padEnd(22)} ${(q.shortname || q.longname || "").slice(0, 50)}${already}`);
   });
-
-  // ── 2. Testa varje ticker och hitta bästa träff ───────────────────────────
-  console.log("\n⏳ Hämtar prisdata för varje ticker...\n");
 
   const candidates = [];
   for (const q of quotes) {
-    if (globalThis._existingTickers?.includes(q.symbol)) continue;
-    process.stdout.write(`  ${q.symbol.padEnd(22)}`);
+    if (existingTickers.includes(q.symbol)) continue;
+    process.stdout.write(`     ${q.symbol.padEnd(22)}`);
     const data = await fetchPriceData(q.symbol);
+    await sleep(400); // var snäll mot Yahoos API
     if (!data || data.dataPoints < 30) {
       console.log(`✗  (${data?.dataPoints ?? 0} datapunkter — för lite data)`);
       continue;
@@ -170,62 +189,108 @@ async function main() {
   if (!candidates.length) {
     console.log("\n❌ Ingen fungerande ticker hittades med tillräcklig prishistorik.");
     console.log("   Tips: Sök manuellt på finance.yahoo.com med ISIN eller fondnamn.");
-    process.exit(1);
+    return { status: "no-data", isin };
   }
 
-  // Välj bäst (flest datapunkter)
   const best = candidates.reduce((a, b) => (a.dataPoints >= b.dataPoints ? a : b));
 
-  // ── 3. Kolla FI-täckning ─────────────────────────────────────────────────
   const inFi = isin in fiFees;
   const feeValue = inFi ? fiFees[isin] : null;
   const feeSource = inFi ? "fi" : "fallback";
 
-  console.log("\n─────────────────────────────────────────────────────");
-  console.log("📊 Rekommenderad ticker:", best.symbol);
-  console.log("   Fondnamn (Yahoo):    ", best.name);
-  console.log("   Valuta:              ", best.currency ?? "okänd");
-  console.log("   Prishistorik:        ", `${best.dataPoints} datapunkter (${best.firstDate} → ${best.lastDate})`);
-  console.log("   Senaste NAV:         ", best.latestPrice ?? "okänt");
+  console.log("   ─────────────────────────────────────────");
+  console.log("   📊 Rekommenderad ticker:", best.symbol);
+  console.log("      Fondnamn (Yahoo):    ", best.name);
+  console.log("      Valuta:              ", best.currency ?? "okänd");
+  console.log("      Prishistorik:        ", `${best.dataPoints} datapunkter (${best.firstDate} → ${best.lastDate})`);
 
   if (inFi) {
-    console.log(`\n✅ FI-täckning:         JA — avgift ${feeValue}% (period: ${fiMeta.period ?? "?"}, publicerat: ${fiMeta.published ?? "?"})`);
-    console.log("   Avgiften hämtas automatiskt varje månad. fallbackFee används bara som reserv.");
+    console.log(`      ✅ FI-täckning: JA — avgift ${feeValue}% (period: ${fiMeta.period ?? "?"})`);
   } else {
-    console.log("\n⚠️  FI-täckning:         NEJ — fonden rapporterar inte till Finansinspektionen");
-    console.log("   Du behöver ange fallbackFee manuellt. Kontrollera avgiften på:");
-    console.log(`   https://www.morningstar.se/se/funds/snapshot/snapshot.aspx?id=${best.symbol.replace(".ST", "")}`);
+    console.log("      ⚠️  FI-täckning: NEJ — sätt fallbackFee manuellt.");
+    console.log(`         https://www.morningstar.se/se/funds/snapshot/snapshot.aspx?id=${best.symbol.replace(".ST", "")}`);
   }
 
-  // ── 4. Bygg registry-objekt ──────────────────────────────────────────────
-  const id = nextId(existingFunds);
-  const fallbackFee = inFi ? feeValue : 0.00; // 0.00 som placeholder om FI saknas
+  const id = nextId(usedIds);
+  usedIds.push(id);
+  const fallbackFee = inFi ? feeValue : 0.00;
 
-  console.log("\n─────────────────────────────────────────────────────");
-  console.log("📋 Klistra in i src/lib/funds-registry.js:\n");
+  const nameClean = best.name.replace(/\s*\(.*?\)/g, "").trim();
+  const entry = formatEntry(id, best.symbol, isin, nameClean, fallbackFee, feeSource);
 
-  const nameClean = best.name
-    .replace(/\s*\(.*?\)/g, "")  // ta bort parenteser
-    .trim();
+  return {
+    status: "ok",
+    isin,
+    entry,
+    inFi,
+    ticker: best.symbol,
+    name: nameClean,
+    alternatives: candidates.filter(c => c.symbol !== best.symbol),
+  };
+}
 
-  console.log(formatEntry(id, best.symbol, isin, nameClean, fallbackFee, feeSource));
+// ─── Main ────────────────────────────────────────────────────────────────────
 
-  console.log("\n─────────────────────────────────────────────────────");
-  console.log("📝 Nästa steg:");
-  console.log("   1. Byt ut category: \"???\" mot rätt kategori");
-  if (!inFi) {
-    console.log("   2. Sätt rätt fallbackFee (avgift i %) från Morningstar");
+async function main() {
+  const isins = parseIsinList(process.argv.slice(2));
+
+  if (!isins.length) {
+    console.error("Användning:");
+    console.error("  node scripts/add-fund.mjs <ISIN>");
+    console.error("  node scripts/add-fund.mjs <ISIN> <ISIN> ...");
+    console.error("  node scripts/add-fund.mjs <fil-med-isin.txt>");
+    process.exit(1);
   }
-  console.log(`   ${inFi ? "2" : "3"}. Verifiera fondnamnet — Yahoo-namn kan vara förkortade`);
-  console.log(`   ${inFi ? "3" : "4"}. Kör: npm run dev och testa att fonden laddar korrekt\n`);
 
-  // Visa alla kandidater om det finns alternativ
-  if (candidates.length > 1) {
-    console.log("💡 Alternativa tickers med prisdata:");
-    candidates.filter(c => c.symbol !== best.symbol).forEach(c => {
-      console.log(`   ${c.symbol.padEnd(22)} ${c.dataPoints} datapunkter  ${c.firstDate} → ${c.lastDate}`);
-    });
-    console.log();
+  console.log(`📋 ${isins.length} ISIN att bearbeta`);
+  console.log("═".repeat(60));
+
+  const usedIds = [...existingIds];
+  const seenIsins = new Set();
+  const results = [];
+
+  for (const isin of isins) {
+    const result = await processIsin(isin, usedIds, seenIsins);
+    results.push(result);
+  }
+
+  // ── Sammanfattning ────────────────────────────────────────────────────────
+  const ok = results.filter(r => r.status === "ok");
+  const exists = results.filter(r => r.status === "exists");
+  const failed = results.filter(r => !["ok", "exists"].includes(r.status));
+
+  console.log("\n" + "═".repeat(60));
+  console.log(`📊 Sammanfattning: ${ok.length} klara · ${exists.length} fanns redan · ${failed.length} misslyckades`);
+
+  if (failed.length) {
+    console.log("\n❌ Misslyckades:");
+    failed.forEach(r => console.log(`   ${r.isin} — ${r.status}`));
+  }
+
+  if (ok.length) {
+    console.log("\n📋 Klistra in i src/lib/funds-registry.js:\n");
+    ok.forEach(r => console.log(r.entry));
+
+    console.log("\n📝 Nästa steg:");
+    console.log("   1. Byt ut category: \"???\" mot rätt kategori för varje ny rad");
+    const needsFee = ok.some(r => !r.inFi);
+    if (needsFee) {
+      console.log("   2. Sätt rätt fallbackFee (avgift i %) för fonder utan FI-täckning, se länkar ovan");
+    }
+    console.log(`   ${needsFee ? "3" : "2"}. Verifiera fondnamnen — Yahoo-namn kan vara förkortade`);
+    console.log(`   ${needsFee ? "4" : "3"}. Kör: npm run dev och testa att fonderna laddar korrekt\n`);
+
+    const withAlts = ok.filter(r => r.alternatives.length);
+    if (withAlts.length) {
+      console.log("💡 Alternativa tickers (om vald ticker är fel):");
+      withAlts.forEach(r => {
+        console.log(`   ${r.isin} (${r.ticker}):`);
+        r.alternatives.forEach(c => {
+          console.log(`     ${c.symbol.padEnd(22)} ${c.dataPoints} datapunkter  ${c.firstDate} → ${c.lastDate}`);
+        });
+      });
+      console.log();
+    }
   }
 }
 
