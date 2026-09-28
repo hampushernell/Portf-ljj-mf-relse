@@ -559,32 +559,42 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
   ].join("");
 
   // ── "Finns det något bättre?"-block ──
-  const selfKr = 100000 * (1 + fund.threeYear.return / 100);
-  const bestKr = 100000 * (1 + best.threeYear.return / 100);
-  const worstKr = 100000 * (1 + worst.threeYear.return / 100);
+  // Fonder utan tre års historik (fund.threeYear === null, se buildFunds/groupByCategory)
+  // kan inte rankas mot kategorin på tre år — samma "för ung"-fall som __unranked på
+  // kategorisidan (renderCategoryPage), fast uttryckt för en enskild fondsida.
+  let figureText, figureColor, costSub, costRowParts;
+  if (fund.threeYear) {
+    const selfKr = 100000 * (1 + fund.threeYear.return / 100);
+    const bestKr = 100000 * (1 + best.threeYear.return / 100);
+    const worstKr = 100000 * (1 + worst.threeYear.return / 100);
 
-  let figureText, figureColor, costSub;
-  if (isBest) {
-    figureText = `1 av ${total}`;
-    figureColor = "var(--positive)";
-    const second = categoryFunds.__ranked[1];
-    costSub = second
-      ? `Ingen annan fond i kategorin ${meta.label.toLowerCase()} har gett mer efter avgift de senaste tre åren. Näst bäst var <a href="/fond/${second.slug}" class="inline-link">${escapeHtml(second.name)}</a>, ${fmtSignedPct(second.threeYear.return)} till ${fmtFeePct(second.fee)} i avgift.`
-      : `Ingen annan fond i kategorin ${meta.label.toLowerCase()} har gett mer efter avgift de senaste tre åren.`;
+    if (isBest) {
+      figureText = `1 av ${total}`;
+      figureColor = "var(--positive)";
+      const second = categoryFunds.__ranked[1];
+      costSub = second
+        ? `Ingen annan fond i kategorin ${meta.label.toLowerCase()} har gett mer efter avgift de senaste tre åren. Näst bäst var <a href="/fond/${second.slug}" class="inline-link">${escapeHtml(second.name)}</a>, ${fmtSignedPct(second.threeYear.return)} till ${fmtFeePct(second.fee)} i avgift.`
+        : `Ingen annan fond i kategorin ${meta.label.toLowerCase()} har gett mer efter avgift de senaste tre åren.`;
+    } else {
+      const betterCount = rank - 1;
+      figureText = `${rank} av ${total}`;
+      figureColor = isWorst ? "var(--negative)" : "var(--warning)";
+      costSub = `${betterCount} ${meta.label.toLowerCase()} har gett mer efter avgift de senaste tre åren. Mest gav
+        <a href="/fond/${best.slug}" class="inline-link">${escapeHtml(best.name)}</a>, ${fmtSignedPct(best.threeYear.return)}
+        till ${fmtFeePct(best.fee)} i avgift. Skillnaden ligger inte nödvändigtvis i avgiften utan i
+        fondens inriktning och index — kontrollera det innan du byter.`;
+    }
+
+    costRowParts = [`<div><span class="k">100 000 kr för 3 år sedan är idag</span><span class="v">${fmtKr(selfKr)}</span></div>`];
+    if (!isBest) costRowParts.push(`<div><span class="k">I den bästa</span><span class="v" style="color:var(--positive)">${fmtKr(bestKr)}</span></div>`);
+    if (!isWorst) costRowParts.push(`<div><span class="k">I den sämsta</span><span class="v" style="color:var(--negative)">${fmtKr(worstKr)}</span></div>`);
   } else {
-    const betterCount = rank - 1;
-    figureText = `${rank} av ${total}`;
-    figureColor = isWorst ? "var(--negative)" : "var(--warning)";
-    costSub = `${betterCount} ${meta.label.toLowerCase()} har gett mer efter avgift de senaste tre åren. Mest gav
-      <a href="/fond/${best.slug}" class="inline-link">${escapeHtml(best.name)}</a>, ${fmtSignedPct(best.threeYear.return)}
-      till ${fmtFeePct(best.fee)} i avgift. Skillnaden ligger inte nödvändigtvis i avgiften utan i
-      fondens inriktning och index — kontrollera det innan du byter.`;
+    const selfKr = 100000 * (1 + fund.oneYear.return / 100);
+    figureText = "Ny fond";
+    figureColor = "var(--text-secondary)";
+    costSub = `${escapeHtml(fund.name)} har historik sedan ${fund.dataFrom} — för kort tid för att rankas mot kategorins ${total} övriga ${meta.label.toLowerCase()} på tre år. Det senaste året gav fonden ${fmtSignedPct(fund.oneYear.return)} efter avgift.`;
+    costRowParts = [`<div><span class="k">100 000 kr för 1 år sedan är idag</span><span class="v">${fmtKr(selfKr)}</span></div>`];
   }
-
-  const costRowParts = [];
-  costRowParts.push(`<div><span class="k">100 000 kr för 3 år sedan är idag</span><span class="v">${fmtKr(selfKr)}</span></div>`);
-  if (!isBest) costRowParts.push(`<div><span class="k">I den bästa</span><span class="v" style="color:var(--positive)">${fmtKr(bestKr)}</span></div>`);
-  if (!isWorst) costRowParts.push(`<div><span class="k">I den sämsta</span><span class="v" style="color:var(--negative)">${fmtKr(worstKr)}</span></div>`);
 
   const feeDiff = categoryFunds.feeAvgCache - fund.fee; // > 0 = billigare än snitt
   let feeFootSentence;
@@ -621,9 +631,11 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
 
   <div class="prose">
     <p>
-      ${escapeHtml(fund.name)} har en årlig avgift på ${fmtFeePct(fund.fee)}${feeSourceClause}. De senaste
-      tre åren har fonden gett <strong>${fmtSignedPct(fund.threeYear.return)} efter avgift</strong> —
-      ${rankFragment}.${secondSentence}
+      ${escapeHtml(fund.name)} har en årlig avgift på ${fmtFeePct(fund.fee)}${feeSourceClause}. ${
+        fund.threeYear
+          ? `De senaste tre åren har fonden gett <strong>${fmtSignedPct(fund.threeYear.return)} efter avgift</strong> — ${rankFragment}.${secondSentence}`
+          : `Fonden har historik sedan <strong>${fund.dataFrom}</strong> — för kort tid för att rankas mot kategorins övriga fonder på tre år. Det senaste året gav fonden <strong>${fmtSignedPct(fund.oneYear.return)} efter avgift</strong>.`
+      }
     </p>
   </div>
 
@@ -667,7 +679,9 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
 
   const canonical = `${BASE_URL}/fond/${fund.slug}`;
   const title = `${fund.name} – avgift ${fmtFeePct(fund.fee)} och historisk avkastning | MinPortfölj`;
-  const description = `${fund.name} kostar ${fmtFeePct(fund.fee)} i årlig avgift. Se historisk avkastning 1 och 3 år och jämför mot ${total - 1} andra ${meta.label.toLowerCase()}.`;
+  const description = fund.threeYear
+    ? `${fund.name} kostar ${fmtFeePct(fund.fee)} i årlig avgift. Se historisk avkastning 1 och 3 år och jämför mot ${total - 1} andra ${meta.label.toLowerCase()}.`
+    : `${fund.name} kostar ${fmtFeePct(fund.fee)} i årlig avgift. Se historisk avkastning sedan ${fund.dataFrom} och jämför mot andra ${meta.label.toLowerCase()}.`;
 
   const financialProduct = {
     "@context": "https://schema.org",
