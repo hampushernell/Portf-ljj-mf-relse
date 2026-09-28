@@ -77,7 +77,7 @@ export const FUNDS_REGISTRY = [
   { id: 56, ticker: "0P0001UE4H.ST", isin: "SE0023260401", name: "Lysa Emerging Markets Equity Broad B", category: "Tillväxtmarknadsfond", fallbackFee: 0.25, slug: "lysa-emerging-markets-equity-broad-b" }, // ej FI-täckning, matarfond (Vanguard), källa: Lysa PRIIP-KID 2025-05-05
   // Spiltan- och Nordea-fonder (tillägg)
   { id: 57, ticker: "0P00018OKM.ST", isin: "SE0008613939", name: "Spiltan Globalfond Investmentbolag",   category: "Globalfond",        fallbackFee: 0.50, slug: "spiltan-globalfond-investmentbolag" }, // ej FI-täckning, källa: spiltanfonder.se
-  { id: 58, ticker: "0P0000M4TI.ST", isin: "FI0008813324", name: "Nordea Emerging Market Equities A",    category: "Tillväxtmarknadsfond", fallbackFee: 1.60, slug: "nordea-emerging-market-equities-a" }, // FI-fond, ej FI-täckning, källa: nordeafunds.com
+  { id: 58, ticker: "0P0000M4TI.ST", isin: "FI0008813324", name: "Nordea Globala Tillväxtmarknader",    category: "Tillväxtmarknadsfond", fallbackFee: 1.60, slug: "nordea-emerging-market-equities-a" }, // FI-fond, ej FI-täckning, källa: nordeafunds.com
   // Swedbank Robur, Storebrand, Nordea, PLUS m.fl. (tillägg)
   { id: 59, ticker: "0P00000LDS.ST", isin: "SE0000996241", name: "Swedbank Robur Kapitalinvest",         category: "Globalfond",        fallbackFee: 1.25, slug: "swedbank-robur-kapitalinvest" }, // ej FI-täckning, källa: Swedbank fondvillkor
   { id: 60, ticker: "0P00000LC8.ST", isin: "SE0000538910", name: "Swedbank Robur Allemansfond Komplett", category: "Globalfond",        fallbackFee: 1.25, slug: "swedbank-robur-allemansfond-komplett" }, // ej FI-täckning, källa: swedbankrobur.fondlista.se
