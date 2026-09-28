@@ -1,9 +1,9 @@
 {
   "_meta": {
     "asOf": "2026-09-24",
-    "generatedAt": "2026-09-28T17:35:13.567Z",
-    "fundsTotal": 56,
-    "fundsOk": 56,
+    "generatedAt": "2026-09-28T18:30:56.638Z",
+    "fundsTotal": 58,
+    "fundsOk": 58,
     "fundsStale": 0,
     "fundsFailed": 0
   },
@@ -1339,6 +1339,54 @@
         "cagr": 25,
         "maxDrawdown": -17.5,
         "years": 1.77
+      },
+      "stale": false
+    },
+    "57": {
+      "isin": "SE0008613939",
+      "dataFrom": "2022-03-07",
+      "dataTo": "2026-09-24",
+      "oneYear": {
+        "return": 5.1,
+        "cagr": 5.1,
+        "maxDrawdown": -11.2,
+        "volatility": 10.5
+      },
+      "threeYear": {
+        "return": 31.8,
+        "cagr": 9.6,
+        "maxDrawdown": -18.3,
+        "volatility": 10.7
+      },
+      "sinceStart": {
+        "return": 71,
+        "cagr": 12.5,
+        "maxDrawdown": -18.3,
+        "years": 4.55
+      },
+      "stale": false
+    },
+    "58": {
+      "isin": "FI0008813324",
+      "dataFrom": "2022-03-07",
+      "dataTo": "2026-09-24",
+      "oneYear": {
+        "return": 56.4,
+        "cagr": 56.3,
+        "maxDrawdown": -13.4,
+        "volatility": 19.2
+      },
+      "threeYear": {
+        "return": 100.4,
+        "cagr": 26.1,
+        "maxDrawdown": -21.2,
+        "volatility": 15.2
+      },
+      "sinceStart": {
+        "return": 111.4,
+        "cagr": 17.9,
+        "maxDrawdown": -21.2,
+        "years": 4.55
       },
       "stale": false
     }

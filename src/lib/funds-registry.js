@@ -75,4 +75,7 @@ export const FUNDS_REGISTRY = [
   { id: 54, ticker: "0P0001OECU.ST", isin: "SE0017231947", name: "Lysa Sweden Equity Broad B",          category: "Sverigefond",       fallbackFee: 0.17, slug: "lysa-sweden-equity-broad-b" }, // ej FI-täckning, källa: Lysa Fonder AB prospekt 2026-03-24
   { id: 55, ticker: "0P0001UE4I.ST", isin: "SE0023260468", name: "Lysa Global Small Cap Equity Broad B", category: "Småbolagsfond",     fallbackFee: 0.28, slug: "lysa-global-small-cap-equity-broad-b" }, // ej FI-täckning, matarfond (Vanguard), källa: Lysa PRIIP-KID 2025-05-05
   { id: 56, ticker: "0P0001UE4H.ST", isin: "SE0023260401", name: "Lysa Emerging Markets Equity Broad B", category: "Tillväxtmarknadsfond", fallbackFee: 0.25, slug: "lysa-emerging-markets-equity-broad-b" }, // ej FI-täckning, matarfond (Vanguard), källa: Lysa PRIIP-KID 2025-05-05
+  // Spiltan- och Nordea-fonder (tillägg)
+  { id: 57, ticker: "0P00018OKM.ST", isin: "SE0008613939", name: "Spiltan Globalfond Investmentbolag",   category: "Globalfond",        fallbackFee: 0.50, slug: "spiltan-globalfond-investmentbolag" }, // ej FI-täckning, källa: spiltanfonder.se
+  { id: 58, ticker: "0P0000M4TI.ST", isin: "FI0008813324", name: "Nordea Emerging Market Equities A",    category: "Tillväxtmarknadsfond", fallbackFee: 1.60, slug: "nordea-emerging-market-equities-a" }, // FI-fond, ej FI-täckning, källa: nordeafunds.com
 ];
