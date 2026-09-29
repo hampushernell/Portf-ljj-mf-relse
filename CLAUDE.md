@@ -20,7 +20,7 @@ Målgrupp: privatpersoner som vill fatta bättre fondbeslut.
 
 **Live:** https://minportfolj.se (Vercel)
 **Repo:** fondportfolj (GitHub → Vercel CI/CD)
-**Fondregister:** 99 fonder, 10 kategorier (Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond, Europafond, Japanfond, Småbolagsfond, Blandfond)
+**Fondregister:** 100 fonder, 10 kategorier (Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond, Europafond, Japanfond, Småbolagsfond, Blandfond)
 
 ---
 

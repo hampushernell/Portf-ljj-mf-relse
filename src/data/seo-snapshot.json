@@ -1,9 +1,9 @@
 {
   "_meta": {
     "asOf": "2026-09-25",
-    "generatedAt": "2026-09-29T17:46:59.490Z",
-    "fundsTotal": 99,
-    "fundsOk": 99,
+    "generatedAt": "2026-09-29T17:51:00.760Z",
+    "fundsTotal": 100,
+    "fundsOk": 100,
     "fundsStale": 0,
     "fundsFailed": 0
   },
@@ -2370,6 +2370,30 @@
         "return": -19.4,
         "cagr": -4.6,
         "maxDrawdown": -43,
+        "years": 4.55
+      },
+      "stale": false
+    },
+    "100": {
+      "isin": "SE0000837296",
+      "dataFrom": "2022-03-08",
+      "dataTo": "2026-09-24",
+      "oneYear": {
+        "return": 27.9,
+        "cagr": 27.9,
+        "maxDrawdown": -10.6,
+        "volatility": 17.1
+      },
+      "threeYear": {
+        "return": 51.8,
+        "cagr": 14.9,
+        "maxDrawdown": -23.7,
+        "volatility": 18
+      },
+      "sinceStart": {
+        "return": 70.6,
+        "cagr": 12.5,
+        "maxDrawdown": -23.7,
         "years": 4.55
       },
       "stale": false

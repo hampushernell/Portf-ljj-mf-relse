@@ -123,4 +123,5 @@ export const FUNDS_REGISTRY = [
   { id: 97, ticker: "0P00000FYO.ST", isin: "SE0000621393", name: "Storebrand Japan A",                   category: "Japanfond",         fallbackFee: 0.20, slug: "storebrand-japan-a" }, // ej FI-täckning, källa: storebrand.se handelsrutiner
   { id: 98, ticker: "0P00000F5G.ST", isin: "SE0000735375", name: "Handelsbanken Hälsovård Tema A1",      category: "Temafond",          fallbackFee: 1.50, slug: "handelsbanken-halsovard-tema-a1" }, // ej FI-täckning, källa: Morningstar
   { id: 99, ticker: "0P0001C96Y.ST", isin: "SE0010547778", name: "Proethos Fond",                        category: "Globalfond",        fallbackFee: 0.85, slug: "proethos-fond" }, // ej FI-täckning, källa: proethos.se
+  { id: 100, ticker: "0P00000L2Y.ST", isin: "SE0000837296", name: "Länsförsäkringar Japan Index",       category: "Japanfond",         fallbackFee: 0.20, slug: "lansforsakringar-japan-index" }, // ej FI-täckning, källa: lf.fondlista.se
 ];
