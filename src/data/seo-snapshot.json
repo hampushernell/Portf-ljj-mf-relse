@@ -1,9 +1,9 @@
 {
   "_meta": {
     "asOf": "2026-09-25",
-    "generatedAt": "2026-09-29T17:34:30.776Z",
-    "fundsTotal": 95,
-    "fundsOk": 95,
+    "generatedAt": "2026-09-29T17:46:59.490Z",
+    "fundsTotal": 99,
+    "fundsOk": 99,
     "fundsStale": 0,
     "fundsFailed": 0
   },
@@ -2274,6 +2274,102 @@
         "return": 68,
         "cagr": 12.1,
         "maxDrawdown": -17,
+        "years": 4.55
+      },
+      "stale": false
+    },
+    "96": {
+      "isin": "SE0013121456",
+      "dataFrom": "2022-03-08",
+      "dataTo": "2026-09-25",
+      "oneYear": {
+        "return": 25,
+        "cagr": 25,
+        "maxDrawdown": -13.2,
+        "volatility": 13.7
+      },
+      "threeYear": {
+        "return": 59.8,
+        "cagr": 16.9,
+        "maxDrawdown": -22.7,
+        "volatility": 14.1
+      },
+      "sinceStart": {
+        "return": 76,
+        "cagr": 13.2,
+        "maxDrawdown": -22.7,
+        "years": 4.55
+      },
+      "stale": false
+    },
+    "97": {
+      "isin": "SE0000621393",
+      "dataFrom": "2022-03-07",
+      "dataTo": "2026-09-24",
+      "oneYear": {
+        "return": 30.4,
+        "cagr": 30.4,
+        "maxDrawdown": -11.1,
+        "volatility": 17.1
+      },
+      "threeYear": {
+        "return": 51.7,
+        "cagr": 14.9,
+        "maxDrawdown": -23.6,
+        "volatility": 18
+      },
+      "sinceStart": {
+        "return": 75.3,
+        "cagr": 13.1,
+        "maxDrawdown": -23.6,
+        "years": 4.55
+      },
+      "stale": false
+    },
+    "98": {
+      "isin": "SE0000735375",
+      "dataFrom": "2022-03-08",
+      "dataTo": "2026-09-25",
+      "oneYear": {
+        "return": 20.6,
+        "cagr": 20.6,
+        "maxDrawdown": -14.3,
+        "volatility": 12.7
+      },
+      "threeYear": {
+        "return": 11.7,
+        "cagr": 3.8,
+        "maxDrawdown": -26,
+        "volatility": 12.6
+      },
+      "sinceStart": {
+        "return": 34.8,
+        "cagr": 6.8,
+        "maxDrawdown": -26,
+        "years": 4.55
+      },
+      "stale": false
+    },
+    "99": {
+      "isin": "SE0010547778",
+      "dataFrom": "2022-03-07",
+      "dataTo": "2026-09-25",
+      "oneYear": {
+        "return": 8.7,
+        "cagr": 8.7,
+        "maxDrawdown": -15.6,
+        "volatility": 14.3
+      },
+      "threeYear": {
+        "return": -5.7,
+        "cagr": -2,
+        "maxDrawdown": -31.7,
+        "volatility": 14.1
+      },
+      "sinceStart": {
+        "return": -19.4,
+        "cagr": -4.6,
+        "maxDrawdown": -43,
         "years": 4.55
       },
       "stale": false

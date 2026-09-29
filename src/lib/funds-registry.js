@@ -118,4 +118,9 @@ export const FUNDS_REGISTRY = [
   { id: 93, ticker: "0P00018JII.ST", isin: "SE0008321780", name: "Aktiespararna Direktavkastning A",     category: "Sverigefond",       fallbackFee: 0.30, slug: "aktiespararna-direktavkastning-a" }, // ej FI-täckning, källa: Morningstar
   { id: 94, ticker: "0P0001D9SX.ST", isin: "LU1777968246", name: "Kavaljer Investmentbolagsfond A",      category: "Sverigefond",       fallbackFee: 0.30, slug: "kavaljer-investmentbolagsfond-a" }, // LU-fond, ej FI-täckning, källa: Morningstar (ej verifierad mot kavaljer.se)
   { id: 95, ticker: "0P0000KBNA.ST", isin: "SE0002793935", name: "Länsförsäkringar Europa Index",        category: "Europafond",        fallbackFee: 0.20, slug: "lansforsakringar-europa-index" }, // ej FI-täckning, källa: lf.fondlista.se
+  // Kvartil, Storebrand, Handelsbanken, Proethos (tillägg)
+  { id: 96, ticker: "0P0001IISR.ST", isin: "SE0013121456", name: "Kvartil Investmentbolag+ Calculus A",  category: "Sverigefond",       fallbackFee: 0.55, slug: "kvartil-investmentbolag-calculus-a" }, // ej FI-täckning, källa: Morningstar
+  { id: 97, ticker: "0P00000FYO.ST", isin: "SE0000621393", name: "Storebrand Japan A",                   category: "Japanfond",         fallbackFee: 0.20, slug: "storebrand-japan-a" }, // ej FI-täckning, källa: storebrand.se handelsrutiner
+  { id: 98, ticker: "0P00000F5G.ST", isin: "SE0000735375", name: "Handelsbanken Hälsovård Tema A1",      category: "Temafond",          fallbackFee: 1.50, slug: "handelsbanken-halsovard-tema-a1" }, // ej FI-täckning, källa: Morningstar
+  { id: 99, ticker: "0P0001C96Y.ST", isin: "SE0010547778", name: "Proethos Fond",                        category: "Globalfond",        fallbackFee: 0.85, slug: "proethos-fond" }, // ej FI-täckning, källa: proethos.se
 ];

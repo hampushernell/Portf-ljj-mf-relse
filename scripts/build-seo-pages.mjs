@@ -50,6 +50,7 @@ const CATEGORY_META = {
   "Temafond":              { slug: "temafonder",              label: "Temafonder",              singular: "temafond",             pluralDefinite: "temafonderna" },
   "Blandfond":             { slug: "blandfonder",             label: "Blandfonder",             singular: "blandfond",            pluralDefinite: "blandfonderna" },
   "Europafond":            { slug: "europafonder",            label: "Europafonder",            singular: "europafond",           pluralDefinite: "europafonderna" },
+  "Japanfond":             { slug: "japanfonder",             label: "Japanfonder",             singular: "japanfond",            pluralDefinite: "japanfonderna" },
 };
 
 // ─── Formattering — Swedish decimalkomma, tusentalsavskiljare, tecken ──────────

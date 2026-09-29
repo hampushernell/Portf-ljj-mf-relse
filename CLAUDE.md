@@ -20,7 +20,7 @@ Målgrupp: privatpersoner som vill fatta bättre fondbeslut.
 
 **Live:** https://minportfolj.se (Vercel)
 **Repo:** fondportfolj (GitHub → Vercel CI/CD)
-**Fondregister:** 95 fonder, 9 kategorier (Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond, Europafond, Småbolagsfond, Blandfond)
+**Fondregister:** 99 fonder, 10 kategorier (Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond, Europafond, Japanfond, Småbolagsfond, Blandfond)
 
 ---
 
@@ -147,7 +147,7 @@ Yahoo råpriser
 
 **Fondsupport:**
 - Fonder med SE-ISIN täcks av FI, övriga använder fallback (hårdkodat i `funds-registry.js`)
-- Kategorier: Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond, Europafond, Småbolagsfond, Blandfond
+- Kategorier: Globalfond, Sverigefond, USA-fond, Räntefond, Temafond, Tillväxtmarknadsfond, Europafond, Japanfond, Småbolagsfond, Blandfond
 - IE/FI-fonder (ej SE-ISIN) täcks inte av FI — använder alltid fallback
 
 Se `FEE_ENGINE.md` för fullständig tabell och UI-exponeringsregler.

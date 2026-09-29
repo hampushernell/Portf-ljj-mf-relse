@@ -6,7 +6,7 @@ import ManualFundModal from "./ManualFundModal";
 
 const CATEGORY_ORDER = [
   "Globalfond", "Sverigefond", "USA-fond", "Räntefond",
-  "Temafond", "Tillväxtmarknadsfond", "Europafond", "Småbolagsfond", "Blandfond",
+  "Temafond", "Tillväxtmarknadsfond", "Europafond", "Japanfond", "Småbolagsfond", "Blandfond",
 ];
 
 function CategoryRow({ cat, isSelected, onToggle }) {
