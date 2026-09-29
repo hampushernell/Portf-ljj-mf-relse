@@ -108,4 +108,14 @@ export const FUNDS_REGISTRY = [
   { id: 84, ticker: "0P000083RV.ST", isin: "SE0000900169", name: "Handelsbanken AstraZeneca Allemansfond", category: "Temafond",        fallbackFee: 0.90, slug: "handelsbanken-astrazeneca-allemansfond" }, // ej FI-täckning, källa: Morningstar
   { id: 85, ticker: "0P0001EC2G.ST", isin: "SE0011527829", name: "MetaSpace Fund A",                     category: "Temafond",          fallbackFee: 1.50, slug: "metaspace-fund-a" }, // ej FI-täckning, källa: fondmarknaden.se
   { id: 86, ticker: "0P0001M5YO.ST", isin: "IE00BNNLSK63", name: "Nordnet Teknologi Index",              category: "Temafond",          fallbackFee: 0.40, slug: "nordnet-teknologi-index" }, // IE-fond, ej FI-täckning, källa: nordnet.se
+  // Storebrand, SEB, AMF, Lannebo, LF m.fl. (tillägg)
+  { id: 87, ticker: "0P00017TAQ.ST", isin: "SE0008129985", name: "Storebrand Global Plus A",             category: "Globalfond",        fallbackFee: 0.40, slug: "storebrand-global-plus-a" }, // ej FI-täckning, källa: Morningstar
+  { id: 88, ticker: "0P0000I3KB.ST", isin: "SE0002593673", name: "SEB Sverige Indexnära A",              category: "Sverigefond",       fallbackFee: 0.20, slug: "seb-sverige-indexnara-a" }, // ej FI-täckning, sänkt 2026-03-01, källa: sebgroup.com
+  { id: 89, ticker: "0P0000RYCW.ST", isin: "SE0003455658", name: "Storebrand Emerging Markets A",        category: "Tillväxtmarknadsfond", fallbackFee: 0.40, slug: "storebrand-emerging-markets-a" }, // ej FI-täckning, källa: Morningstar
+  { id: 90, ticker: "0P00000K17.ST", isin: "SE0000739153", name: "AMF Aktiefond Europa",                 category: "Europafond",        fallbackFee: 0.40, slug: "amf-aktiefond-europa" }, // ej FI-täckning, källa: amf.se
+  { id: 91, ticker: "0P0000WEQ4.ST", isin: "SE0004578615", name: "Lannebo Emerging Markets A",           category: "Tillväxtmarknadsfond", fallbackFee: 0.90, slug: "lannebo-emerging-markets-a" }, // ej FI-täckning, källa: lannebo.se
+  { id: 92, ticker: "0P0001D63M.ST", isin: "LU1822851538", name: "Finserve Global Security Fund I SEK R", category: "Temafond",         fallbackFee: 1.60, slug: "finserve-global-security-fund" }, // LU-fond, ej FI-täckning, källa: finserve.se
+  { id: 93, ticker: "0P00018JII.ST", isin: "SE0008321780", name: "Aktiespararna Direktavkastning A",     category: "Sverigefond",       fallbackFee: 0.30, slug: "aktiespararna-direktavkastning-a" }, // ej FI-täckning, källa: Morningstar
+  { id: 94, ticker: "0P0001D9SX.ST", isin: "LU1777968246", name: "Kavaljer Investmentbolagsfond A",      category: "Sverigefond",       fallbackFee: 0.30, slug: "kavaljer-investmentbolagsfond-a" }, // LU-fond, ej FI-täckning, källa: Morningstar (ej verifierad mot kavaljer.se)
+  { id: 95, ticker: "0P0000KBNA.ST", isin: "SE0002793935", name: "Länsförsäkringar Europa Index",        category: "Europafond",        fallbackFee: 0.20, slug: "lansforsakringar-europa-index" }, // ej FI-täckning, källa: lf.fondlista.se
 ];
