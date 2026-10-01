@@ -26,11 +26,17 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { FUNDS_REGISTRY } from "../src/lib/funds-registry.js";
+import { renderCategoryChart, CHART_CSS } from "./seo-chart.mjs";
+import { fmtSignedPct, fmtDateSv, categoryPlural } from "./seo-format.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const DIST = join(ROOT, "dist");
 const BASE_URL = "https://www.minportfolj.se";
+
+// Sökvägen till verktyget (SPA:n). Används av headern, fondsidan, kategorisidan och
+// fondlistan. När appen flyttar till /jamfor räcker det att ändra den här raden.
+const APP_PATH = "/";
 
 // ─── Kategorimetadata — URL-struktur och etiketter, SEO.md avsnitt 4 ───────────
 // Fasta strängar, ingen finansiell data — samma typ av konstant som slug-fältet
@@ -56,12 +62,6 @@ const CATEGORY_META = {
 };
 
 // ─── Formattering — Swedish decimalkomma, tusentalsavskiljare, tecken ──────────
-
-function fmtSignedPct(v) {
-  if (v === null || v === undefined) return "–";
-  const sign = v > 0 ? "+" : v < 0 ? "−" : "";
-  return `${sign}${Math.abs(v).toFixed(1).replace(".", ",")} %`;
-}
 
 function fmtPlainPct(v) {
   if (v === null || v === undefined) return "–";
@@ -177,11 +177,6 @@ function equalWeights(n) {
   return Array.from({ length: n }, (_, i) => base + (i < remainder ? 1 : 0));
 }
 
-function pickPeers(fund, categoryFunds) {
-  const others = categoryFunds.__ranked.filter(f => f.id !== fund.id).slice(0, 3);
-  return [...others, fund].sort((a, b) => (b.threeYear?.return ?? -Infinity) - (a.threeYear?.return ?? -Infinity));
-}
-
 // ─── FAQ — en källa, återanvänd i både synlig HTML och FAQPage JSON-LD ─────────
 
 function buildFaq(stats, meta) {
@@ -226,7 +221,8 @@ const PAGE_CSS = `
     --surface-sunken: #080d19;
     --border-edge: rgba(255,255,255,0.34); --border-inner: rgba(255,255,255,0.26); --border-soft: rgba(255,255,255,0.20); --border-hairline: rgba(255,255,255,0.12);
     --text-primary: #f0ede8; --text-secondary: #cbd5e6; --text-label: #a9b6cc;
-    --accent-light: #7891ff; --accent-b: #38bdf8;
+    --accent-light: #7891ff; --accent-b: #38bdf8; --accent-a: #5c74ff; --tint-a: rgba(92,116,255,0.14);
+    --surface-tab: rgba(255,255,255,0.07); --surface-active: rgba(255,255,255,0.13);
     --positive: #56ec8d; --negative: #f87171; --warning: #fbbf24;
     --fi: #3a9aa8; --fallback: #94a3b8;
     --tint-fi: rgba(58,154,168,0.12); --tint-fallback: rgba(148,163,184,0.12);
@@ -258,32 +254,15 @@ const PAGE_CSS = `
   .fundname { color: var(--text-primary); text-decoration: none; border-bottom: 1px solid rgba(120,145,255,0.45); }
   .fee { color: var(--text-primary); font-weight: 500; }
   .cagr { color: var(--positive); font-weight: 500; }
-  tbody tr.softrow td { background: rgba(255,255,255,0.03); }
   .rowtag { font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; color: var(--text-label); margin-left: 8px; padding: 2px 7px; border-radius: 20px; border: 1px solid var(--border-hairline); vertical-align: 1px; }
   .badge { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; padding: 2px 7px; border-radius: 20px; vertical-align: 1px; }
   .badge.fi { color: var(--fi); background: var(--tint-fi); border: 1px solid rgba(58,154,168,0.45); }
   .badge.man { color: var(--fallback); background: var(--tint-fallback); border: 1px solid rgba(148,163,184,0.42); }
-  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 1px; background: var(--border-hairline); border: 1px solid var(--border-inner); border-radius: 10px; overflow: hidden; }
-  .fact { background: var(--bg-base); padding: 13px 15px; display: flex; flex-direction: column; gap: 3px; }
-  .fact dt { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label); }
-  .fact dd { margin: 0; font-size: 15px; color: var(--text-primary); font-variant-numeric: tabular-nums; }
-  .fact dd.mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px; }
-  .cost { background: var(--bg-elevated); border: 1px solid var(--border-inner); border-radius: 14px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
-  .cost-kicker { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-label); margin: 0; }
-  .cost-figure { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-  .cost-figure-sub { font-size: 15px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0; margin-left: 4px; }
-  .cost-sub { color: var(--text-secondary); font-size: 13px; max-width: 58ch; margin: 0; }
-  .cost-foot { color: var(--text-label); font-size: 12.5px; max-width: 60ch; margin: 2px 0 0; border-top: 1px solid var(--border-hairline); padding-top: 12px; }
-  .cost-foot b { color: var(--text-secondary); font-weight: 500; }
   .inline-link { color: var(--accent-light); text-decoration: none; border-bottom: 1px solid rgba(120,145,255,0.45); }
   .datawindow { font-size: 12.5px; color: var(--text-label); margin: 0; max-width: 66ch; border-left: 2px solid var(--border-soft); padding-left: 14px; }
   .verdictline { margin: 0; font-size: 13px; color: var(--text-secondary); background: var(--surface-card); border: 1px solid var(--border-soft); border-radius: 9px; padding: 12px 14px; }
   .verdictline b { color: var(--text-primary); font-weight: 500; }
   .verdictline .sep { color: var(--border-edge); margin: 0 6px; }
-  .cost-row { display: flex; gap: 26px; flex-wrap: wrap; }
-  .cost-row div { display: flex; flex-direction: column; gap: 2px; }
-  .cost-row .k { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label); }
-  .cost-row .v { font-size: 15px; font-variant-numeric: tabular-nums; }
   .cta { display: inline-flex; align-items: center; gap: 9px; align-self: flex-start; font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--accent-light); text-decoration: none; background: rgba(0,24,245,0.14); border: 1px solid rgba(120,145,255,0.55); border-radius: 6px; padding: 10px 16px; }
   .cta .arrow { color: var(--accent-b); }
   .cta-note { font-size: 12px; color: var(--text-label); margin: 6px 0 0; }
@@ -291,21 +270,11 @@ const PAGE_CSS = `
   .faq { display: flex; flex-direction: column; gap: 14px; }
   .faq-item { border-left: 2px solid var(--border-soft); padding-left: 14px; }
   .faq-item p { margin: 0; color: var(--text-secondary); font-size: 13px; max-width: 62ch; }
-  .peers-note { font-size: 12px; color: var(--text-label); margin: -4px 0 12px; }
-  .peers { display: flex; flex-direction: column; gap: 8px; }
-  .peer { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: center; background: var(--surface-card); border: 1px solid var(--border-soft); border-radius: 9px; padding: 10px 14px; font-size: 13px; }
-  .peer .pname { color: var(--text-primary); }
-  .peer .pfee, .peer .pcagr { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .peer .pcagr { color: var(--positive); }
-  .peer.self { border-color: rgba(120,145,255,0.6); background: rgba(120,145,255,0.09); }
-  .peer.self .pname::after { content: 'denna sida'; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; color: var(--accent-light); margin-left: 9px; padding: 2px 7px; border-radius: 20px; background: rgba(120,145,255,0.16); vertical-align: 1px; }
   .disclaimer { font-size: 12px; color: var(--text-label); border-top: 1px solid var(--border-hairline); padding-top: 14px; margin: 0; max-width: 66ch; }
   a:focus-visible, .cta:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
   @media (max-width: 640px) {
     .wrap { padding: 24px 16px 40px; }
     h1 { font-size: 22px; }
-    .cost-figure { font-size: 28px; }
-    .peer { grid-template-columns: 1fr auto; }
   }
 `;
 
@@ -343,7 +312,7 @@ function siteHeader(active) {
   const link = (key, href, label) => `<a href="${href}"${key === active ? ' aria-current="page"' : ""}>${label}</a>`;
   return `<header class="sh">
   <a class="sh-logo" href="/"><svg class="sh-mark" viewBox="0 0 44 40" aria-hidden="true"><rect x="0" y="0" width="16" height="40" rx="5" fill="#5a6e8a"/><rect x="20" y="0" width="24" height="40" rx="6" fill="#94a3b8"/></svg><span>MinPortfölj</span></a>
-  <nav class="sh-links" aria-label="Huvudmeny">${link("jamfor", "/", "Jämför")}${link("fonder", "/fonder/", "Fonder")}</nav>
+  <nav class="sh-links" aria-label="Huvudmeny">${link("jamfor", APP_PATH, "Jämför")}${link("fonder", "/fonder/", "Fonder")}</nav>
   <div class="sh-right"><a class="sh-om" href="/om">Om</a></div>
 </header>`;
 }
@@ -518,10 +487,10 @@ function renderCategoryPage(category, categoryFunds, fiMeta, asOf) {
   </p>
 
   <div>
-    <a class="cta" href="/?${ctaQuery}">Sätt ihop dem till en portfölj och jämför <span class="arrow">→</span></a>
+    <a class="cta" href="${APP_PATH}?${ctaQuery}">Sätt ihop dem till en portfölj och jämför <span class="arrow">→</span></a>
     <p class="cta-note">
       Det tabellen inte kan: blanda flera fonder, sätta egna andelar och ställa två portföljer mot
-      varandra. Går till <code>/?${ctaQuery}</code>.
+      varandra. Går till <code>${APP_PATH}?${ctaQuery}</code>.
     </p>
   </div>
 
@@ -564,167 +533,299 @@ function renderCategoryPage(category, categoryFunds, fiMeta, asOf) {
   return { html: pageShell({ title, description, canonical, jsonLd: [itemList, faqPage], bodyHtml: body }), stats, title, description, canonical };
 }
 
-// ─── Fondsida ────────────────────────────────────────────────────────────────────
+// ─── Fondsida ───────────────────────────────────────────────────────────────────
+// Se project-docs/mockups/fondsida.html för ordning, copy och layout.
+// "Efter avgift" står bara i fotnoten (SEO.md 5.1).
+
+const FUND_PAGE_CSS = `
+  .wrap.fp { max-width: 880px; gap: 36px; }
+  .fp h1 { font-size: 32px; line-height: 1.1; }
+  .fp-head { display: flex; flex-direction: column; gap: 22px; }
+  .fp-title { display: flex; flex-direction: column; gap: 6px; }
+  .fp-meta { font-size: 13px; color: var(--text-label); display: flex; gap: 8px; flex-wrap: wrap; margin: 0; }
+  .fp-meta code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 12.5px; color: var(--text-secondary); }
+  .fp .label { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-label); }
+  .fp .pos { color: var(--positive); }
+  .fp .neg { color: var(--negative); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--border-edge); border-radius: 12px; }
+  .stat { padding: 14px 18px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .stat + .stat { border-left: 1px solid var(--border-hairline); }
+  .stat-val { font-family: var(--font-display); font-size: 24px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; display: flex; align-items: center; gap: 8px; }
+  .stat-sub { font-size: 12px; color: var(--text-label); }
+
+  .chart-card { position: relative; border: 1px solid var(--border-edge); border-radius: 12px; padding: 16px 18px 12px; display: flex; flex-direction: column; gap: 10px; }
+  .chart-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .chart-top h2 { font-size: 16px; margin: 0; }
+  .sc-radio { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+  .tabs { display: flex; gap: 2px; background: var(--surface-tab); border: 1px solid var(--border-soft); border-radius: 8px; padding: 2px; }
+  .tabs label, .tabs span { border-radius: 6px; padding: 4px 12px; font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--text-label); cursor: pointer; }
+  .tabs span { cursor: default; background: var(--surface-active); color: var(--text-primary); }
+  #sc-1y:checked ~ .chart-top label[for="sc-1y"], #sc-3y:checked ~ .chart-top label[for="sc-3y"] { background: var(--surface-active); color: var(--text-primary); }
+  #sc-1y:focus-visible ~ .chart-top label[for="sc-1y"], #sc-3y:focus-visible ~ .chart-top label[for="sc-3y"] { outline: 2px solid var(--accent-light); outline-offset: 2px; }
+  #sc-1y:checked ~ .sc-3y, #sc-3y:checked ~ .sc-1y { display: none; }
+  .legend { display: flex; gap: 18px; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { display: inline-block; width: 16px; height: 2px; border-radius: 1px; }
+  .chart-foot { font-size: 12px; color: var(--text-label); margin: 0; }
+
+  .fp-sec { display: flex; flex-direction: column; gap: 12px; }
+  .fp-sec > h2 { margin: 0; }
+  .fp-lede { margin: 0; color: var(--text-secondary); max-width: 62ch; }
+
+  .ptable { border: 1px solid var(--border-edge); border-radius: 12px; overflow: hidden; }
+  .prow { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; padding: 11px 18px; align-items: center; }
+  .prow + .prow { border-top: 1px solid var(--border-hairline); }
+  .prow > :not(:first-child), .pmeta > * { text-align: right; }
+  .prow.head { padding-block: 9px; }
+  .pmeta { display: contents; }
+  .pname { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .pname small { font-size: 11px; color: var(--text-label); }
+  .pcell .k { display: none; }
+
+  .kr { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .kr > div { background: var(--surface-panel); border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .kr > div.me { border-color: var(--accent-a); background: var(--tint-a); }
+  .kr .v { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+  .kr .who { font-size: 12px; color: var(--text-secondary); overflow-wrap: anywhere; }
+  .fp-aside { font-size: 13px; color: var(--text-secondary); border-left: 2px solid var(--border-soft); padding-left: 12px; margin: 0; max-width: 64ch; }
+
+  .rank { display: flex; flex-direction: column; }
+  .rrow { display: grid; grid-template-columns: 28px 1fr 84px 60px; gap: 10px; padding: 10px 12px; align-items: center; border-radius: 8px; text-decoration: none; color: inherit; }
+  a.rrow:hover { background: var(--surface-panel); }
+  .rrow.head { padding-block: 4px; }
+  .rrow .r { color: var(--text-label); font-family: var(--font-display); font-weight: 600; font-size: 12px; }
+  .rrow .n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rrow > :nth-child(3), .rrow > :nth-child(4) { text-align: right; }
+  .rrow.me { background: var(--tint-a); box-shadow: inset 0 0 0 1px var(--accent-a); }
+  .rrow.me .n { font-weight: 500; }
+  .rrow.gap { padding-block: 0; color: var(--text-label); }
+  .rank-foot { padding: 8px 12px 0; font-size: 13px; margin: 0; }
+
+  .fp-cta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .fp-cta p { margin: 0; font-size: 13px; color: var(--text-label); max-width: 44ch; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 9px; border: 1px solid var(--accent-a); background: var(--tint-a); color: var(--text-primary); font-family: var(--font-display); font-weight: 700; font-size: 14px; text-decoration: none; }
+  .btn:focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; }
+  .fp-foot { border-top: 1px solid var(--border-hairline); padding-top: 16px; font-size: 12px; color: var(--text-label); margin: 0; }
+  .fp-foot a { color: var(--text-secondary); }
+
+  @media (max-width: 767px) {
+    .wrap.fp { gap: 30px; padding-top: 18px; }
+    .fp h1 { font-size: 26px; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stat:first-child { grid-column: 1 / -1; border-bottom: 1px solid var(--border-hairline); }
+    .stat + .stat { border-left: 0; }
+    .stat:last-child { border-left: 1px solid var(--border-hairline); }
+    .stat-val { font-size: 21px; }
+    .chart-card { padding: 14px 12px 10px; }
+    .prow.head { display: none; }
+    .prow { grid-template-columns: 1fr auto; row-gap: 2px; padding: 11px 14px; }
+    .prow .pret { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+    .pmeta { display: flex; flex-wrap: wrap; column-gap: 6px; grid-column: 1 / -1; font-size: 12px; color: var(--text-label); }
+    .pmeta > * { text-align: left; }
+    .pcell .k { display: inline; }
+    .pcell + .pcell::before { content: "· "; }
+    .kr { grid-template-columns: 1fr; }
+    .kr > div { flex-direction: row; justify-content: space-between; align-items: baseline; gap: 10px; }
+    .kr .v { font-size: 17px; order: 2; white-space: nowrap; }
+    .rrow { grid-template-columns: 22px 1fr auto 46px; gap: 8px; padding: 10px 8px; }
+  }
+`;
+
+const signClass = v => (v > 0 ? "pos" : v < 0 ? "neg" : "");
+const fundLink = (f, cls = "inline-link") => `<a href="/fond/${f.slug}" class="${cls}">${escapeHtml(f.name)}</a>`;
+const fmtKrRounded = v => fmtKr(Math.round(v / 100) * 100);
+
+// Kronrutorna: denna fond, bäst och sämst i fönstret. Är fonden själv bäst eller
+// sämst visas näst bäst/näst sämst i stället, så att ingen ruta upprepas.
+function krBoxes(fund, sorted, key) {
+  const box = (f, who, me = false) => {
+    const ret = f[key].return;
+    return `<div${me ? ' class="me"' : ""}><span class="who">${who}</span><span class="v num${me ? "" : ` ${signClass(ret)}`.trimEnd()}">${fmtKrRounded(100000 * (1 + ret / 100))}</span></div>`;
+  };
+  const n = sorted.length;
+  const idx = sorted.findIndex(f => f.id === fund.id);
+  const name = escapeHtml(fund.name);
+  // På 1 år (fonder utan tre års historik) är fonden inte rankad, så "i kategorin" vore fel.
+  const where = key === "threeYear" ? "i kategorin" : "senaste året";
+  if (n < 2) return box(fund, name, true);
+  if (n === 2) return box(fund, name, true) + box(sorted[1 - idx], escapeHtml(sorted[1 - idx].name));
+  if (idx === 0) return box(fund, `${name} · bäst ${where}`, true) + box(sorted[1], `Näst bäst: ${escapeHtml(sorted[1].name)}`) + box(sorted[n - 1], `Sämst: ${escapeHtml(sorted[n - 1].name)}`);
+  if (idx === n - 1) return box(fund, `${name} · sämst ${where}`, true) + box(sorted[0], `Bäst: ${escapeHtml(sorted[0].name)}`) + box(sorted[n - 2], `Näst sämst: ${escapeHtml(sorted[n - 2].name)}`);
+  return box(fund, name, true) + box(sorted[0], `Bäst: ${escapeHtml(sorted[0].name)}`) + box(sorted[n - 1], `Sämst: ${escapeHtml(sorted[n - 1].name)}`);
+}
+
+// "Finns det något bättre?" — stycket. Meningsmallarna täcker bäst, sämst, tvåa och
+// kategorier med bara två fonder, så att "0 fonder" eller "1 globalfonder" aldrig uppstår.
+function betterLede(fund, categoryFunds) {
+  const meta = fund.categoryMeta;
+  const plural = categoryPlural(meta);
+  const ranked = categoryFunds.__ranked;
+  const total = ranked.length;
+  const why = "Skillnaden kommer från fondernas inriktning lika mycket som från avgiften, så titta på vad fonden äger innan du byter.";
+  const about = f => `${fundLink(f)}, ${fmtSignedPct(f.threeYear.return)} med ${fmtFeePct(f.fee)} i avgift`;
+
+  if (!fund.threeYear) {
+    return `${escapeHtml(fund.name)} har historik sedan ${fmtDateSv(fund.dataFrom)}, för kort tid för att jämföras på tre år med de ${total} ${plural} som har så lång historik. Det senaste året gav fonden ${fmtSignedPct(fund.oneYear.return)}.`;
+  }
+  const rank = fund.rank3y;
+  const best = ranked[0];
+  if (total === 1) return `${escapeHtml(fund.name)} är ensam bland ${plural} med tre års historik på sajten, så det finns ingen att jämföra med än.`;
+  if (rank === 1) {
+    return `Ingen annan ${meta.singular} har gett mer de senaste tre åren. Närmast kom ${about(ranked[1])}. Tre år är en kort period, och ett försprång som det här säger mer om vad fonden äger än om hur det går framåt.`;
+  }
+  if (rank === total) {
+    return total === 2
+      ? `Den andra ${meta.singular}en i kategorin har gett mer de senaste tre åren: ${about(best)}. ${why}`
+      : `Alla andra ${total - 1} ${plural} har gett mer de senaste tre åren. Mest gav ${about(best)}. ${why}`;
+  }
+  if (rank === 2) return `En ${meta.singular} har gett mer de senaste tre åren: ${about(best)}. ${why}`;
+  return `${rank - 1} ${plural} har gett mer de senaste tre åren. Mest gav ${about(best)}. ${why}`;
+}
+
+function feeAside(fund, feeAvg) {
+  const diff = feeAvg - fund.fee; // > 0 = billigare än snittet
+  const lead = "Avgiften är det enda som är känt i förväg.";
+  if (Math.abs(diff) < 0.005) return `${lead} ${fmtFeePct(fund.fee)} ligger i nivå med kategorisnittet.`;
+  return `${lead} ${fmtFeePct(fund.fee)} mot kategorisnittet ${fmtFeePct(feeAvg)} är ${fmtPpFee(diff)} procentenheter ${diff > 0 ? "mindre" : "mer"} per år, oavsett hur marknaden går.`;
+}
+
+// Topp 3, sedan fonden med grannen över och under. Raderna slås ihop utan dubbletter,
+// och "…" sätts bara där placeringarna faktiskt hoppar.
+function rankingRows(fund, categoryFunds) {
+  const ranked = categoryFunds.__ranked;
+  const row = (f, r) => {
+    const cells = `<span class="r">${r ?? "–"}</span><span class="n">${escapeHtml(f.name)}</span><span class="num ${f.threeYear ? signClass(f.threeYear.return) : ""}">${f.threeYear ? fmtSignedPct(f.threeYear.return) : "–"}</span><span class="num">${fmtFeePct(f.fee)}</span>`;
+    return f.id === fund.id
+      ? `<div class="rrow me" aria-current="page">${cells}</div>`
+      : `<a class="rrow" href="/fond/${f.slug}">${cells}</a>`;
+  };
+  const gap = '<div class="rrow gap" aria-hidden="true"><span></span><span>…</span><span></span><span></span></div>';
+
+  const indices = new Set([0, 1, 2].filter(i => i < ranked.length));
+  if (fund.rank3y) [fund.rank3y - 2, fund.rank3y - 1, fund.rank3y].forEach(i => { if (i >= 0 && i < ranked.length) indices.add(i); });
+  const sorted = [...indices].sort((a, b) => a - b);
+
+  let html = "";
+  sorted.forEach((i, k) => {
+    if (k > 0 && i !== sorted[k - 1] + 1) html += gap;
+    html += row(ranked[i], i + 1);
+  });
+  if (!fund.rank3y) html += gap + row(fund, null);
+  return html;
+}
 
 function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
   const meta = fund.categoryMeta;
+  const plural = categoryPlural(meta);
   const total = categoryFunds.__ranked.length;
-  const rank = fund.rank3y;
-  const isBest = rank === 1;
-  const isWorst = rank === total;
-  const best = categoryFunds.__ranked[0];
-  const worst = categoryFunds.__ranked[total - 1];
+  const name = escapeHtml(fund.name);
+  const feeAvg = categoryFunds.feeAvgCache;
 
-  // ── Intro ──
-  let rankFragment;
-  if (isBest) rankFragment = `högst i kategorin ${meta.label.toLowerCase()}`;
-  else if (isWorst) rankFragment = `lägst av kategorins ${total} ${meta.label.toLowerCase()}`;
-  else rankFragment = `plats ${rank} av ${total} i kategorin ${meta.label.toLowerCase()}`;
+  // ── 2. Nyckeltal ──
+  const headline = fund.threeYear
+    ? { label: "Avkastning 3 år", val: fund.threeYear.return, sub: `${fmtSignedPct(fund.oneYear.return)} senaste året` }
+    : { label: "Avkastning 1 år", val: fund.oneYear.return, sub: `Historik sedan ${fmtDateSv(fund.dataFrom)}` };
+  const feeBadge = fund.feeSource === "fi"
+    ? `<span class="badge fi" title="Finansinspektionen ${fiMeta.period}">FI</span>`
+    : '<span class="badge man" title="Från fondbolaget, saknas i Finansinspektionens register">Manuell</span>';
 
-  const cheapestInCategory = [...categoryFunds].sort((a, b) => a.fee - b.fee)[0];
-  const mostExpensiveInCategory = [...categoryFunds].sort((a, b) => b.fee - a.fee)[0];
-  let secondSentence = "";
-  if (fund.id === cheapestInCategory.id && !isBest) {
-    secondSentence = " Den lägsta avgiften i kategorin har alltså inte gett högst avkastning under perioden.";
-  } else if (fund.id === mostExpensiveInCategory.id && !isWorst) {
-    secondSentence = " Den högsta avgiften i kategorin har alltså inte gett lägst avkastning under perioden.";
-  }
+  // ── 3. Graf ──
+  const chart1 = renderCategoryChart(fund, categoryFunds, "1y", asOf);
+  const chart3 = renderCategoryChart(fund, categoryFunds, "3y", asOf);
+  const tabs = chart1 && chart3
+    ? `<div class="tabs"><label for="sc-1y">1 år</label><label for="sc-3y">3 år</label></div>`
+    : `<div class="tabs"><span>${chart3 ? "3 år" : "1 år"}</span></div>`;
+  const radios = chart1 && chart3
+    ? `<input type="radio" class="sc-radio" name="sc-span" id="sc-1y"><input type="radio" class="sc-radio" name="sc-span" id="sc-3y" checked>`
+    : "";
+  const chartCard = chart1 || chart3 ? `
+  <section class="chart-card" aria-labelledby="chart-h">
+    ${radios}
+    <div class="chart-top">
+      <h2 id="chart-h">Bland ${categoryFunds.length} ${plural}</h2>
+      ${tabs}
+    </div>
+    <div class="legend"><span><i style="background:#7891ff"></i>${name}</span><span><i style="background:rgba(203,213,230,0.35)"></i>Övriga ${plural}</span></div>
+    ${chart1}${chart3}
+    <p class="chart-foot">Utveckling t.o.m. ${fmtDateSv(asOf)}</p>
+  </section>` : "";
 
-  const feeSourceClause = fund.feeSource === "fi" ? "" : " (avgiften är hämtad manuellt, inte från Finansinspektionen)";
-
-  // ── Period-tabell ──
+  // ── 4. Avkastning per period ──
+  const periodRow = (label, w) => w
+    ? `<div class="prow" role="row"><span class="pname" role="rowheader">${label}</span><span class="pret num ${signClass(w.return)}" role="cell">${fmtSignedPct(w.return)}</span><span class="pmeta"><span class="pcell num" role="cell"><span class="k">Per år </span>${fmtPlainPct(w.cagr)}</span><span class="pcell num" role="cell"><span class="k">Största nedgång </span>${fmtPlainPct(w.maxDrawdown)}</span></span></div>`
+    : `<div class="prow" role="row"><span class="pname" role="rowheader">${label}</span><span class="pret num" role="cell">–</span><span class="pmeta"><span class="pcell num" role="cell"><span class="k">Per år </span>–</span><span class="pcell num" role="cell"><span class="k">Största nedgång </span>–</span></span></div>`;
   const periodRows = [
-    `<tr><td>1 år</td><td class="num cagr">${fmtSignedPct(fund.oneYear.return)}</td><td class="num">${fmtPlainPct(fund.oneYear.cagr)}</td><td class="num">${fmtPlainPct(fund.oneYear.maxDrawdown)}</td></tr>`,
-    fund.threeYear
-      ? `<tr><td>3 år</td><td class="num cagr">${fmtSignedPct(fund.threeYear.return)}</td><td class="num">${fmtPlainPct(fund.threeYear.cagr)}</td><td class="num">${fmtPlainPct(fund.threeYear.maxDrawdown)}</td></tr>`
-      : `<tr><td>3 år</td><td class="num">–</td><td class="num">–</td><td class="num">–</td></tr>`,
-    `<tr class="softrow"><td>Sedan ${fund.dataFrom} <span class="rowtag">hela datan</span></td><td class="num cagr">${fmtSignedPct(fund.sinceStart.return)}</td><td class="num">${fmtPlainPct(fund.sinceStart.cagr)}</td><td class="num">${fmtPlainPct(fund.sinceStart.maxDrawdown)}</td></tr>`,
+    periodRow("1 år", fund.oneYear),
+    periodRow("3 år", fund.threeYear),
+    fund.sinceStart ? periodRow(`Sedan ${fmtDateSv(fund.dataFrom)} <small>hela historiken</small>`, fund.sinceStart) : "",
   ].join("");
 
-  // ── "Finns det något bättre?"-block ──
-  // Fonder utan tre års historik (fund.threeYear === null, se buildFunds/groupByCategory)
-  // kan inte rankas mot kategorin på tre år — samma "för ung"-fall som __unranked på
-  // kategorisidan (renderCategoryPage), fast uttryckt för en enskild fondsida.
-  let figureText, figureColor, costSub, costRowParts;
-  if (fund.threeYear) {
-    const selfKr = 100000 * (1 + fund.threeYear.return / 100);
-    const bestKr = 100000 * (1 + best.threeYear.return / 100);
-    const worstKr = 100000 * (1 + worst.threeYear.return / 100);
+  // ── 5. Finns det något bättre? ──
+  const krKey = fund.threeYear ? "threeYear" : "oneYear";
+  const krSorted = categoryFunds.filter(f => f[krKey]).sort((a, b) => b[krKey].return - a[krKey].return);
+  const krLabel = fund.threeYear ? "100 000 kr för tre år sedan" : "100 000 kr för ett år sedan";
 
-    if (isBest) {
-      figureText = `1 av ${total}`;
-      figureColor = "var(--positive)";
-      const second = categoryFunds.__ranked[1];
-      costSub = second
-        ? `Ingen annan fond i kategorin ${meta.label.toLowerCase()} har gett mer efter avgift de senaste tre åren. Näst bäst var <a href="/fond/${second.slug}" class="inline-link">${escapeHtml(second.name)}</a>, ${fmtSignedPct(second.threeYear.return)} till ${fmtFeePct(second.fee)} i avgift.`
-        : `Ingen annan fond i kategorin ${meta.label.toLowerCase()} har gett mer efter avgift de senaste tre åren.`;
-    } else {
-      const betterCount = rank - 1;
-      figureText = `${rank} av ${total}`;
-      figureColor = isWorst ? "var(--negative)" : "var(--warning)";
-      costSub = `${betterCount} ${meta.label.toLowerCase()} har gett mer efter avgift de senaste tre åren. Mest gav
-        <a href="/fond/${best.slug}" class="inline-link">${escapeHtml(best.name)}</a>, ${fmtSignedPct(best.threeYear.return)}
-        till ${fmtFeePct(best.fee)} i avgift. Skillnaden ligger inte nödvändigtvis i avgiften utan i
-        fondens inriktning och index — kontrollera det innan du byter.`;
-    }
-
-    costRowParts = [`<div><span class="k">100 000 kr för 3 år sedan är idag</span><span class="v">${fmtKr(selfKr)}</span></div>`];
-    if (!isBest) costRowParts.push(`<div><span class="k">I den bästa</span><span class="v" style="color:var(--positive)">${fmtKr(bestKr)}</span></div>`);
-    if (!isWorst) costRowParts.push(`<div><span class="k">I den sämsta</span><span class="v" style="color:var(--negative)">${fmtKr(worstKr)}</span></div>`);
-  } else {
-    const selfKr = 100000 * (1 + fund.oneYear.return / 100);
-    figureText = "Ny fond";
-    figureColor = "var(--text-secondary)";
-    costSub = `${escapeHtml(fund.name)} har historik sedan ${fund.dataFrom} — för kort tid för att rankas mot kategorins ${total} övriga ${meta.label.toLowerCase()} på tre år. Det senaste året gav fonden ${fmtSignedPct(fund.oneYear.return)} efter avgift.`;
-    costRowParts = [`<div><span class="k">100 000 kr för 1 år sedan är idag</span><span class="v">${fmtKr(selfKr)}</span></div>`];
-  }
-
-  const feeDiff = categoryFunds.feeAvgCache - fund.fee; // > 0 = billigare än snitt
-  let feeFootSentence;
-  if (Math.abs(feeDiff) < 0.005) {
-    feeFootSentence = `Avgiften ligger i linje med kategorins snittavgift på ${fmtFeePct(categoryFunds.feeAvgCache)}.`;
-  } else if (feeDiff > 0) {
-    feeFootSentence = `Det den låga avgiften ger dig är säkerhet framåt: ${fmtFeePct(fund.fee)} mot kategorisnittets ${fmtFeePct(categoryFunds.feeAvgCache)} är ${fmtPpFee(feeDiff)} procentenheter per år som du behåller oavsett hur marknaden går.`;
-  } else {
-    feeFootSentence = `Avgiften ligger ${fmtPpFee(feeDiff)} procentenheter över kategorisnittet på ${fmtFeePct(categoryFunds.feeAvgCache)} — en känd kostnad, till skillnad från avkastningen framåt som ingen kan lova.`;
-  }
-
-  // ── Peers ──
-  const peers = pickPeers(fund, categoryFunds);
-  const peersHtml = peers.map(p => `
-    <div class="peer${p.id === fund.id ? " self" : ""}">
-      <span class="pname">${escapeHtml(p.name)}</span>
-      <span class="pcagr">${p.threeYear ? fmtSignedPct(p.threeYear.return) : "–"}</span>
-      <span class="pfee">${fmtFeePct(p.fee)}</span>
-    </div>`).join("");
+  const appLink = `${APP_PATH}?a=${fund.id}:100&amp;mode=fund`;
+  const feeSourceText = fund.feeSource === "fi"
+    ? `Finansinspektionens öppna register (${fiMeta.period})`
+    : "fondbolagets publika information";
 
   const body = `
-  <p class="crumbs"><a href="/fonder/">Fonder</a> › <a href="/fonder/${meta.slug}">${escapeHtml(meta.label)}</a> › <span>${escapeHtml(fund.name)}</span></p>
-
-  <h1>${escapeHtml(fund.name)}</h1>
-
-  <p class="stamp"><em>${escapeHtml(fund.category)}</em> · Avgift per <em>${fiMeta.published}</em> · Avkastning per <em>${asOf}</em></p>
-
-  <dl class="facts">
-    <div class="fact"><dt>Avgift</dt><dd>${fmtFeePct(fund.fee)}</dd></div>
-    <div class="fact"><dt>Kategori</dt><dd style="font-size:14px">${escapeHtml(fund.category)}</dd></div>
-    <div class="fact"><dt>ISIN</dt><dd class="mono">${escapeHtml(fund.isin)}</dd></div>
-    <div class="fact"><dt>Avgiftskälla</dt><dd style="font-size:14px">${fund.feeSource === "fi" ? `<span class="badge fi">FI</span> ${fiMeta.period}` : '<span class="badge man">Manuell</span>'}</dd></div>
-  </dl>
-
-  <div class="prose">
-    <p>
-      ${escapeHtml(fund.name)} har en årlig avgift på ${fmtFeePct(fund.fee)}${feeSourceClause}. ${
-        fund.threeYear
-          ? `De senaste tre åren har fonden gett <strong>${fmtSignedPct(fund.threeYear.return)} efter avgift</strong> — ${rankFragment}.${secondSentence}`
-          : `Fonden har historik sedan <strong>${fund.dataFrom}</strong> — för kort tid för att rankas mot kategorins övriga fonder på tre år. Det senaste året gav fonden <strong>${fmtSignedPct(fund.oneYear.return)} efter avgift</strong>.`
-      }
-    </p>
+  <div class="fp-head">
+    <p class="crumbs"><a href="/fonder/">Fonder</a> › <a href="/fonder/${meta.slug}">${escapeHtml(meta.label)}</a> › <span>${name}</span></p>
+    <div class="fp-title">
+      <h1>${name}</h1>
+      <p class="fp-meta"><code>${escapeHtml(fund.isin)}</code><span aria-hidden="true">·</span><span>${escapeHtml(fund.category)}</span></p>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="label">${headline.label}</span><span class="stat-val num ${signClass(headline.val)}">${fmtSignedPct(headline.val)}</span><span class="stat-sub">${headline.sub}</span></div>
+      <div class="stat"><span class="label">Avgift</span><span class="stat-val num">${fmtFeePct(fund.fee)} ${feeBadge}</span><span class="stat-sub">Snitt i kategorin ${fmtFeePct(feeAvg)}</span></div>
+      <div class="stat"><span class="label">Plats i kategorin</span><span class="stat-val num">${fund.rank3y ? `${fund.rank3y} av ${total}` : "–"}</span><span class="stat-sub">${fund.rank3y ? "Avkastning 3 år" : "Kräver tre års historik"}</span></div>
+    </div>
   </div>
+  ${chartCard}
 
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>Period</th><th class="num">Avkastning</th><th class="num">CAGR</th><th class="num">Max nedgång</th></tr></thead>
-      <tbody>${periodRows}</tbody>
-    </table>
-  </div>
-
-  <div class="cost">
-    <p class="cost-kicker">Finns det något bättre?</p>
-    <div class="cost-figure" style="color:${figureColor}">${figureText} <span class="cost-figure-sub">${meta.label.toLowerCase()}</span></div>
-    <p class="cost-sub">${costSub}</p>
-    <div class="cost-row">${costRowParts.join("")}</div>
-    <p class="cost-foot">
-      Siffrorna är <b>efter avgift</b> — avgiften är alltså redan avdragen, inte något du ska räkna
-      bort igen. ${feeFootSentence}
-    </p>
-  </div>
-
-  <section>
-    <h2>Andra ${meta.label.toLowerCase()}</h2>
-    <p class="peers-note">De tre som gett mest på tre år, plus denna fond. <a href="/fonder/${meta.slug}" class="inline-link">Se hela kategorin</a>.</p>
-    <div class="peers">${peersHtml}</div>
+  <section class="fp-sec">
+    <h2>Avkastning per period</h2>
+    <div class="ptable" role="table" aria-label="Avkastning per period">
+      <div class="prow head" role="row"><span class="label" role="columnheader">Period</span><span class="label" role="columnheader">Avkastning</span><span class="pmeta"><span class="label" role="columnheader">Per år</span><span class="label" role="columnheader">Största nedgång</span></span></div>
+      ${periodRows}
+    </div>
   </section>
 
-  <div>
-    <a class="cta" href="/?a=${fund.id}:100&span=max&mode=funds">Ställ ${escapeHtml(fund.name)} mot en annan fond <span class="arrow">→</span></a>
-    <p class="cta-note">
-      I verktyget kan du lägga två fonder i samma graf, blanda flera i en portfölj och köra hela
-      den tillgängliga historiken. Går till <code>/?a=${fund.id}:100&amp;span=max&amp;mode=funds</code>.
-    </p>
-  </div>
+  <section class="fp-sec">
+    <h2>Finns det något bättre?</h2>
+    <p class="fp-lede">${betterLede(fund, categoryFunds)}</p>
+    <div>
+      <div class="label" style="margin-bottom:8px">${krLabel}</div>
+      <div class="kr">${krBoxes(fund, krSorted, krKey)}</div>
+    </div>
+    <p class="fp-aside">${feeAside(fund, feeAvg)}</p>
+  </section>
 
-  <p class="disclaimer">
-    Prisdata från Yahoo Finance, avgift från Finansinspektionens öppna register.
-    Historisk avkastning är ingen garanti för framtida avkastning.
-    <a href="/om" style="color:var(--text-secondary)">Om datakällorna</a>
-  </p>`;
+  <section class="fp-sec">
+    <h2>${escapeHtml(meta.label)} efter avkastning</h2>
+    <div class="rank">
+      <div class="rrow head"><span class="label">#</span><span class="label">Fond</span><span class="label">3 år</span><span class="label">Avgift</span></div>
+      ${rankingRows(fund, categoryFunds)}
+      <p class="rank-foot"><a href="/fonder/${meta.slug}" class="inline-link">Se alla ${categoryFunds.length} ${plural}</a></p>
+    </div>
+  </section>
+
+  <section class="fp-cta">
+    <a class="btn" href="${appLink}">Jämför med en annan fond →</a>
+    <p>Lägg ${name} bredvid valfri fond i samma graf, eller bygg en portfölj.</p>
+  </section>
+
+  <p class="fp-foot">All avkastning är efter avgift. Prisdata från Yahoo Finance, avgift från ${feeSourceText}. Historisk avkastning är ingen garanti för framtida avkastning. <a href="/om">Om datakällorna</a></p>`;
 
   const canonical = `${BASE_URL}/fond/${fund.slug}`;
   const title = `${fund.name} – avgift ${fmtFeePct(fund.fee)} och historisk avkastning | MinPortfölj`;
   const description = fund.threeYear
-    ? `${fund.name} kostar ${fmtFeePct(fund.fee)} i årlig avgift. Se historisk avkastning 1 och 3 år och jämför mot ${total - 1} andra ${meta.label.toLowerCase()}.`
-    : `${fund.name} kostar ${fmtFeePct(fund.fee)} i årlig avgift. Se historisk avkastning sedan ${fund.dataFrom} och jämför mot andra ${meta.label.toLowerCase()}.`;
+    ? `${fund.name} kostar ${fmtFeePct(fund.fee)} i årlig avgift. Se historisk avkastning 1 och 3 år och jämför mot ${categoryFunds.length - 1} andra ${plural}.`
+    : `${fund.name} kostar ${fmtFeePct(fund.fee)} i årlig avgift. Se historisk avkastning sedan ${fund.dataFrom} och jämför mot andra ${plural}.`;
 
   const financialProduct = {
     "@context": "https://schema.org",
@@ -736,8 +837,8 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
     "additionalProperty": [
       { "@type": "PropertyValue", "name": "ISIN", "value": fund.isin },
       { "@type": "PropertyValue", "name": "Årlig avgift", "value": fmtFeePct(fund.fee) },
-      { "@type": "PropertyValue", "name": "Avkastning 1 år efter avgift", "value": fmtSignedPct(fund.oneYear.return) },
-      ...(fund.threeYear ? [{ "@type": "PropertyValue", "name": "Avkastning 3 år efter avgift", "value": fmtSignedPct(fund.threeYear.return) }] : []),
+      { "@type": "PropertyValue", "name": "Avkastning 1 år", "value": fmtSignedPct(fund.oneYear.return) },
+      ...(fund.threeYear ? [{ "@type": "PropertyValue", "name": "Avkastning 3 år", "value": fmtSignedPct(fund.threeYear.return) }] : []),
     ],
   };
   const breadcrumbs = {
@@ -751,9 +852,14 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
   };
 
   return {
-    html: pageShell({ title, description, canonical, jsonLd: [financialProduct, breadcrumbs], bodyHtml: body }),
+    html: pageShell({
+      title, description, canonical,
+      jsonLd: [financialProduct, breadcrumbs],
+      bodyHtml: body,
+      css: PAGE_CSS + CHART_CSS + FUND_PAGE_CSS,
+      wrapClass: "wrap fp",
+    }),
     title, description, canonical,
-    costBlock: { figureText, costSub: costSub.replace(/\s+/g, " ").trim(), rows: costRowParts.map(r => r.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()), feeFootSentence, rank, total },
   };
 }
 
@@ -1063,7 +1169,7 @@ function renderFundsIndexPage(funds, fiMeta, asOf) {
     }).join("");
     $("[data-tray-count]").textContent = \`\${st.sel.length} av \${MAX} valda\`;
     const weights = equalWeights(st.sel.length);
-    $("[data-compare]").href = "/?a=" + st.sel.map((id, i) => id + ":" + weights[i]).join(",") + "&mode=fund";
+    $("[data-compare]").href = "${APP_PATH}?a=" + st.sel.map((id, i) => id + ":" + weights[i]).join(",") + "&mode=fund";
     if (refocus) { const el = $(refocus); if (el) el.focus(); }
   }
 
@@ -1136,7 +1242,7 @@ function renderFundsIndexPage(funds, fiMeta, asOf) {
   <div class="tray" data-tray hidden>
     <div class="tray-list" data-tray-list></div>
     <span class="tray-count" data-tray-count></span>
-    <a class="btn btn-accent" data-compare href="/">Jämför i verktyget →</a>
+    <a class="btn btn-accent" data-compare href="${APP_PATH}">Jämför i verktyget →</a>
   </div>
   ${script}`;
 
@@ -1194,14 +1300,14 @@ function verifyBuild(pages, funds) {
 
   // 2. Varje intern länk motsvarar en fil som faktiskt skrevs. "/" (SPA-roten,
   // byggd av vite build) och querysträngar (appens djuplänkar, t.ex.
-  // /?a=1:100&mode=funds) räknas inte som statiska sidor och kontrolleras inte.
+  // /?a=1:100&mode=fund) och APP_PATH räknas inte som statiska sidor och kontrolleras inte.
   const normalize = p => p.replace(/\/+$/, "") || "/";
   const knownPaths = new Set(pagePaths.map(p => normalize(`/${p}`)));
   const brokenLinks = [];
   for (const page of pages) {
     const hrefs = [...page.html.matchAll(/href="(\/[^"]*)"/g)].map(m => m[1]);
     for (const href of hrefs) {
-      if (href.includes("?") || href === "/") continue;
+      if (href.includes("?") || href === "/" || href === APP_PATH) continue;
       const norm = normalize(href);
       if (!knownPaths.has(norm)) brokenLinks.push(`${href} (länkad från /${page.path})`);
     }
@@ -1238,6 +1344,25 @@ function verifyBuild(pages, funds) {
     if (dupDescriptions.length) console.log(`  ✗ Identiska <meta description> på flera sidor: ${dupDescriptions.join(" | ")}`);
   } else {
     console.log(`  ✓ Alla ${titles.length} titlar och beskrivningar är unika`);
+  }
+
+  // 5. Grafens veckoserie slutar där fönstrets return säger (SEO.md 6.2). Samma
+  // invariant som build-seo-snapshot.mjs kontrollerar innan filen skrivs.
+  const seriesViolations = [];
+  for (const f of funds) {
+    for (const key of ["oneYear", "threeYear"]) {
+      const pts = f[key]?.series?.points;
+      if (!pts) continue;
+      if (pts[0] !== 100 || Math.abs((pts[pts.length - 1] - 100) - f[key].return) > 0.05) {
+        seriesViolations.push(`${f.name} ${key}`);
+      }
+    }
+  }
+  if (seriesViolations.length) {
+    ok = false;
+    console.log(`  ✗ ${seriesViolations.length} serier slutar inte på fönstrets avkastning: ${seriesViolations.join(", ")}`);
+  } else {
+    console.log(`  ✓ Alla veckoserier börjar på 100 och slutar på fönstrets avkastning (±0,05)`);
   }
 
   console.log(ok ? "\n✅ Verifiering godkänd\n" : "\n❌ Verifiering misslyckades\n");
@@ -1277,12 +1402,9 @@ function main() {
   }
   console.log(`  ✓ ${byCategory.size} kategorisidor`);
 
-  let amfOutcome = null;
   for (const fund of funds) {
     const categoryFunds = byCategory.get(fund.category);
-    const result = renderFundPage(fund, categoryFunds, fiFees.meta, asOf);
-    writePage(`fond/${fund.slug}`, result);
-    if (fund.slug === "amf-aktiefond-global") amfOutcome = { fund, costBlock: result.costBlock };
+    writePage(`fond/${fund.slug}`, renderFundPage(fund, categoryFunds, fiFees.meta, asOf));
   }
   console.log(`  ✓ ${funds.length} fondsidor`);
 
@@ -1301,16 +1423,6 @@ function main() {
   const sitemapXml = buildSitemap(sitemapEntries);
   writeFileSync(join(DIST, "sitemap.xml"), sitemapXml);
   console.log(`🗺️  sitemap.xml skriven med ${sitemapEntries.length} URL:er (lastmod ${asOf})\n`);
-
-  if (amfOutcome) {
-    console.log("─────────────────────────────────────────────────────");
-    console.log(`🧪 Testfall — utfallsblocket för ${amfOutcome.fund.name} (sist i kategorin, plats ${amfOutcome.costBlock.rank} av ${amfOutcome.costBlock.total}):\n`);
-    console.log(`   Siffra:  ${amfOutcome.costBlock.figureText} ${amfOutcome.fund.categoryMeta.label.toLowerCase()}`);
-    console.log(`   Text:    ${amfOutcome.costBlock.costSub}`);
-    amfOutcome.costBlock.rows.forEach(r => console.log(`   Rad:     ${r}`));
-    console.log(`   Fotnot:  ${amfOutcome.costBlock.feeFootSentence}`);
-    console.log("─────────────────────────────────────────────────────\n");
-  }
 
   const ok = verifyBuild(pages, funds);
   if (!ok) process.exitCode = 1;

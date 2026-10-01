@@ -127,18 +127,50 @@ Avanza Zero mot Sverigeindexfonderna, de billigaste mot de dyraste i varje kateg
 
 ### 5.1 Fondsida `/fond/[slug]`
 
-- `<h1>` Fondnamn
-- Faktaruta: ISIN, kategori, avgift, avgiftskälla (FI/Manuell), datumstämpel
-- Avkastningstabell: 1 år / 3 år, plus en tydligt märkt rad "Sedan <faktiskt startdatum>"
-  (endast här — se avsnitt 2.2)
-- Utfallsblock "Finns det något bättre?": fondens placering i kategorin efter avgift, namn och
-  länk till närmaste bättre alternativ, samt slutvärde i kr för 100 000 kr — denna fond, bästa,
-  sämsta. **Aldrig avgiften i kronor** (se avsnitt 2.1)
-- Jämförelseblock: 4 fonder ur samma kategori sorterade på avkastning efter avgift, länkade,
-  med länk vidare till hela kategorisidan
-- Primär CTA → `/?a=<id>:100&span=5y&mode=funds` (öppnar fonden i appen)
-- 150–250 ord unik prosa per fond, genererad från datan men varierad i formulering
+Version 2 (2026-10-01), byggd efter `project-docs/mockups/fondsida.html`. Ordning:
+
+1. Brödsmulor → `<h1>` fondnamn → metarad `ISIN · Kategori` (ISIN först, monospace)
+2. Tre nyckeltal i en ram: **Avkastning 3 år** (under: "x % senaste året") · **Avgift** + FI/Manuell-badge
+   (under: "Snitt i kategorin x %", från `feeAvgCache`) · **Plats i kategorin** "14 av 22".
+   Fond utan tre års historik: "Avkastning 1 år", "Historik sedan <datum>" och "–" som plats.
+3. Grafkort "Bland N <kategori>" med flikarna 1 år / 3 år och teckenförklaring (se 5.1.1)
+4. "Avkastning per period": 1 år, 3 år, "Sedan <datum> · hela historiken". Kolumner:
+   Avkastning, Per år, Största nedgång. Staplade rader på mobil.
+5. "Finns det något bättre?": ett stycke, tre kronrutor (denna fond / bäst / sämst, 100 000 kr för
+   tre år sedan) och avgiftsmeningen som aside. Är fonden själv bäst eller sämst visas näst bäst
+   respektive näst sämst, så att ingen ruta upprepas. Meningsmallarna täcker bäst, sämst, tvåa och
+   kategorier med två fonder ("0 fonder" och "1 globalfonder" kan inte uppstå). Fonder utan tre års
+   historik får 1-årsvarianten. **Aldrig avgiften i kronor** (se avsnitt 2.1)
+6. "<Kategori> efter avkastning": topp 3, "…", fonden med grannen över och under. Raderna slås ihop
+   utan dubbletter och "…" sätts bara där placeringen hoppar. Kolumner #, Fond, 3 år, Avgift.
+   Länk "Se alla N <kategori>"
+7. Knappen "Jämför med en annan fond →" → `APP_PATH?a=<id>:100&mode=fund`, plus en rad text
+8. Fotnot: "All avkastning är efter avgift. Prisdata från …". **Det enda stället på fondsidan där
+   "efter avgift" står**, även i JSON-LD
+
+- Länkar till verktyget går via konstanten `APP_PATH` överst i `build-seo-pages.mjs` (header,
+  fondsida, kategorisida, fondlista). Flyttar appen till `/jamfor` ändras bara den raden.
+- Inga hårdkodade tal i copy, inget index och ingen dom: bara fond mot fond inom kategorin.
 - JSON-LD: `FinancialProduct` + `BreadcrumbList`
+
+#### 5.1.1 Grafen
+
+`scripts/seo-chart.mjs` exporterar `renderCategoryChart(fund, categoryFunds, span, asOf)` (ren
+funktion, `span` = `"1y"` | `"3y"`) och `CHART_CSS`. Grafen renderas som statisk SVG vid byggtid,
+och sidan har ingen JS.
+
+- Fonden ritas i `#7891ff` med 2,25 px linje, sist så att den hamnar överst. Övriga fonder i kategorin
+  ritas i `rgba(203,213,230,0.20)` med 1 px linje, samlade i en `<path>`. Fonder utan serie för
+  spannet hoppas över, och en rad under grafen säger hur många.
+- viewBox-bredd 800, `preserveAspectRatio="none"` och `vector-effect="non-scaling-stroke"` på alla
+  linjer. Höjden sätts i CSS: 280 px, och 220 px under 768 px.
+- All text och slutpunktens prick är HTML-overlay positionerad i %: y-etiketter (0 % plus steg om
+  10/20/50 efter hur stort avkastningsspann grafen visar), datumetiketter och slutetiketten.
+  Slutetiketten läser `oneYear.return` / `threeYear.return` direkt, inte seriens sista punkt.
+- `asOf` krävs för att placera punkterna på rätt datum (se seriefältet i 6.2).
+- 1 år / 3 år: båda graferna renderas, och två radio-inputs styr via `:checked` vilken som syns.
+  3 år är förvalt, och piltangenterna byter period. Saknar fonden `threeYear` visas bara 1 år, utan flikar.
+- Sidstorlek: cirka 67 kB HTML för en globalfond (22 linjer × 2 grafer), cirka 15 kB gzippat.
 
 Title: `Avanza Global – avgift 0,08 % och historisk avkastning | MinPortfölj`
 Description: `Avanza Global kostar 0,08 % i årlig avgift. Se historisk avkastning 1, 3 och 5 år och jämför mot 11 andra globalfonder.`
@@ -268,8 +300,10 @@ mer än fem handelsdagar efter `asOf` flaggas.
       "isin": "SE0011527613",
       "dataFrom": "2022-03-14",
       "dataTo": "2026-09-05",
-      "oneYear":    { "return": 14.2, "cagr": 14.2, "maxDrawdown": -7.1,  "volatility": 11.4 },
-      "threeYear":  { "return": 47.4, "cagr": 13.8, "maxDrawdown": -12.3, "volatility": 13.1 },
+      "oneYear":    { "return": 14.2, "cagr": 14.2, "maxDrawdown": -7.1,  "volatility": 11.4,
+                      "series": { "start": "2025-09-07", "points": [100, 100.3, …, 114.2] } },
+      "threeYear":  { "return": 47.4, "cagr": 13.8, "maxDrawdown": -12.3, "volatility": 13.1,
+                      "series": { "start": "2023-09-07", "points": [100, 100.2, …, 147.4] } },
       "sinceStart": { "return": 79.0, "cagr": 13.7, "maxDrawdown": -18.4, "years": 4.48 },
       "stale": false
     }
@@ -279,6 +313,14 @@ mer än fem handelsdagar efter `asOf` flaggas.
 
 - `threeYear` är `null` för fonder med kortare historik än tre år. Aldrig 0, aldrig utelämnad
   nyckel — sidgeneratorn ska kunna skilja "saknas" från "noll".
+- `series` (bara `oneYear` och `threeYear`, aldrig `sinceStart`) är fondsidans grafserie. Den
+  samplas ur exakt samma `rebased`-serie som fönstrets övriga värden, utan egen rebasering:
+  var 7:e kalenderdag räknat bakåt från `asOf`, plus seriens första punkt (alltid 100) på `start`.
+  Punkt k räknat bakifrån ligger på `asOf − 7·k` dagar, och avståndet mellan `points[0]` och
+  `points[1]` är 1–7 dagar. Värdena avrundas till 1 decimal i avkastningsled (värde − 100), på
+  samma sätt som `return`.
+- **Invariant:** `points.at(-1) − 100 === return` (±0,05) och `points[0] === 100`. Både
+  `build-seo-snapshot.mjs` (skriver då ingen fil) och `verifyBuild` (bygget avbryts) kontrollerar den.
 - Avrundning sker **här**, en gång. Sidorna formaterar men räknar inte om.
 - Endast fondfakta. Kategoristatistik (spann, snitt, antal, vinnare) härleds i sidgeneratorn, så
   det finns exakt en sanning per uppgift.

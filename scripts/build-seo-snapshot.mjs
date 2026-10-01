@@ -45,6 +45,8 @@ const STALE_TRADING_DAYS = 5;    // SEO.md 6.2: flaggas om data ligger mer än 5
 const MAX_FAILURES      = 10;    // SEO.md 6.2: fler misslyckanden än detta → avbryt utan att skriva filen
 const WINDOW_MARGIN_YEARS = 0.1; // samma marginal som App.jsx:s "y3 >= 2.9 ? computeCAGR(..., 3) : null"
 const MIN_DATA_POINTS   = 30;    // samma tröskel som add-fund.mjs använder för en godkänd ticker
+const SERIES_STEP_DAYS  = 7;     // veckoserie för fondsidans graf
+const SERIES_TOLERANCE  = 0.05;  // invariant: sista punkten − 100 === return, med denna tolerans
 
 // ─── Hjälpfunktioner utan finansiell betydelse (datum, avrundning, sömn) ───────────────
 
@@ -92,6 +94,50 @@ function computeAsOf(lastDates) {
     if (c > bestCount || (c === bestCount && d > best)) { best = d; bestCount = c; }
   }
   return best;
+}
+
+// Veckosampling av en redan rebaserad serie för fondsidans graf. Ingen ny matematik:
+// punkterna är värden ur `rebased`, bara utglesade och avrundade till 1 decimal.
+// Samplas var 7:e kalenderdag räknat bakåt från seriens sista punkt (= asOf), så att
+// sista punkten alltid är seriens sista värde. Första punkten är alltid rebased[0]
+// (= 100), så avståndet mellan points[0] och points[1] kan vara 1–7 dagar; övriga
+// punkter ligger exakt 7 dagar isär. Punkt k räknat bakifrån ligger alltså på
+// asOf − 7·k dagar, och points[0] ligger på `start`.
+//
+// Avrundningen sker i avkastningsled (värde − 100), precis som `return` räknas via
+// portfolioReturn. Annars kan t.ex. 123,05 bli 123,1 medan return 23,0499… blir 23,0.
+function sampleWeekly(rebased) {
+  const toPoint = v => round(100 + round(v - 100, 1), 1);
+  const byTs = new Map(rebased.map(p => [p.timestamp, p.value]));
+  const firstTs = rebased[0].timestamp;
+  const stepSecs = SERIES_STEP_DAYS * 86400;
+  const points = [];
+  for (let ts = rebased[rebased.length - 1].timestamp; ts > firstTs; ts -= stepSecs) {
+    if (!byTs.has(ts)) throw new Error(`lucka i kalenderserien ${isoDate(ts)}`);
+    points.push(toPoint(byTs.get(ts)));
+  }
+  points.push(toPoint(rebased[0].value));
+  points.reverse();
+  return { start: isoDate(firstTs), points };
+}
+
+// Invariant (SEO.md 6.2): grafens sista punkt måste stämma med fönstrets `return`,
+// annars visar grafen och siffrorna olika saker. Returnerar en lista med brott.
+function checkSeriesInvariant(funds, registry) {
+  const violations = [];
+  for (const fund of registry) {
+    const entry = funds[fund.id];
+    for (const key of ["oneYear", "threeYear"]) {
+      const win = entry?.[key];
+      if (!win?.series) continue; // fönster saknas, eller äldre post utan serie (stale)
+      const pts = win.series.points;
+      const diff = Math.abs((pts[pts.length - 1] - 100) - win.return);
+      if (pts[0] !== 100 || diff > SERIES_TOLERANCE) {
+        violations.push(`${fund.name} ${key}: första ${pts[0]}, sista−100 ${round(pts[pts.length - 1] - 100, 2)}, return ${win.return}`);
+      }
+    }
+  }
+  return violations;
 }
 
 function loadPreviousSnapshot() {
@@ -212,6 +258,7 @@ async function main() {
         cagr: pct(cagr),
         maxDrawdown: pct(drawdown),
         volatility: pct(volatility),
+        series: sampleWeekly(rebased),
       };
     }
 
@@ -297,7 +344,20 @@ async function main() {
       funds,
     };
 
-    writeFileSync(OUT_FILE, `${JSON.stringify(output, null, 2)}\n`);
+    const violations = checkSeriesInvariant(funds, FUNDS_REGISTRY);
+    if (violations.length) {
+      console.error(`\n❌ ${violations.length} serier bryter mot invarianten sista punkt − 100 === return (±${SERIES_TOLERANCE}):`);
+      violations.forEach(v => console.error(`   ${v}`));
+      console.error("Avbryter utan att skriva filen.");
+      process.exitCode = 1;
+      return;
+    }
+
+    // Indenterat som tidigare, men varje points-array på en rad så att diffen
+    // förblir läsbar och filen inte får en rad per veckopunkt.
+    const json = JSON.stringify(output, null, 2)
+      .replace(/"points": \[[^\]]*\]/g, m => m.replace(/\s+/g, " ").replace("[ ", "[").replace(" ]", "]"));
+    writeFileSync(OUT_FILE, `${json}\n`);
 
     // ── Sammanfattning ───────────────────────────────────────────────────────────────
     console.log("\n─────────────────────────────────────────────────────");
