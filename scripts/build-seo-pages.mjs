@@ -570,10 +570,12 @@ const FUND_PAGE_CSS = `
   .chart-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
   .chart-top h2 { font-size: 16px; margin: 0; }
   .sc-radio { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
-  .tabs { display: flex; gap: 2px; background: var(--surface-tab); border: 1px solid var(--border-soft); border-radius: 8px; padding: 2px; }
-  .tabs label, .tabs span { border-radius: 6px; padding: 4px 12px; font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--text-label); cursor: pointer; }
+  /* Samma ghost-flikar som tidsknapparna i verktygets graf (ReturnChart.jsx). */
+  .tabs { display: flex; gap: 3px; background: var(--surface-tab); border-radius: 8px; padding: 3px; }
+  .tabs label, .tabs span { border-radius: 6px; padding: 5px 10px; font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--text-secondary); cursor: pointer; transition: background .15s, color .15s; }
+  .tabs label:hover { color: var(--text-primary); }
   .tabs span { cursor: default; }
-  .tabs span, #sc-1y:checked ~ .chart-top label[for="sc-1y"], #sc-3y:checked ~ .chart-top label[for="sc-3y"] { background: var(--tint-sel); box-shadow: inset 0 0 0 1px var(--accent-a); color: var(--text-primary); }
+  .tabs span, #sc-1y:checked ~ .chart-top label[for="sc-1y"], #sc-3y:checked ~ .chart-top label[for="sc-3y"] { background: var(--surface-active); box-shadow: 0 1px 4px rgba(0,0,0,0.3); color: var(--text-primary); }
   #sc-1y:focus-visible ~ .chart-top label[for="sc-1y"], #sc-3y:focus-visible ~ .chart-top label[for="sc-3y"] { outline: 2px solid var(--accent-light); outline-offset: 2px; }
   #sc-1y:checked ~ .sc-3y, #sc-3y:checked ~ .sc-1y { display: none; }
   .legend { display: flex; gap: 18px; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
