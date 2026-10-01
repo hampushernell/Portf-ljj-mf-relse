@@ -214,6 +214,17 @@ function buildFaq(stats, meta) {
 
 // ─── Delad CSS — tokens kopierade ur src/lib/tokens.js via mockens facit ───────
 
+// Accenttokens och accentknapp delas av fondsidan och fondlistan så att de inte
+// glider isär. #0018f5 (--accent-a) används bara som kant och fyllnadston —
+// aldrig som linje eller text (2,2:1 mot bakgrunden); där gäller --accent-light.
+const ACCENT_TOKENS = `--accent-a: #0018f5; --accent-light: #7891ff;
+    --tint-sel: rgba(0,24,245,0.16); --tint-sel-hover: rgba(0,24,245,0.26); --tint-row: rgba(0,24,245,0.08);`;
+
+const ACCENT_BUTTON_CSS = `
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-display); font-weight: 600; font-size: 13px; text-decoration: none; border-radius: 8px; padding: 9px 16px; white-space: nowrap; cursor: pointer; transition: background .15s; }
+  .btn-accent { color: var(--text-primary); background: var(--tint-sel); border: 1px solid var(--accent-a); }
+  .btn-accent:hover { background: var(--tint-sel-hover); }`;
+
 const PAGE_CSS = `
   :root {
     --bg-base: #0a0f1c; --bg-elevated: #141a2b;
@@ -221,7 +232,7 @@ const PAGE_CSS = `
     --surface-sunken: #080d19;
     --border-edge: rgba(255,255,255,0.34); --border-inner: rgba(255,255,255,0.26); --border-soft: rgba(255,255,255,0.20); --border-hairline: rgba(255,255,255,0.12);
     --text-primary: #f0ede8; --text-secondary: #cbd5e6; --text-label: #a9b6cc;
-    --accent-light: #7891ff; --accent-b: #38bdf8; --accent-a: #5c74ff; --tint-a: rgba(92,116,255,0.14);
+    ${ACCENT_TOKENS} --accent-b: #38bdf8;
     --surface-tab: rgba(255,255,255,0.07); --surface-active: rgba(255,255,255,0.13);
     --positive: #56ec8d; --negative: #f87171; --warning: #fbbf24;
     --fi: #3a9aa8; --fallback: #94a3b8;
@@ -561,8 +572,8 @@ const FUND_PAGE_CSS = `
   .sc-radio { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
   .tabs { display: flex; gap: 2px; background: var(--surface-tab); border: 1px solid var(--border-soft); border-radius: 8px; padding: 2px; }
   .tabs label, .tabs span { border-radius: 6px; padding: 4px 12px; font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--text-label); cursor: pointer; }
-  .tabs span { cursor: default; background: var(--surface-active); color: var(--text-primary); }
-  #sc-1y:checked ~ .chart-top label[for="sc-1y"], #sc-3y:checked ~ .chart-top label[for="sc-3y"] { background: var(--surface-active); color: var(--text-primary); }
+  .tabs span { cursor: default; }
+  .tabs span, #sc-1y:checked ~ .chart-top label[for="sc-1y"], #sc-3y:checked ~ .chart-top label[for="sc-3y"] { background: var(--tint-sel); box-shadow: inset 0 0 0 1px var(--accent-a); color: var(--text-primary); }
   #sc-1y:focus-visible ~ .chart-top label[for="sc-1y"], #sc-3y:focus-visible ~ .chart-top label[for="sc-3y"] { outline: 2px solid var(--accent-light); outline-offset: 2px; }
   #sc-1y:checked ~ .sc-3y, #sc-3y:checked ~ .sc-1y { display: none; }
   .legend { display: flex; gap: 18px; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
@@ -586,26 +597,26 @@ const FUND_PAGE_CSS = `
 
   .kr { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .kr > div { background: var(--surface-panel); border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-  .kr > div.me { border-color: var(--accent-a); background: var(--tint-a); }
+  .kr > div.me { border-color: var(--accent-a); background: var(--tint-sel); }
   .kr .v { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
   .kr .who { font-size: 12px; color: var(--text-secondary); overflow-wrap: anywhere; }
   .fp-aside { font-size: 13px; color: var(--text-secondary); border-left: 2px solid var(--border-soft); padding-left: 12px; margin: 0; max-width: 64ch; }
 
   .rank { display: flex; flex-direction: column; }
   .rrow { display: grid; grid-template-columns: 28px 1fr 84px 60px; gap: 10px; padding: 10px 12px; align-items: center; border-radius: 8px; text-decoration: none; color: inherit; }
-  a.rrow:hover { background: var(--surface-panel); }
+  a.rrow:not(.me):hover { background: var(--tint-row); }
   .rrow.head { padding-block: 4px; }
   .rrow .r { color: var(--text-label); font-family: var(--font-display); font-weight: 600; font-size: 12px; }
   .rrow .n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rrow > :nth-child(3), .rrow > :nth-child(4) { text-align: right; }
-  .rrow.me { background: var(--tint-a); box-shadow: inset 0 0 0 1px var(--accent-a); }
+  .rrow.me { background: var(--tint-sel); box-shadow: inset 0 0 0 1px var(--accent-a); }
   .rrow.me .n { font-weight: 500; }
   .rrow.gap { padding-block: 0; color: var(--text-label); }
   .rank-foot { padding: 8px 12px 0; font-size: 13px; margin: 0; }
 
   .fp-cta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
   .fp-cta p { margin: 0; font-size: 13px; color: var(--text-label); max-width: 44ch; }
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 9px; border: 1px solid var(--accent-a); background: var(--tint-a); color: var(--text-primary); font-family: var(--font-display); font-weight: 700; font-size: 14px; text-decoration: none; }
+${ACCENT_BUTTON_CSS}
   .btn:focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; }
   .fp-foot { border-top: 1px solid var(--border-hairline); padding-top: 16px; font-size: 12px; color: var(--text-label); margin: 0; }
   .fp-foot a { color: var(--text-secondary); }
@@ -815,7 +826,7 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
   </section>
 
   <section class="fp-cta">
-    <a class="btn" href="${appLink}">Jämför med en annan fond →</a>
+    <a class="btn btn-accent" href="${appLink}">Jämför med en annan fond →</a>
     <p>Lägg ${name} bredvid valfri fond i samma graf, eller bygg en portfölj.</p>
   </section>
 
@@ -964,8 +975,7 @@ const FUND_LIST_CSS = `
     --surface-input: #080d19;
     --border-edge: rgba(255,255,255,0.34); --border-inner: rgba(255,255,255,0.26); --border-soft: rgba(255,255,255,0.20); --border-hairline: rgba(255,255,255,0.12);
     --text-primary: #f0ede8; --text-secondary: #cbd5e6; --text-label: #a9b6cc;
-    --accent-a: #0018f5; --accent-light: #7891ff;
-    --tint-sel: rgba(0,24,245,0.16); --tint-sel-hover: rgba(0,24,245,0.26); --tint-row: rgba(0,24,245,0.08);
+    ${ACCENT_TOKENS}
     --positive: #56ec8d; --negative: #f87171;
     --fi: #3a9aa8; --fallback: #94a3b8;
     --tint-fi: rgba(58,154,168,0.12); --tint-fallback: rgba(148,163,184,0.12);
@@ -980,9 +990,7 @@ const FUND_LIST_CSS = `
   :focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; border-radius: 4px; }
 
   .fl { max-width: 1120px; margin: 0 auto; padding: 0 40px 112px; }
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-display); font-weight: 600; font-size: 13px; text-decoration: none; border-radius: 8px; padding: 9px 16px; white-space: nowrap; cursor: pointer; transition: background .15s; }
-  .btn-accent { color: var(--text-primary); background: var(--tint-sel); border: 1px solid var(--accent-a); }
-  .btn-accent:hover { background: var(--tint-sel-hover); }
+${ACCENT_BUTTON_CSS}
 
   .page-head { display: flex; flex-direction: column; gap: 8px; padding-block: 32px 24px; }
   .page-head h1 { font-family: var(--font-display); font-weight: 800; font-size: 36px; line-height: 1.08; letter-spacing: -0.025em; margin: 0; }
