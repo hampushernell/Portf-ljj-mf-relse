@@ -40,17 +40,19 @@ const BASE_URL = "https://www.minportfolj.se";
 // ("globalfonderna") — Swedish "dubbel bestämdhet" kräver båda formerna
 // beroende på meningskonstruktion (t.ex. "de tolv globalfonderna" men
 // "kategorins tolv globalfonder").
+// Objektordningen är också chipordningen på /fonder/. chip = kortare etikett
+// där den fulla pluralformen blir för bred som chip.
 const CATEGORY_META = {
   "Globalfond":            { slug: "globalfonder",           label: "Globalfonder",           singular: "globalfond",           pluralDefinite: "globalfonderna" },
   "Sverigefond":           { slug: "sverigefonder",           label: "Sverigefonder",           singular: "sverigefond",          pluralDefinite: "sverigefonderna" },
-  "Räntefond":             { slug: "rantefonder",             label: "Räntefonder",             singular: "räntefond",            pluralDefinite: "räntefonderna" },
   "USA-fond":              { slug: "usa-fonder",              label: "USA-fonder",              singular: "USA-fond",             pluralDefinite: "USA-fonderna" },
-  "Småbolagsfond":         { slug: "smabolagsfonder",         label: "Småbolagsfonder",         singular: "småbolagsfond",        pluralDefinite: "småbolagsfonderna" },
-  "Tillväxtmarknadsfond":  { slug: "tillvaxtmarknadsfonder",  label: "Tillväxtmarknadsfonder",  singular: "tillväxtmarknadsfond", pluralDefinite: "tillväxtmarknadsfonderna" },
+  "Europafond":            { slug: "europafonder",            label: "Europafonder",            singular: "europafond",           pluralDefinite: "europafonderna" },
+  "Tillväxtmarknadsfond":  { slug: "tillvaxtmarknadsfonder",  label: "Tillväxtmarknadsfonder",  singular: "tillväxtmarknadsfond", pluralDefinite: "tillväxtmarknadsfonderna", chip: "Tillväxtmarknad" },
+  "Japanfond":             { slug: "japanfonder",             label: "Japanfonder",             singular: "japanfond",            pluralDefinite: "japanfonderna" },
+  "Småbolagsfond":         { slug: "smabolagsfonder",         label: "Småbolagsfonder",         singular: "småbolagsfond",        pluralDefinite: "småbolagsfonderna", chip: "Småbolag" },
   "Temafond":              { slug: "temafonder",              label: "Temafonder",              singular: "temafond",             pluralDefinite: "temafonderna" },
   "Blandfond":             { slug: "blandfonder",             label: "Blandfonder",             singular: "blandfond",            pluralDefinite: "blandfonderna" },
-  "Europafond":            { slug: "europafonder",            label: "Europafonder",            singular: "europafond",           pluralDefinite: "europafonderna" },
-  "Japanfond":             { slug: "japanfonder",             label: "Japanfonder",             singular: "japanfond",            pluralDefinite: "japanfonderna" },
+  "Räntefond":             { slug: "rantefonder",             label: "Räntefonder",             singular: "räntefond",            pluralDefinite: "räntefonderna" },
 };
 
 // ─── Formattering — Swedish decimalkomma, tusentalsavskiljare, tecken ──────────
@@ -307,7 +309,7 @@ const PAGE_CSS = `
   }
 `;
 
-function pageShell({ title, description, canonical, jsonLd, bodyHtml }) {
+function pageShell({ title, description, canonical, jsonLd, bodyHtml, css = PAGE_CSS, wrapClass = "wrap" }) {
   return `<!doctype html>
 <html lang="sv">
 <head>
@@ -329,10 +331,10 @@ function pageShell({ title, description, canonical, jsonLd, bodyHtml }) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 ${jsonLd.map(obj => `<script type="application/ld+json">\n${JSON.stringify(obj, null, 2)}\n</script>`).join("\n")}
-<style>${PAGE_CSS}</style>
+<style>${css}</style>
 </head>
 <body>
-<div class="wrap">
+<div class="${wrapClass}">
 ${bodyHtml}
 </div>
 </body>
@@ -761,64 +763,363 @@ function renderOmPage(markdownPath) {
   return { html: pageShell({ title, description, canonical, jsonLd: [], bodyHtml: body }), title, description, canonical };
 }
 
-// ─── /fonder/ — index över samtliga fonder ─────────────────────────────────────
+// ─── /fonder/ — fondlistan, project-docs/FONDLISTA.md ──────────────────────────
+// Visuell referens: project-docs/mockups/fondlista.html. Statisk HTML: raderna
+// renderas här i standardordningen (läsbara utan JS och för sökmotorer), och ett
+// litet inline-skript tar över sök, kategorier, sortering och jämförelsefältet.
+// Skriptet återanvänder generatorns egna funktioner via .toString() — samma
+// formattering, sortering och viktning på servern och i webbläsaren.
+
+// Filterknappen: innehållet byggs i ett senare steg, så knappen renderas inte i
+// produktion än. FONDLISTA_FILTER=1 npm run build visar den lokalt.
+const SHOW_FUND_FILTER = process.env.FONDLISTA_FILTER === "1";
+
+// Tak för jämförelsefältet = det Fondläget i verktyget visar läsbart. Fondläget
+// har inget hårt tak, men FUND_COLORS (src/lib/utils.js) har bara fem färger som
+// skiljer sig tydligt från varandra och från semantiska färger; från sjätte
+// linjen (grå ≈ label, mint ≈ positiv, blush ≈ rosa) går linjerna i varandra.
+const MAX_COMPARE = 5;
+
+// Sortering — delas av servern (startordning) och skriptet. dir -1 = fallande.
+// Saknat värde hamnar alltid sist oavsett riktning; lika värden sorteras A–Ö.
+function compareFundRows(a, b, key, dir) {
+  if (key === "n") return dir * a.n.localeCompare(b.n, "sv");
+  const av = a[key], bv = b[key];
+  if (av === null && bv === null) return a.n.localeCompare(b.n, "sv");
+  if (av === null) return 1;
+  if (bv === null) return -1;
+  return dir * (av - bv) || a.n.localeCompare(b.n, "sv");
+}
+
+// En rad i listan — delas av servern och skriptet. Beror bara på escapeHtml,
+// fmtSignedPct och fmtFeePct, som skickas med till skriptet.
+function fundListRow(f, selected, full) {
+  const plus = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 2.5v9M2.5 7h9"/></svg>';
+  const check = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7.2 2.6 2.6L11 4.4"/></svg>';
+  const tone = v => v === null ? "na" : v >= 0 ? "pos" : "neg";
+  const name = escapeHtml(f.n);
+  const url = "/fond/" + f.s;
+  const badge = long => `<span class="badge ${f.src}">${f.src === "fi" ? "FI" : long ? "Manuell" : "Man."}</span>`;
+  const label = selected ? `Ta bort ${name} från jämförelsen` : `Lägg till ${name} i jämförelsen`;
+  const blocked = full && !selected;
+  return `<div class="lr${selected ? " sel" : ""}" role="row">
+      <span class="fname" role="cell"><a class="rowlink" href="${url}"><b>${name}</b></a><small><span class="isin">${f.i}</span> · ${escapeHtml(f.c)}</small><small class="mcol">Avgift ${fmtFeePct(f.fee)} ${badge(true)}</small></span>
+      <span class="num" role="cell"><small class="mcol">1 år</small><span class="val ${tone(f.r1)}">${fmtSignedPct(f.r1)}</span></span>
+      <span class="num" role="cell"><small class="mcol">3 år</small><span class="val ${tone(f.r3)}">${fmtSignedPct(f.r3)}</span></span>
+      <span class="num col-fee" role="cell"><span class="fee">${fmtFeePct(f.fee)} ${badge(false)}</span></span>
+      <span class="addcell" role="cell"><button type="button" class="add" data-add="${f.id}" aria-pressed="${selected}" aria-label="${label}"${blocked ? ' aria-disabled="true" title="Jämförelsen är full"' : ""}>${selected ? check : plus}</button></span>
+    </div>`;
+}
+
+const FUND_LIST_CSS = `
+  :root {
+    --bg-base: #0a0f1c; --bg-elevated: #141a2b;
+    --surface-row: rgba(255,255,255,0.03); --surface-hover: rgba(255,255,255,0.06); --surface-tab: rgba(255,255,255,0.07); --surface-active: rgba(255,255,255,0.13);
+    --surface-input: #080d19;
+    --border-edge: rgba(255,255,255,0.34); --border-inner: rgba(255,255,255,0.26); --border-soft: rgba(255,255,255,0.20); --border-hairline: rgba(255,255,255,0.12);
+    --text-primary: #f0ede8; --text-secondary: #cbd5e6; --text-label: #a9b6cc;
+    --accent-a: #0018f5; --accent-light: #7891ff;
+    --tint-sel: rgba(0,24,245,0.16); --tint-sel-hover: rgba(0,24,245,0.26); --tint-row: rgba(0,24,245,0.08);
+    --positive: #56ec8d; --negative: #f87171;
+    --fi: #3a9aa8; --fallback: #94a3b8;
+    --tint-fi: rgba(58,154,168,0.12); --tint-fallback: rgba(148,163,184,0.12);
+    --font-display: 'Syne', 'Trebuchet MS', sans-serif; --font-body: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+    --ease-out: cubic-bezier(.2,.7,.2,1);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg-base); color: var(--text-primary); font-family: var(--font-body); font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; border-radius: 4px; }
+
+  .fl { max-width: 1120px; margin: 0 auto; padding: 0 40px 112px; }
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 20px; }
+  .logo { font-family: var(--font-display); font-weight: 800; font-size: 19px; letter-spacing: -0.02em; text-decoration: none; }
+  .logo b { color: var(--accent-light); font-weight: 800; }
+  .nav-links { display: flex; gap: 28px; font-family: var(--font-display); font-size: 13px; font-weight: 600; }
+  .nav-links a { text-decoration: none; color: var(--text-secondary); }
+  .nav-links a:hover, .nav-links a[aria-current] { color: var(--text-primary); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-display); font-weight: 600; font-size: 13px; text-decoration: none; border-radius: 8px; padding: 9px 16px; white-space: nowrap; cursor: pointer; transition: background .15s; }
+  .btn-accent { color: var(--text-primary); background: var(--tint-sel); border: 1px solid var(--accent-a); }
+  .btn-accent:hover { background: var(--tint-sel-hover); }
+
+  .page-head { display: flex; flex-direction: column; gap: 8px; padding-block: 32px 24px; }
+  .page-head h1 { font-family: var(--font-display); font-weight: 800; font-size: 36px; line-height: 1.08; letter-spacing: -0.025em; margin: 0; }
+  .stamp { margin: 0; font-size: 13px; color: var(--text-label); font-variant-numeric: tabular-nums; }
+  .stamp b { color: var(--text-secondary); font-weight: 500; }
+
+  .controls { display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px; }
+  .row-1 { display: flex; gap: 12px; align-items: center; }
+  .search { position: relative; flex: 1 1 320px; min-width: 0; }
+  .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-label); pointer-events: none; }
+  .search input { width: 100%; font-family: var(--font-display); font-size: 13px; color: var(--text-primary); background: var(--surface-input); border: 1px solid var(--border-inner); border-radius: 9px; padding: 10px 12px 10px 36px; outline: none; transition: border-color .15s; }
+  .search input::placeholder { color: var(--text-label); }
+  .search input:focus { border-color: var(--accent-light); }
+  .filter-btn { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--text-secondary); background: var(--surface-row); border: 1px solid var(--border-inner); border-radius: 9px; padding: 10px 16px; transition: background .15s, border-color .15s, color .15s; }
+  .filter-btn svg { width: 16px; height: 16px; }
+  .filter-btn:hover { color: var(--text-primary); border-color: var(--border-edge); background: var(--surface-tab); }
+  .cats { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--text-secondary); background: var(--surface-row); border: 1px solid var(--border-soft); border-radius: 20px; padding: 5px 12px; white-space: nowrap; transition: background .15s, border-color .15s, color .15s; }
+  .chip span { color: var(--text-label); font-variant-numeric: tabular-nums; }
+  .chip:hover { border-color: var(--border-edge); color: var(--text-primary); }
+  .chip[aria-pressed="true"] { background: var(--tint-sel); border-color: var(--accent-a); color: var(--text-primary); }
+  .chip[aria-pressed="true"]:hover { background: var(--tint-sel-hover); }
+  .chip[aria-pressed="true"] span { color: var(--text-secondary); }
+  .result { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--text-label); font-variant-numeric: tabular-nums; min-height: 28px; }
+  .result b { color: var(--text-primary); font-weight: 500; }
+  .linkbtn { border: 0; background: none; padding: 0; cursor: pointer; font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--accent-light); }
+  .linkbtn:hover { text-decoration: underline; }
+  .seg { display: none; align-items: center; gap: 2px; background: var(--surface-tab); border-radius: 8px; padding: 3px; }
+  .seg-label { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label); padding: 0 8px 0 6px; }
+  .seg button { border: 0; background: transparent; cursor: pointer; font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--text-label); padding: 5px 10px; border-radius: 6px; white-space: nowrap; transition: background .15s, color .15s; }
+  .seg button:hover { color: var(--text-primary); }
+  .seg button[aria-pressed="true"] { background: var(--surface-active); color: var(--text-primary); }
+
+  .list { border: 1px solid var(--border-soft); border-radius: 14px; overflow: clip; }
+  .lh, .lr { display: grid; grid-template-columns: minmax(0,1fr) 96px 96px 104px 40px; align-items: center; column-gap: 8px; padding-inline: 16px; }
+  .lh { position: sticky; top: 0; z-index: 2; background: #0f1424; border-bottom: 1px solid var(--border-soft); padding-block: 10px; }
+  .lh button { border: 0; background: none; padding: 0; cursor: pointer; font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label); display: inline-flex; align-items: center; gap: 4px; }
+  .lh button:hover, .lh [aria-sort="ascending"] button, .lh [aria-sort="descending"] button { color: var(--text-primary); }
+  .lh .dir { width: 10px; display: inline-block; text-align: center; opacity: 0; }
+  .lh [aria-sort="ascending"] .dir, .lh [aria-sort="descending"] .dir { opacity: 1; }
+  .lh .num, .lr .num { justify-self: end; text-align: right; }
+  .lr { position: relative; padding-block: 11px; border-bottom: 1px solid var(--border-hairline); transition: background .12s; }
+  .lr:last-child { border-bottom: 0; }
+  .lr:hover { background: var(--surface-hover); }
+  .lr.sel { background: var(--tint-row); }
+  .fname { display: flex; flex-direction: column; min-width: 0; }
+  .fname b { font-family: var(--font-display); font-size: 14px; font-weight: 600; line-height: 1.35; display: block; }
+  .fname small { font-size: 12px; color: var(--text-label); }
+  .fname small.mcol { white-space: nowrap; }
+  .isin { font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+  .rowlink { text-decoration: none; }
+  .rowlink::after { content: ""; position: absolute; inset: 0; }
+  .rowlink:focus-visible { outline: none; }
+  .rowlink:focus-visible::after { outline: 2px solid var(--accent-light); outline-offset: -2px; }
+  .val { font-family: var(--font-display); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .val.pos { color: var(--positive); } .val.neg { color: var(--negative); } .val.na { color: var(--text-label); font-weight: 600; }
+  .fee { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .badge { font-family: var(--font-display); font-size: 9px; font-weight: 600; text-transform: uppercase; border-radius: 4px; padding: 1px 5px; }
+  .badge.fi { color: var(--fi); background: var(--tint-fi); }
+  .badge.man { color: var(--fallback); background: var(--tint-fallback); }
+  .addcell { justify-self: end; position: relative; z-index: 1; }
+  .add { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-secondary); cursor: pointer; display: grid; place-items: center; transition: background .15s, border-color .15s, color .15s; }
+  .add svg { width: 14px; height: 14px; }
+  .add:hover { border-color: var(--border-edge); color: var(--text-primary); background: var(--surface-tab); }
+  .add[aria-pressed="true"] { background: transparent; border-color: var(--accent-a); color: var(--text-primary); }
+  .add[aria-pressed="true"]:hover { background: var(--tint-sel); }
+  .add[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; }
+  .add[aria-disabled="true"]:hover { border-color: var(--border-soft); color: var(--text-secondary); background: transparent; }
+  .mcol { display: none; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .empty { padding: 48px 16px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; color: var(--text-secondary); }
+  .empty b { font-family: var(--font-display); font-size: 15px; color: var(--text-primary); }
+
+  .tray { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 5; width: min(760px, calc(100% - 32px)); display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 12px;
+    background: rgba(20,26,43,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border-edge); box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    transform: translate(-50%, 0); opacity: 1; transition: transform .35s var(--ease-out), opacity .35s var(--ease-out), visibility .35s; }
+  .tray[hidden] { display: flex !important; transform: translate(-50%, 24px); opacity: 0; visibility: hidden; pointer-events: none; }
+  .tray-list { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  .tray-item { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 12px; font-weight: 600; background: var(--surface-tab); border-radius: 6px; padding: 4px 6px 4px 10px; white-space: nowrap; }
+  .tray-item button { border: 0; background: none; cursor: pointer; color: var(--text-label); padding: 0 2px; line-height: 1; font-size: 14px; }
+  .tray-item button:hover { color: var(--text-primary); }
+  .tray-count { font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--text-label); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  .disclaimer { font-size: 12px; color: var(--text-label); border-top: 1px solid var(--border-hairline); padding-top: 14px; margin: 32px 0 0; max-width: 66ch; }
+  .disclaimer a { color: var(--text-secondary); }
+
+  @media (max-width: 767px) {
+    .fl { padding-inline: 16px; padding-bottom: 96px; }
+    .nav { padding-block: 14px; }
+    .nav-links { display: none; }
+    .btn-nav { padding: 7px 12px; font-size: 12px; }
+    .page-head { padding-block: 16px; }
+    .page-head h1 { font-size: 28px; }
+    .filter-btn { padding-inline: 12px; }
+    .cats { flex-wrap: nowrap; overflow-x: auto; margin-inline: -16px; padding-inline: 16px; scrollbar-width: none; }
+    .cats::-webkit-scrollbar { display: none; }
+    .seg { display: inline-flex; }
+    .result { flex-wrap: wrap; }
+    .list { border-inline: 0; border-radius: 0; margin-inline: -16px; }
+    .lh { display: none; }
+    .lr { grid-template-columns: minmax(0,1fr) 60px 72px 34px; column-gap: 6px; padding-block: 12px; }
+    .lr .num.col-fee { display: none; }
+    .mcol { display: inline; }
+    .fname small.mcol { display: block; }
+    .fname b { font-size: 13px; }
+    .val { font-size: 13px; }
+    .lr .num { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.3; }
+    .lr .num small { font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label); }
+    .tray { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); padding: 8px 8px 8px 12px; }
+    .tray-list { display: none; }
+    .tray-count { flex: 1; color: var(--text-secondary); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+`;
 
 function renderFundsIndexPage(funds, fiMeta, asOf) {
-  const sorted = [...funds].sort((a, b) => a.name.localeCompare(b.name, "sv"));
+  const total = funds.length;
+  const data = funds.map(f => ({
+    id: f.id, n: f.name, s: f.slug, i: f.isin, c: f.category,
+    fee: f.fee, src: f.feeSource === "fi" ? "fi" : "man",
+    r1: f.oneYear ? f.oneYear.return : null,
+    r3: f.threeYear ? f.threeYear.return : null,
+  }));
+  const initialRows = [...data].sort((a, b) => compareFundRows(a, b, "r3", -1));
 
-  const rows = sorted.map(f => `
-    <tr>
-      <td><a class="fundname" href="/fond/${f.slug}">${escapeHtml(f.name)}</a></td>
-      <td><a href="/fonder/${f.categoryMeta.slug}" class="inline-link" style="font-size:12px">${escapeHtml(f.category)}</a></td>
-      <td class="num" data-sort="${f.oneYear.return}">${fmtSignedPct(f.oneYear.return)}</td>
-      <td class="num cagr" data-sort="${f.threeYear ? f.threeYear.return : -999}">${f.threeYear ? fmtSignedPct(f.threeYear.return) : "–"}</td>
-      <td class="num fee" data-sort="${f.fee}">${fmtFeePct(f.fee)}</td>
-      <td>${f.feeSource === "fi" ? '<span class="badge fi">FI</span>' : '<span class="badge man">Manuell</span>'}</td>
-    </tr>`).join("");
+  const counts = new Map();
+  for (const f of funds) counts.set(f.category, (counts.get(f.category) ?? 0) + 1);
+  const chips = Object.entries(CATEGORY_META)
+    .filter(([category]) => counts.has(category))
+    .map(([category, meta]) => `<button type="button" class="chip" data-cat="${escapeHtml(category)}" aria-pressed="false">${escapeHtml(meta.chip ?? meta.label)} <span>${counts.get(category)}</span></button>`)
+    .join("");
+
+  const filterButton = SHOW_FUND_FILTER
+    ? `<button type="button" class="filter-btn" data-filter aria-haspopup="dialog"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2.5 4.5h11M4.5 8h7M6.5 11.5h3"/></svg>Filter</button>`
+    : "";
+
+  const sortHeader = (key, label, num) => {
+    const sorted = key === "r3";
+    return `<span${num ? ' class="num"' : ""} role="columnheader"${sorted ? ' aria-sort="descending"' : ""}><button type="button" data-k="${key}">${label} <span class="dir" aria-hidden="true">↓</span></button></span>`;
+  };
+
+  // JSON i <script>: "<" escapas så att ett fondnamn aldrig kan stänga taggen.
+  const json = JSON.stringify(data).replace(/</g, "\\u003c");
+
+  const script = `
+<script>
+(() => {
+  const FUNDS = ${json};
+  const MAX = ${MAX_COMPARE};
+  ${escapeHtml}
+  ${fmtSignedPct}
+  ${fmtFeePct}
+  ${equalWeights}
+  ${compareFundRows}
+  ${fundListRow}
+  const byId = new Map(FUNDS.map(f => [f.id, f]));
+  const norm = s => s.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
+  const st = { q: "", cats: new Set(), key: "r3", dir: -1, sel: [] };
+  const root = document.querySelector(".fl");
+  const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
+
+  function render(refocus) {
+    const q = norm(st.q.trim());
+    const rows = FUNDS
+      .filter(f => (!q || norm(f.n).includes(q) || f.i.toLowerCase().includes(q)) && (!st.cats.size || st.cats.has(f.c)))
+      .sort((a, b) => compareFundRows(a, b, st.key, st.dir));
+    const full = st.sel.length >= MAX;
+    $("[data-count]").innerHTML = st.q || st.cats.size
+      ? \`Visar <b>\${rows.length}</b> av \${FUNDS.length} fonder · <button type="button" class="linkbtn" data-clear>Rensa filter</button>\`
+      : \`Visar alla <b>\${FUNDS.length}</b> fonder\`;
+    $("[data-rows]").innerHTML = rows.length
+      ? rows.map(f => fundListRow(f, st.sel.includes(f.id), full)).join("")
+      : '<div class="empty"><b>Inga fonder matchar</b><span>Prova ett annat sökord eller ta bort ett filter.</span><button type="button" class="linkbtn" data-clear>Rensa filter</button></div>';
+    $$("[data-cat]").forEach(c => c.setAttribute("aria-pressed", c.dataset.cat ? st.cats.has(c.dataset.cat) : !st.cats.size));
+    $$(".lh [role=columnheader]").forEach(h => {
+      const b = h.querySelector("button");
+      if (!b) return;
+      const on = b.dataset.k === st.key;
+      if (on) h.setAttribute("aria-sort", st.dir === 1 ? "ascending" : "descending"); else h.removeAttribute("aria-sort");
+      b.querySelector(".dir").textContent = on && st.dir === 1 ? "↑" : "↓";
+    });
+    $$("[data-msort] button").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === st.key));
+    $("[data-tray]").hidden = !st.sel.length;
+    $("[data-tray-list]").innerHTML = st.sel.map(id => {
+      const name = escapeHtml(byId.get(id).n);
+      return \`<span class="tray-item">\${name}<button type="button" data-rm="\${id}" aria-label="Ta bort \${name} från jämförelsen">×</button></span>\`;
+    }).join("");
+    $("[data-tray-count]").textContent = \`\${st.sel.length} av \${MAX} valda\`;
+    const weights = equalWeights(st.sel.length);
+    $("[data-compare]").href = "/?a=" + st.sel.map((id, i) => id + ":" + weights[i]).join(",") + "&mode=fund";
+    if (refocus) { const el = $(refocus); if (el) el.focus(); }
+  }
+
+  $("[data-q]").addEventListener("input", e => { st.q = e.target.value; render(); });
+  root.addEventListener("click", e => {
+    const t = e.target.closest("button"); if (!t || !root.contains(t)) return;
+    let refocus = null;
+    if (t.hasAttribute("data-cat")) {
+      const c = t.dataset.cat;
+      if (!c) st.cats.clear(); else if (st.cats.has(c)) st.cats.delete(c); else st.cats.add(c);
+    } else if (t.dataset.k) {
+      if (st.key === t.dataset.k && t.closest(".lh")) st.dir *= -1;
+      else { st.key = t.dataset.k; st.dir = st.key === "fee" || st.key === "n" ? 1 : -1; }
+    } else if (t.dataset.add) {
+      const id = Number(t.dataset.add), i = st.sel.indexOf(id);
+      if (i >= 0) st.sel.splice(i, 1); else if (st.sel.length < MAX) st.sel.push(id); else return;
+      refocus = \`[data-add="\${id}"]\`;
+    } else if (t.dataset.rm) {
+      st.sel = st.sel.filter(id => id !== Number(t.dataset.rm));
+      refocus = st.sel.length ? "[data-tray-list] button" : "[data-q]";
+    } else if (t.hasAttribute("data-clear")) {
+      st.q = ""; st.cats.clear(); $("[data-q]").value = ""; refocus = "[data-q]";
+    } else return; // t.ex. Filter — innehållet byggs i ett senare steg
+    render(refocus);
+  });
+})();
+</script>`;
 
   const body = `
-  <p class="crumbs"><a href="/">MinPortfölj</a> › <span>Fonder</span></p>
+  <nav class="nav" aria-label="Huvudmeny">
+    <a class="logo" href="/">minportfölj<b>.se</b></a>
+    <div class="nav-links"><a href="/">Jämför</a><a href="/fonder/" aria-current="page">Fonder</a><a href="/om">Om sajten</a></div>
+    <a class="btn btn-accent btn-nav" href="/">Börja jämföra</a>
+  </nav>
 
-  <h1>Alla fonder</h1>
+  <main>
+    <header class="page-head">
+      <h1>Alla fonder</h1>
+      <p class="stamp"><b>${total} fonder</b> · Avkastning per <b>${asOf}</b> · Avgifter från Finansinspektionen, <b>${fiMeta.period}</b></p>
+    </header>
 
-  <p class="stamp">
-    <em>${funds.length} fonder</em> · Avgifter per <em>${fiMeta.published}</em> (FI ${fiMeta.period}) · Avkastning per <em>${asOf}</em>
-  </p>
+    <div class="controls">
+      <div class="row-1">
+        <label class="search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.75"/><path d="M10.5 10.5 14 14"/></svg><input type="search" data-q placeholder="Sök fond eller ISIN" aria-label="Sök fond eller ISIN" autocomplete="off"></label>
+        ${filterButton}
+      </div>
+      <div class="cats" role="group" aria-label="Kategorier"><button type="button" class="chip" data-cat="" aria-pressed="true">Alla <span>${total}</span></button>${chips}</div>
+      <div class="result">
+        <span data-count aria-live="polite">Visar alla <b>${total}</b> fonder</span>
+        <div class="seg" role="group" aria-label="Sortera" data-msort>
+          <span class="seg-label">Sortera</span>
+          <button type="button" data-k="r1" aria-pressed="false">1 år</button>
+          <button type="button" data-k="r3" aria-pressed="true">3 år</button>
+          <button type="button" data-k="fee" aria-pressed="false">Avgift</button>
+        </div>
+      </div>
+    </div>
 
-  <div class="prose">
-    <p>
-      Samtliga fonder i registret, sorterbara på avkastning och avgift. Klicka på en fond för
-      detaljer, eller på kategorin för att jämföra den mot resten av sin kategori.
+    <div class="list" role="table" aria-label="Fonder">
+      <div class="lh" role="row">
+        ${sortHeader("n", "Fond", false)}
+        ${sortHeader("r1", "1 år", true)}
+        ${sortHeader("r3", "3 år", true)}
+        ${sortHeader("fee", "Avgift", true)}
+        <span role="columnheader"><span class="sr">Jämförelse</span></span>
+      </div>
+      <div data-rows role="rowgroup">${initialRows.map(f => fundListRow(f, false, false)).join("")}</div>
+    </div>
+
+    <p class="disclaimer">
+      Avkastningen är efter avgift. Historisk avkastning är ingen garanti för framtida avkastning.
+      Ingenting på den här sidan utgör finansiell rådgivning. <a href="/om">Om datakällorna</a>
     </p>
-  </div>
+  </main>
 
-  <div class="tablewrap">
-    <table id="fund-table">
-      <thead>
-        <tr>
-          <th>Fond</th>
-          <th>Kategori</th>
-          <th class="num sortable" data-col="2">1 år</th>
-          <th class="num sortable" data-col="3">3 år</th>
-          <th class="num sortable" data-col="4">Avgift</th>
-          <th>Källa</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
+  <div class="tray" data-tray hidden>
+    <div class="tray-list" data-tray-list></div>
+    <span class="tray-count" data-tray-count></span>
+    <a class="btn btn-accent" data-compare href="/">Jämför i verktyget →</a>
   </div>
-
-  <p class="disclaimer">
-    Historisk avkastning är ingen garanti för framtida avkastning. Ingenting på den här sidan
-    utgör finansiell rådgivning. <a href="/om" style="color:var(--text-secondary)">Om datakällorna</a>
-  </p>
-  ${SORT_SCRIPT}`;
+  ${script}`;
 
   const canonical = `${BASE_URL}/fonder/`;
   const title = "Alla fonder – jämför avgifter och avkastning | MinPortfölj";
-  const description = `Bläddra bland alla ${funds.length} fonder i registret. Jämför avkastning efter avgift och årlig avgift, uppdaterat ${asOf}.`;
+  const description = `Bläddra bland alla ${total} fonder i registret. Jämför avkastning efter avgift och årlig avgift, uppdaterat ${asOf}.`;
 
-  return { html: pageShell({ title, description, canonical, jsonLd: [], bodyHtml: body }), title, description, canonical };
+  return { html: pageShell({ title, description, canonical, jsonLd: [], bodyHtml: body, css: FUND_LIST_CSS, wrapClass: "fl" }), title, description, canonical };
 }
 
 // ─── sitemap.xml — genererad ur de faktiskt skrivna sidorna ────────────────────

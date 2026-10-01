@@ -1,0 +1,376 @@
+<title>Fondlista minportfölj.se</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap">
+<style>
+  /* Layout: dokumentram → desktopram (1180 × 780, scrollar internt) → mobilram (375 × 740) med noteringar.
+     Samma markup och logik i båda; @container bryter vid 768px som useBreakpoint(). Riktig data ur registret. */
+  :root {
+    /* ur src/lib/tokens.js — medvetet enbart mörkt tema, som produkten */
+    --bg-base: #0a0f1c;
+    --bg-elevated: #141a2b;
+    --surface-panel: rgba(255,255,255,0.04);
+    --surface-row: rgba(255,255,255,0.03);
+    --surface-hover: rgba(255,255,255,0.06);
+    --surface-tab: rgba(255,255,255,0.07);
+    --surface-active: rgba(255,255,255,0.13);
+    --surface-input: #080d19;
+    --border-edge: rgba(255,255,255,0.34);
+    --border-inner: rgba(255,255,255,0.26);
+    --border-soft: rgba(255,255,255,0.20);
+    --border-hairline: rgba(255,255,255,0.12);
+    --text-primary: #f0ede8;
+    --text-secondary: #cbd5e6;
+    --text-label: #a9b6cc;
+    --accent-a: #0018f5;
+    --accent-a-hover: #1a30ff;
+    --accent-a-light: #7891ff;
+    --tint-a: rgba(0,24,245,0.18);
+    --positive: #56ec8d;
+    --negative: #f87171;
+    --fi: #3a9aa8;
+    --tint-fi: rgba(58,154,168,0.12);
+    --fallback: #94a3b8;
+    --tint-fallback: rgba(148,163,184,0.12);
+    --note: #fbbf24;
+    --tint-note: rgba(251,191,36,0.08);
+    --font-display: 'Syne', 'Trebuchet MS', sans-serif;
+    --font-body: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+    --ease-out: cubic-bezier(.2,.7,.2,1);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg-base); color: var(--text-primary); font-family: var(--font-body); font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent-a-light); outline-offset: 2px; border-radius: 4px; }
+  code { font-size: 12px; background: var(--surface-tab); padding: 1px 5px; border-radius: 4px; }
+
+  /* ── Dokumentram ── */
+  .doc { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; display: flex; flex-direction: column; gap: 40px; }
+  .doc-head { display: flex; flex-direction: column; gap: 12px; max-width: 72ch; }
+  .eyebrow { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent-a-light); margin: 0; }
+  .doc-title { font-family: var(--font-display); font-size: 28px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0; }
+  .doc-lede { margin: 0; color: var(--text-secondary); }
+  .frame-label { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .frame-label h2 { font-family: var(--font-display); font-size: 17px; font-weight: 700; margin: 0; }
+  .scroller { overflow-x: auto; border-radius: 14px; }
+  .browser { width: 1180px; border: 1px solid var(--border-edge); border-radius: 14px; overflow: hidden; background: var(--bg-base); }
+  .browser-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--border-hairline); background: var(--bg-elevated); }
+  .browser-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--border-soft); }
+  .browser-bar span { margin-left: 12px; font-size: 12px; color: var(--text-label); background: var(--surface-panel); padding: 3px 12px; border-radius: 6px; }
+  .viewport { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent; position: relative; }
+  .browser .viewport { height: 780px; }
+  .phone-wrap { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+  .phone { width: 375px; max-width: 100%; border: 1px solid var(--border-edge); border-radius: 28px; overflow: hidden; background: var(--bg-base); flex-shrink: 0; }
+  .phone .viewport { height: 740px; }
+  .phone-notch { height: 28px; display: flex; justify-content: center; align-items: center; }
+  .phone-notch i { width: 90px; height: 6px; border-radius: 3px; background: var(--border-soft); }
+  .notes { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+  .note { background: var(--surface-panel); border: 1px solid var(--border-soft); border-radius: 9px; padding: 14px 16px; }
+  .note h3 { font-family: var(--font-display); font-size: 13px; font-weight: 700; margin: 0 0 6px; }
+  .note p, .note li { margin: 0; color: var(--text-secondary); font-size: 13px; }
+  .note ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+  .note.decide { background: var(--tint-note); border-color: rgba(251,191,36,0.45); }
+  .note.decide h3 { color: var(--note); }
+
+  /* ── Fondlistan ── */
+  .fl { container-type: inline-size; }
+  .fl-inner { max-width: 1120px; margin: 0 auto; padding-inline: 40px; }
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 20px; }
+  .logo { font-family: var(--font-display); font-weight: 800; font-size: 19px; letter-spacing: -0.02em; text-decoration: none; }
+  .logo b { color: var(--accent-a-light); font-weight: 800; }
+  .nav-links { display: flex; gap: 28px; font-family: var(--font-display); font-size: 13px; font-weight: 600; }
+  .nav-links a { text-decoration: none; color: var(--text-secondary); }
+  .nav-links a[aria-current] { color: var(--text-primary); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-display); font-weight: 600; font-size: 13px; text-decoration: none; border-radius: 8px; padding: 9px 16px; white-space: nowrap; cursor: pointer; transition: background .15s, border-color .15s; }
+  .btn-accent { color: var(--text-primary); background: transparent; border: 1px solid var(--accent-a); }
+  .btn-accent:hover { background: rgba(0,24,245,0.16); }
+
+  .page-head { display: flex; flex-direction: column; gap: 8px; padding-block: 32px 24px; }
+  .page-head h1 { font-family: var(--font-display); font-weight: 800; font-size: 36px; line-height: 1.08; letter-spacing: -0.025em; margin: 0; }
+  .stamp { margin: 0; font-size: 13px; color: var(--text-label); font-variant-numeric: tabular-nums; }
+  .stamp b { color: var(--text-secondary); font-weight: 500; }
+
+  /* filterpanel */
+  .controls { display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px; }
+  .row-1 { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .search { position: relative; flex: 1 1 320px; min-width: 0; }
+  .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-label); pointer-events: none; }
+  .search input { width: 100%; font: inherit; font-family: var(--font-display); font-size: 13px; color: var(--text-primary); background: var(--surface-input); border: 1px solid var(--border-inner); border-radius: 9px; padding: 10px 12px 10px 36px; outline: none; transition: border-color .15s; }
+  .search input::placeholder { color: var(--text-label); }
+  .search input:focus { border-color: var(--accent-a-light); }
+  .seg { display: inline-flex; align-items: center; gap: 2px; background: var(--surface-tab); border-radius: 8px; padding: 3px; }
+  .seg-label { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label); padding: 0 8px 0 6px; }
+  .seg button { border: 0; background: transparent; cursor: pointer; font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--text-label); padding: 5px 10px; border-radius: 6px; white-space: nowrap; transition: background .15s, color .15s; }
+  .seg button:hover { color: var(--text-primary); }
+  .seg button[aria-pressed="true"] { background: var(--surface-active); color: var(--text-primary); }
+  .filter-btn { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--text-secondary); background: var(--surface-row); border: 1px solid var(--border-inner); border-radius: 9px; padding: 10px 16px; transition: background .15s, border-color .15s, color .15s; }
+  .filter-btn svg { width: 16px; height: 16px; }
+  .filter-btn:hover { color: var(--text-primary); border-color: var(--border-edge); background: var(--surface-tab); }
+  .isin { font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+  .cats { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--text-secondary); background: var(--surface-row); border: 1px solid var(--border-soft); border-radius: 20px; padding: 5px 12px; white-space: nowrap; transition: background .15s, border-color .15s, color .15s; }
+  .chip span { color: var(--text-label); font-variant-numeric: tabular-nums; }
+  .chip:hover { border-color: var(--border-edge); color: var(--text-primary); }
+  .chip[aria-pressed="true"] { background: transparent; border-color: var(--accent-a); color: var(--text-primary); }
+  .chip[aria-pressed="true"]:hover { background: rgba(0,24,245,0.16); border-color: var(--accent-a); }
+  .chip[aria-pressed="true"] span { color: var(--text-secondary); }
+  .result { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--text-label); font-variant-numeric: tabular-nums; min-height: 28px; }
+  .result b { color: var(--text-primary); font-weight: 500; }
+  .linkbtn { border: 0; background: none; padding: 0; cursor: pointer; font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--accent-a-light); }
+  .linkbtn:hover { text-decoration: underline; }
+  .mobile-sort { display: none; }
+
+  /* listan */
+  .list { border: 1px solid var(--border-soft); border-radius: 14px; overflow: clip; margin-bottom: 120px; }
+  .lh, .lr { display: grid; grid-template-columns: minmax(0,1fr) 96px 96px 104px 40px; align-items: center; column-gap: 8px; padding-inline: 16px; }
+  .lh { position: sticky; top: 0; z-index: 2; background: #0f1424; border-bottom: 1px solid var(--border-soft); padding-block: 10px; }
+  .lh button { border: 0; background: none; padding: 0; cursor: pointer; font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label); display: inline-flex; align-items: center; gap: 4px; }
+  .lh button:hover { color: var(--text-primary); }
+  .lh button[data-on] { color: var(--text-primary); }
+  .lh button .dir { width: 10px; display: inline-block; text-align: center; opacity: 0; }
+  .lh button[data-on] .dir { opacity: 1; }
+  .lh .num, .lr .num { justify-self: end; text-align: right; }
+  .lr { position: relative; padding-block: 11px; border-bottom: 1px solid var(--border-hairline); text-decoration: none; transition: background .12s; }
+  .lr:last-child { border-bottom: 0; }
+  .lr:hover { background: var(--surface-hover); }
+  .lr.sel { background: rgba(0,24,245,0.08); }
+  .fname { display: flex; flex-direction: column; min-width: 0; }
+  .rowlink { text-decoration: none; }
+  .rowlink::after { content: ""; position: absolute; inset: 0; }
+  .add { position: relative; z-index: 1; }
+  .fname b { font-family: var(--font-display); font-size: 14px; font-weight: 600; line-height: 1.35; display: block; }
+  .fname small { font-size: 12px; color: var(--text-label); }
+  .val { font-family: var(--font-display); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .val.pos { color: var(--positive); } .val.neg { color: var(--negative); } .val.na { color: var(--text-label); font-weight: 600; }
+  .fee { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .badge { font-family: var(--font-display); font-size: 9px; font-weight: 600; text-transform: uppercase; border-radius: 4px; padding: 1px 5px; }
+  .badge.fi { color: var(--fi); background: var(--tint-fi); }
+  .badge.man { color: var(--fallback); background: var(--tint-fallback); }
+  .add { justify-self: end; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-secondary); cursor: pointer; display: grid; place-items: center; transition: background .15s, border-color .15s, color .15s; }
+  .add svg { width: 14px; height: 14px; }
+  .add:hover { border-color: var(--border-edge); color: var(--text-primary); background: var(--surface-tab); }
+  .add[aria-pressed="true"] { background: transparent; border-color: var(--accent-a); color: var(--text-primary); }
+  .add[aria-pressed="true"]:hover { background: rgba(0,24,245,0.16); border-color: var(--accent-a); }
+  .mcol { display: none; }
+  .empty { padding: 48px 16px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; color: var(--text-secondary); }
+  .empty b { font-family: var(--font-display); font-size: 15px; color: var(--text-primary); }
+
+  /* jämförelsefältet */
+  .tray { position: sticky; bottom: 16px; z-index: 5; margin: -104px auto 16px; max-width: 760px; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 12px;
+    background: rgba(20,26,43,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border-edge); box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    transform: translateY(0); opacity: 1; transition: transform .35s var(--ease-out), opacity .35s var(--ease-out); }
+  .tray[hidden] { display: flex !important; transform: translateY(24px); opacity: 0; pointer-events: none; }
+  .tray-list { flex: 1; min-width: 0; display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .tray-item { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 12px; font-weight: 600; background: var(--surface-tab); border-radius: 6px; padding: 4px 6px 4px 10px; white-space: nowrap; }
+  .tray-item button { border: 0; background: none; cursor: pointer; color: var(--text-label); padding: 0 2px; line-height: 1; font-size: 14px; }
+  .tray-item button:hover { color: var(--text-primary); }
+  .tray-count { font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--text-label); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  @container (max-width: 767px) {
+    .fl-inner { padding-inline: 16px; }
+    .nav { padding-block: 14px; }
+    .nav-links { display: none; }
+    .btn-nav { padding: 7px 12px; font-size: 12px; }
+    .page-head { padding-block: 16px 16px; }
+    .page-head h1 { font-size: 28px; }
+    .row-1 { flex-wrap: nowrap; }
+    .search { flex: 1 1 auto; }
+    .filter-btn { padding-inline: 12px; }
+    .cats { flex-wrap: nowrap; overflow-x: auto; margin-inline: -16px; padding-inline: 16px; scrollbar-width: none; }
+    .mobile-sort { display: inline-flex; }
+    .result { flex-wrap: wrap; }
+    .list { border-inline: 0; border-radius: 0; margin-inline: -16px; }
+    .lh { display: none; }
+    .lr { grid-template-columns: minmax(0,1fr) 62px 62px 34px; column-gap: 6px; padding-block: 12px; }
+    .lr .num.col-fee { display: none; }
+    .mcol { display: inline; }
+    .fname small.mcol { display: block; }
+    .rowlink { text-decoration: none; }
+  .rowlink::after { content: ""; position: absolute; inset: 0; }
+  .add { position: relative; z-index: 1; }
+  .fname b { font-size: 13px; }
+    .val { font-size: 13px; }
+    .lr .num { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.3; }
+    .lr .num small { font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-label); }
+    .tray { margin-inline: 0; bottom: 12px; padding: 8px 8px 8px 12px; }
+    .tray-list { display: none; }
+    .tray-count { flex: 1; color: var(--text-secondary); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main class="doc">
+  <header class="doc-head">
+    <p class="eyebrow">Mockup · Fondlista · <code>/fonder/</code></p>
+    <h1 class="doc-title">Fondlistan</h1>
+    <p class="doc-lede">Alla fonder i registret med riktiga siffror ur snapshotten (avkastning per 29 sep 2026, avgifter FI 2026Q2). Sök, filtrera, sortera och lägg fonder i jämförelsen, allt fungerar i ramarna.</p>
+  </header>
+
+  <section>
+    <div class="frame-label"><h2>Desktop · 1180 × 780</h2></div>
+    <div class="scroller"><div class="browser"><div class="browser-bar"><i></i><i></i><i></i><span>minportfolj.se/fonder/</span></div><div class="viewport"><div class="fl" id="desk"></div></div></div></div>
+  </section>
+
+  <section>
+    <div class="frame-label"><h2>Mobil · 375 × 740</h2></div>
+    <div class="phone-wrap">
+      <div class="phone"><div class="phone-notch"><i></i></div><div class="viewport"><div class="fl" id="mob"></div></div></div>
+      <div class="notes">
+        <div class="note"><h3>Hur listan fungerar</h3>
+          <ul>
+            <li><b>Standard:</b> alla fonder, sorterade på 3 år, högst först. Fonder utan tre års historik hamnar sist och visar ett streck.</li>
+            <li><b>Sök</b> matchar fondnamn och ISIN och bryr sig inte om å, ä, ö eller versaler.</li>
+            <li><b>Under fondnamnet</b> står ISIN först och kategori efter.</li>
+            <li><b>Kategorier</b> går att kombinera, som i sökmodalen i verktyget. "Alla" nollställer.</li>
+            <li><b>Filter</b> är en knapp bredvid sök. Innehållet byggs i nästa steg; i mocken gör den ingenting än.</li>
+            <li><b>Sortering:</b> klicka på kolumnrubriken, klicka igen för att vända. På mobil finns 1 år, 3 år och avgift som knappar ovanför listan.</li>
+            <li><b>Raden</b> leder till fondsidan. Plusknappen lägger fonden i jämförelsefältet längst ned, som öppnar verktyget med fonderna inlagda.</li>
+          </ul>
+        </div>
+        <div class="note"><h3>Mobil</h3>
+          <p>Avgiften flyttar till en egen rad under ISIN och kategori, så att 1 år och 3 år får plats bredvid. Kategorichipsen scrollar i sidled. Jämförelsefältet visar bara antal och knapp.</p>
+        </div>
+        <div class="note decide"><h3>Att bestämma</h3>
+          <ul>
+            <li><b>Standardvyn.</b> Alla fonder sorterade på 3 år lägger temafonder överst (AuAg Silver Bullet +328,9 %). Det stämmer, men listan kan läsas som en topplista. Alternativ: utan valt filter visas fonderna grupperade per kategori, och sorteringen gäller inom varje grupp.</li>
+            <li><b>Max antal i jämförelsen.</b> Satt till 5 i mocken. Kolla vad Fondläget i verktyget klarar läsbart.</li>
+            <li><b>Länkformat till verktyget.</b> useUrlSync läser <code>a</code>, <code>b</code>, <code>span</code>, <code>mode</code> och <code>idx</code>. Code behöver bekräfta hur flera fonder i Fondläget skrivs i <code>a</code>.</li>
+            <li><b>Filter i adressen.</b> Förslag: spara sök och filter i adressen (<code>/fonder/?kat=globalfond&amp;q=avanza</code>) så att en filtrerad lista går att dela.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<template id="fl-tpl">
+  <div class="fl-inner">
+    <nav class="nav" aria-label="Huvudmeny">
+      <a class="logo" href="#">minportfölj<b>.se</b></a>
+      <div class="nav-links"><a href="#">Jämför</a><a href="#" aria-current="page">Fonder</a><a href="#">Om sajten</a></div>
+      <a class="btn btn-accent btn-nav" href="#">Börja jämföra</a>
+    </nav>
+
+    <header class="page-head">
+      <h1>Alla fonder</h1>
+      <p class="stamp" data-stamp></p>
+    </header>
+
+    <div class="controls">
+      <div class="row-1">
+        <label class="search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.75"/><path d="M10.5 10.5 14 14"/></svg><input type="search" data-q placeholder="Sök fond eller ISIN" aria-label="Sök fond eller ISIN"></label>
+        <button type="button" class="filter-btn" data-filter aria-haspopup="dialog"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2.5 4.5h11M4.5 8h7M6.5 11.5h3"/></svg>Filter</button>
+      </div>
+      <div class="cats" data-cats role="group" aria-label="Kategorier"></div>
+      <div class="result">
+        <span data-count></span>
+        <div class="seg mobile-sort" role="group" aria-label="Sortera" data-msort>
+          <span class="seg-label">Sortera</span>
+          <button type="button" data-k="r1">1 år</button>
+          <button type="button" data-k="r3" aria-pressed="true">3 år</button>
+          <button type="button" data-k="fee">Avgift</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="list" role="table" aria-label="Fonder">
+      <div class="lh" role="row">
+        <button type="button" data-k="n" role="columnheader">Fond <span class="dir"></span></button>
+        <span class="num"><button type="button" data-k="r1" role="columnheader">1 år <span class="dir"></span></button></span>
+        <span class="num"><button type="button" data-k="r3" role="columnheader">3 år <span class="dir"></span></button></span>
+        <span class="num"><button type="button" data-k="fee" role="columnheader">Avgift <span class="dir"></span></button></span>
+        <span></span>
+      </div>
+      <div data-rows></div>
+    </div>
+
+    <div class="tray" data-tray hidden>
+      <div class="tray-list" data-tray-list></div>
+      <span class="tray-count" data-tray-count></span>
+      <a class="btn btn-accent" href="#">Jämför i verktyget →</a>
+    </div>
+  </div>
+</template>
+
+<script>
+(() => {
+  const FUNDS = [{"n":"Avanza Global","s":"avanza-global","i":"SE0011527613","c":"Globalfond","fee":0.08,"src":"fi","r1":21.8,"r3":59.6},{"n":"Nordea Global Enhanced Growth","s":"nordea-global-enhanced-growth","i":"FI4000261326","c":"Globalfond","fee":0.6,"src":"man","r1":24,"r3":64.4},{"n":"Länsförsäkringar Global Index","s":"lansforsakringar-global-index","i":"SE0005188836","c":"Globalfond","fee":0.2,"src":"fi","r1":20.8,"r3":64.1},{"n":"Nordea Global Index Select","s":"nordea-global-index-select","i":"FI4000046685","c":"Globalfond","fee":0.19,"src":"man","r1":22.6,"r3":62},{"n":"Handelsbanken Global Index","s":"handelsbanken-global-index","i":"SE0011309707","c":"Globalfond","fee":0.4,"src":"fi","r1":24.4,"r3":62.7},{"n":"DNB Global Indeks S","s":"dnb-global-indeks-s","i":"NO0010827280","c":"Globalfond","fee":0.2,"src":"man","r1":22.9,"r3":63.7},{"n":"Storebrand Global All Countries","s":"storebrand-global-all-countries","i":"SE0000671919","c":"Globalfond","fee":0.3,"src":"fi","r1":25.1,"r3":64.6},{"n":"Avanza Zero","s":"avanza-zero","i":"SE0001718388","c":"Sverigefond","fee":0,"src":"fi","r1":24.9,"r3":65.3},{"n":"Nordea Swedish Sustainable Enhanced","s":"nordea-swedish-sustainable-enhanced","i":"LU2122930915","c":"Sverigefond","fee":0.61,"src":"man","r1":24.4,"r3":58.8},{"n":"AMF Aktiefond Sverige","s":"amf-aktiefond-sverige","i":"SE0000739195","c":"Sverigefond","fee":0.4,"src":"fi","r1":19.9,"r3":49.6},{"n":"Handelsbanken Sverige Index","s":"handelsbanken-sverige-index","i":"SE0001466368","c":"Sverigefond","fee":0.65,"src":"fi","r1":22.6,"r3":55.2},{"n":"Spiltan Aktiefond Investmentbolag","s":"spiltan-aktiefond-investmentbolag","i":"SE0004297927","c":"Sverigefond","fee":0.2,"src":"man","r1":26.2,"r3":63},{"n":"Länsförsäkringar Sverige Index","s":"lansforsakringar-sverige-index","i":"SE0002656611","c":"Sverigefond","fee":0.2,"src":"fi","r1":23,"r3":60.8},{"n":"Spiltan Räntefond Sverige","s":"spiltan-rantefond-sverige","i":"SE0002152140","c":"Räntefond","fee":0.1,"src":"fi","r1":2.7,"r3":14.1},{"n":"AMF Räntefond Lång","s":"amf-rantefond-lang","i":"SE0000739187","c":"Räntefond","fee":0.1,"src":"fi","r1":0.7,"r3":12.6},{"n":"Länsförsäkringar USA Index","s":"lansforsakringar-usa-index","i":"SE0002793943","c":"USA-fond","fee":0.2,"src":"fi","r1":20.8,"r3":70.6},{"n":"Handelsbanken USA Index Criteria","s":"handelsbanken-usa-index-criteria","i":"SE0004139780","c":"USA-fond","fee":0.2,"src":"fi","r1":24.2,"r3":69.3},{"n":"Avanza USA","s":"avanza-usa","i":"SE0012741163","c":"USA-fond","fee":0.17,"src":"fi","r1":22.6,"r3":59.4},{"n":"Swedbank Robur Technology A","s":"swedbank-robur-technology-a","i":"SE0000538944","c":"Temafond","fee":1.25,"src":"fi","r1":44.9,"r3":119.7},{"n":"Swedbank Robur Ny Teknik A","s":"swedbank-robur-ny-teknik-a","i":"SE0000709123","c":"Temafond","fee":1.25,"src":"fi","r1":21.1,"r3":35.1},{"n":"LF Tillväxtmarknad Index A","s":"lf-tillvaxtmarknad-index-a","i":"SE0005796331","c":"Tillväxtmarknadsfond","fee":0.4,"src":"fi","r1":20.7,"r3":52.2},{"n":"Nordnet Sverige Index","s":"nordnet-sverige-index","i":"SE0002756973","c":"Sverigefond","fee":0,"src":"fi","r1":24.1,"r3":58.5},{"n":"Nordnet Global Index","s":"nordnet-global-index","i":"IE00BMTD2G30","c":"Globalfond","fee":0.2,"src":"man","r1":22.5,"r3":62},{"n":"Nordnet USA Index","s":"nordnet-usa-index","i":"IE00BMTD2V80","c":"USA-fond","fee":0.2,"src":"man","r1":24,"r3":67.6},{"n":"Avanza Europa","s":"avanza-europa","i":"SE0013718699","c":"Europafond","fee":0.17,"src":"fi","r1":17.5,"r3":38},{"n":"Avanza Emerging Markets","s":"avanza-emerging-markets","i":"SE0012454338","c":"Tillväxtmarknadsfond","fee":0.15,"src":"fi","r1":38.5,"r3":76.5},{"n":"Swedbank Robur Access Sverige","s":"swedbank-robur-access-sverige","i":"SE0007074075","c":"Sverigefond","fee":0.2,"src":"fi","r1":22.7,"r3":56.1},{"n":"Swedbank Robur Access Global","s":"swedbank-robur-access-global","i":"SE0007074059","c":"Globalfond","fee":0.2,"src":"fi","r1":22.8,"r3":64},{"n":"Swedbank Robur Access USA","s":"swedbank-robur-access-usa","i":"SE0007074083","c":"USA-fond","fee":0.2,"src":"fi","r1":23.2,"r3":69.3},{"n":"SEB Hållbarhetsfond Sverige Index","s":"seb-hallbarhetsfond-sverige-index","i":"SE0001696857","c":"Sverigefond","fee":0.25,"src":"man","r1":15.7,"r3":39.5},{"n":"AMF Aktiefond Småbolag","s":"amf-aktiefond-smabolag","i":"SE0001185000","c":"Småbolagsfond","fee":0.4,"src":"fi","r1":5.6,"r3":28.7},{"n":"LF Småbolag Sverige","s":"lf-smabolag-sverige","i":"SE0008585459","c":"Småbolagsfond","fee":1.4,"src":"man","r1":1.9,"r3":24.2},{"n":"Swedbank Robur Småbolagsfond Sverige","s":"swedbank-robur-smabolagsfond-sverige","i":"SE0000602302","c":"Småbolagsfond","fee":1.25,"src":"fi","r1":6.1,"r3":37.7},{"n":"Nordea Småbolagsfond Norden","s":"nordea-smabolagsfond-norden","i":"FI0008813365","c":"Småbolagsfond","fee":1.6,"src":"man","r1":10.4,"r3":48.8},{"n":"Carnegie Småbolagsfond","s":"carnegie-smabolagsfond","i":"SE0004392025","c":"Småbolagsfond","fee":1.6,"src":"fi","r1":16.9,"r3":89.6},{"n":"Nordea Stratega 50","s":"nordea-stratega-50","i":"SE0001114976","c":"Blandfond","fee":1.37,"src":"fi","r1":10.8,"r3":29},{"n":"Swedbank Robur Access Mix","s":"swedbank-robur-access-mix","i":"SE0000434359","c":"Blandfond","fee":0.2,"src":"fi","r1":10.9,"r3":31.8},{"n":"SEB Blandfond Sverige","s":"seb-blandfond-sverige","i":"SE0000500407","c":"Blandfond","fee":1,"src":"fi","r1":12.3,"r3":32.6},{"n":"Handelsbanken Multi Asset 50","s":"handelsbanken-multi-asset-50","i":"SE0001192618","c":"Blandfond","fee":1.25,"src":"fi","r1":12,"r3":28.3},{"n":"AMF Balansfond","s":"amf-balansfond","i":"SE0000739179","c":"Blandfond","fee":0.4,"src":"fi","r1":14.3,"r3":36.8},{"n":"LF Bekväm Fond Balans","s":"lf-bekvam-fond-balans","i":"SE0006963518","c":"Blandfond","fee":1.3,"src":"man","r1":11.2,"r3":34.7},{"n":"Avanza Auto 3","s":"avanza-auto-3","i":"SE0009779671","c":"Blandfond","fee":0.34,"src":"man","r1":13.2,"r3":36.9},{"n":"Avanza Auto 6","s":"avanza-auto-6","i":"SE0009779705","c":"Blandfond","fee":0.34,"src":"man","r1":23.3,"r3":55.7},{"n":"AMF Aktiefond Global","s":"amf-aktiefond-global","i":"SE0000862278","c":"Globalfond","fee":0.4,"src":"fi","r1":22.8,"r3":55.7},{"n":"Swedbank Robur Globalfond A","s":"swedbank-robur-globalfond-a","i":"SE0000542979","c":"Globalfond","fee":1.25,"src":"fi","r1":22.7,"r3":57.7},{"n":"Nordea Global Dividend A","s":"nordea-global-dividend-a","i":"FI4000064076","c":"Globalfond","fee":0.8,"src":"man","r1":28,"r3":58.1},{"n":"Nordea Sverige Passiv","s":"nordea-sverige-passiv","i":"SE0002591016","c":"Sverigefond","fee":0.19,"src":"fi","r1":23.4,"r3":55.6},{"n":"SPP Aktiefond USA","s":"spp-aktiefond-usa","i":"SE0000594111","c":"USA-fond","fee":0.2,"src":"fi","r1":22.7,"r3":65},{"n":"Storebrand Europa A SEK","s":"storebrand-europa-a-sek","i":"SE0000531881","c":"Europafond","fee":0.1,"src":"fi","r1":20.3,"r3":52.3},{"n":"Handelsbanken Hållbar Energi A1","s":"handelsbanken-hallbar-energi-a1","i":"SE0005965662","c":"Temafond","fee":1.5,"src":"fi","r1":16.9,"r3":10.1},{"n":"Nordea Emerging Markets Enhanced BP","s":"nordea-emerging-markets-enhanced-bp","i":"LU1648400262","c":"Tillväxtmarknadsfond","fee":0.65,"src":"man","r1":39.8,"r3":81.2},{"n":"Nordea Stratega Ränta","s":"nordea-stratega-ranta","i":"FI4000010525","c":"Räntefond","fee":0.65,"src":"man","r1":-1.7,"r3":9.5},{"n":"Lysa Global Equity Broad C","s":"lysa-global-equity-broad-c","i":"SE0009268584","c":"Globalfond","fee":0.17,"src":"fi","r1":23.3,"r3":60.3},{"n":"Lysa Sweden Equity Broad B","s":"lysa-sweden-equity-broad-b","i":"SE0017231947","c":"Sverigefond","fee":0.17,"src":"fi","r1":21.5,"r3":57.5},{"n":"Lysa Global Small Cap Equity Broad B","s":"lysa-global-small-cap-equity-broad-b","i":"SE0023260468","c":"Småbolagsfond","fee":0.12,"src":"fi","r1":23.2,"r3":null},{"n":"Lysa Emerging Markets Equity Broad B","s":"lysa-emerging-markets-equity-broad-b","i":"SE0023260401","c":"Tillväxtmarknadsfond","fee":0.12,"src":"fi","r1":37.2,"r3":null},{"n":"Spiltan Globalfond Investmentbolag","s":"spiltan-globalfond-investmentbolag","i":"SE0008613939","c":"Globalfond","fee":0.5,"src":"fi","r1":5.6,"r3":37.2},{"n":"Nordea Globala Tillväxtmarknader","s":"nordea-emerging-market-equities-a","i":"FI0008813324","c":"Tillväxtmarknadsfond","fee":1.6,"src":"man","r1":55.9,"r3":105.2},{"n":"Swedbank Robur Kapitalinvest","s":"swedbank-robur-kapitalinvest","i":"SE0000996241","c":"Globalfond","fee":1.25,"src":"fi","r1":27.6,"r3":77.8},{"n":"Swedbank Robur Allemansfond Komplett","s":"swedbank-robur-allemansfond-komplett","i":"SE0000538910","c":"Globalfond","fee":1.25,"src":"fi","r1":24.1,"r3":64.1},{"n":"Swedbank Robur Access Asien","s":"swedbank-robur-access-asien","i":"SE0007074117","c":"Tillväxtmarknadsfond","fee":0.2,"src":"fi","r1":40.4,"r3":82.6},{"n":"TIN Ny Teknik","s":"tin-ny-teknik","i":"SE0012193019","c":"Temafond","fee":1.52,"src":"fi","r1":-23.2,"r3":-21},{"n":"Storebrand Sverige Småbolag Plus","s":"storebrand-sverige-smabolag-plus","i":"SE0014808382","c":"Småbolagsfond","fee":0.5,"src":"fi","r1":5,"r3":30.1},{"n":"Storebrand Emerging Markets Plus","s":"storebrand-emerging-markets-plus","i":"SE0008129969","c":"Tillväxtmarknadsfond","fee":0.5,"src":"fi","r1":38.8,"r3":78.2},{"n":"Storebrand Global Solutions","s":"storebrand-global-solutions","i":"SE0004576452","c":"Globalfond","fee":0.75,"src":"fi","r1":21.2,"r3":47.1},{"n":"AuAg Silver Bullet","s":"auag-silver-bullet","i":"SE0013358181","c":"Temafond","fee":1.4,"src":"fi","r1":43.7,"r3":328.9},{"n":"DNB Teknologi S","s":"dnb-teknologi-s","i":"NO0010827819","c":"Temafond","fee":1.2,"src":"man","r1":36,"r3":122.4},{"n":"Länsförsäkringar Fastighetsfond","s":"lansforsakringar-fastighetsfond","i":"SE0000837338","c":"Temafond","fee":1.4,"src":"fi","r1":-12.8,"r3":6.7},{"n":"Nordea India A","s":"nordea-india-a","i":"FI0008813241","c":"Tillväxtmarknadsfond","fee":1.85,"src":"man","r1":1.6,"r3":7},{"n":"Nordea Emerging Sustainable Stars Equity BP","s":"nordea-emerging-sustainable-stars-equity-bp","i":"LU0602540527","c":"Tillväxtmarknadsfond","fee":1.5,"src":"man","r1":43.7,"r3":80.1},{"n":"Nordea North American Enhanced A","s":"nordea-north-american-enhanced-a","i":"FI4000261284","c":"USA-fond","fee":0.6,"src":"man","r1":24.4,"r3":66.3},{"n":"PLUS Allabolag Sverige Index","s":"plus-allabolag-sverige-index","i":"SE0014991535","c":"Sverigefond","fee":0.2,"src":"fi","r1":18.6,"r3":54.2},{"n":"PLUS Småbolag Sverige Index","s":"plus-smabolag-sverige-index","i":"SE0010323642","c":"Småbolagsfond","fee":0.4,"src":"fi","r1":5.3,"r3":33.2},{"n":"Skandia Time Global","s":"skandia-time-global","i":"SE0001112715","c":"Globalfond","fee":1.4,"src":"fi","r1":31.4,"r3":109.3},{"n":"Lannebo Global Småbolag A","s":"lannebo-global-smabolag-a","i":"SE0013041654","c":"Småbolagsfond","fee":1.5,"src":"fi","r1":9.2,"r3":32.5},{"n":"Lannebo Marknad Global A","s":"lannebo-marknad-global-a","i":"SE0010049197","c":"Globalfond","fee":0.4,"src":"fi","r1":24.5,"r3":66.4},{"n":"Carnegie Listed Private Equity A","s":"carnegie-listed-private-equity-a","i":"SE0003039874","c":"Temafond","fee":1.5,"src":"fi","r1":-7.7,"r3":22},{"n":"Cliens Småbolag A","s":"cliens-smabolag-a","i":"SE0008992069","c":"Småbolagsfond","fee":1.35,"src":"fi","r1":2.3,"r3":29.2},{"n":"Lannebo Marknad Sverige Bred A","s":"lannebo-marknad-sverige-bred-a","i":"SE0001463449","c":"Sverigefond","fee":0.48,"src":"fi","r1":19.7,"r3":53.3},{"n":"D&G Aktiefond","s":"dg-aktiefond","i":"SE0000428336","c":"Sverigefond","fee":1.22,"src":"fi","r1":11.9,"r3":39.6},{"n":"Carnegie Sverigefond A","s":"carnegie-sverigefond-a","i":"SE0000429789","c":"Sverigefond","fee":1.4,"src":"fi","r1":21.2,"r3":53.5},{"n":"Nordnet One Balanserad","s":"nordnet-one-balanserad","i":"SE0017831977","c":"Blandfond","fee":0.32,"src":"fi","r1":15.6,"r3":42.4},{"n":"Nordnet One Offensiv","s":"nordnet-one-offensiv","i":"SE0017832413","c":"Blandfond","fee":0.34,"src":"fi","r1":26.6,"r3":63.9},{"n":"Handelsbanken AstraZeneca Allemansfond","s":"handelsbanken-astrazeneca-allemansfond","i":"SE0000900169","c":"Temafond","fee":0.9,"src":"man","r1":19.9,"r3":37.6},{"n":"MetaSpace Fund A","s":"metaspace-fund-a","i":"SE0011527829","c":"Temafond","fee":1.5,"src":"fi","r1":48,"r3":148.5},{"n":"Nordnet Teknologi Index","s":"nordnet-teknologi-index","i":"IE00BNNLSK63","c":"Temafond","fee":0.4,"src":"man","r1":41.4,"r3":131.3},{"n":"Storebrand Global Plus A","s":"storebrand-global-plus-a","i":"SE0008129985","c":"Globalfond","fee":0.3,"src":"fi","r1":22.3,"r3":57.3},{"n":"SEB Sverige Indexnära A","s":"seb-sverige-indexnara-a","i":"SE0002593673","c":"Sverigefond","fee":0.2,"src":"fi","r1":19.2,"r3":54},{"n":"Storebrand Emerging Markets A","s":"storebrand-emerging-markets-a","i":"SE0003455658","c":"Tillväxtmarknadsfond","fee":0.2,"src":"fi","r1":38.9,"r3":80.8},{"n":"AMF Aktiefond Europa","s":"amf-aktiefond-europa","i":"SE0000739153","c":"Europafond","fee":0.4,"src":"fi","r1":19.8,"r3":45.1},{"n":"Lannebo Emerging Markets A","s":"lannebo-emerging-markets-a","i":"SE0004578615","c":"Tillväxtmarknadsfond","fee":0.9,"src":"fi","r1":43.3,"r3":83.3},{"n":"Finserve Global Security Fund I SEK R","s":"finserve-global-security-fund","i":"LU1822851538","c":"Temafond","fee":1.6,"src":"man","r1":-4.7,"r3":118.4},{"n":"Aktiespararna Direktavkastning A","s":"aktiespararna-direktavkastning-a","i":"SE0008321780","c":"Sverigefond","fee":0.3,"src":"fi","r1":16.5,"r3":54.9},{"n":"Kavaljer Investmentbolagsfond A","s":"kavaljer-investmentbolagsfond-a","i":"LU1777968246","c":"Sverigefond","fee":0.3,"src":"man","r1":6.2,"r3":27.5},{"n":"Länsförsäkringar Europa Index","s":"lansforsakringar-europa-index","i":"SE0002793935","c":"Europafond","fee":0.2,"src":"fi","r1":19.1,"r3":41.8},{"n":"Kvartil Investmentbolag+ Calculus A","s":"kvartil-investmentbolag-calculus-a","i":"SE0013121456","c":"Sverigefond","fee":0.55,"src":"man","r1":21.7,"r3":60},{"n":"Storebrand Japan A","s":"storebrand-japan-a","i":"SE0000621393","c":"Japanfond","fee":0.2,"src":"fi","r1":33.8,"r3":59.8},{"n":"Handelsbanken Hälsovård Tema A1","s":"handelsbanken-halsovard-tema-a1","i":"SE0000735375","c":"Temafond","fee":1.5,"src":"fi","r1":21.8,"r3":14.7},{"n":"Proethos Fond","s":"proethos-fond","i":"SE0010547778","c":"Globalfond","fee":0.85,"src":"fi","r1":8,"r3":-3.9},{"n":"Länsförsäkringar Japan Index","s":"lansforsakringar-japan-index","i":"SE0000837296","c":"Japanfond","fee":0.2,"src":"fi","r1":31.5,"r3":59.6},{"n":"SEB Sweden Equity C","s":"seb-sweden-equity-c","i":"LU0047322432","c":"Sverigefond","fee":1.25,"src":"man","r1":23.4,"r3":53.2},{"n":"SEB Teknologifond A","s":"seb-teknologifond-a","i":"SE0000984114","c":"Temafond","fee":0.75,"src":"fi","r1":32.9,"r3":114.6},{"n":"SEB Global Aktiefond A","s":"seb-global-aktiefond-a","i":"SE0000434151","c":"Globalfond","fee":0.65,"src":"fi","r1":16.5,"r3":46.5},{"n":"SEB Sverigefond Småbolag Chans/Risk A","s":"seb-sverigefond-smabolag-chans-risk-a","i":"SE0000434201","c":"Småbolagsfond","fee":1,"src":"fi","r1":3.9,"r3":39.6},{"n":"AuAg Essential Metals A","s":"auag-essential-metals-a","i":"SE0019175563","c":"Temafond","fee":1.4,"src":"fi","r1":34.4,"r3":82.2},{"n":"SEB Artificial Intelligence C","s":"seb-artificial-intelligence-c","i":"LU2602444262","c":"Temafond","fee":1.5,"src":"man","r1":41,"r3":125.1},{"n":"Söderberg & Partners Alternative R2 D","s":"soderberg-partners-alternative-r2-d","i":"LU2181417226","c":"Blandfond","fee":1.17,"src":"man","r1":6.8,"r3":15.1},{"n":"Söderberg & Partners Alternative R5 D","s":"soderberg-partners-alternative-r5-d","i":"LU2181417143","c":"Blandfond","fee":1.49,"src":"man","r1":19.5,"r3":39.6}];
+  const AS_OF = "29 sep 2026", FI_PERIOD = "2026Q2", MAX_SEL = 5;
+  const CAT_ORDER = ["Globalfond","Sverigefond","USA-fond","Europafond","Tillväxtmarknadsfond","Japanfond","Småbolagsfond","Temafond","Blandfond","Räntefond"];
+  const CAT_PLURAL = { "Globalfond":"Globalfonder","Sverigefond":"Sverigefonder","USA-fond":"USA-fonder","Europafond":"Europafonder","Tillväxtmarknadsfond":"Tillväxtmarknad","Japanfond":"Japanfonder","Småbolagsfond":"Småbolag","Temafond":"Temafonder","Blandfond":"Blandfonder","Räntefond":"Räntefonder" };
+  const pct = v => v == null ? "–" : (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1).replace(".", ",") + " %";
+  const fee = v => v.toFixed(2).replace(".", ",") + " %";
+  const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const cls = v => v == null ? "na" : v >= 0 ? "pos" : "neg";
+  const esc = s => s.replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+  const counts = FUNDS.reduce((m, f) => (m[f.c] = (m[f.c] || 0) + 1, m), {});
+  const plus = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 2.5v9M2.5 7h9"/></svg>';
+  const check = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 7.2 2.6 2.6L11 4.4"/></svg>';
+
+  function mount(id) {
+    const root = document.getElementById(id);
+    root.appendChild(document.getElementById("fl-tpl").content.cloneNode(true));
+    const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
+    const st = { q: "", cats: new Set(), key: "r3", dir: -1, sel: [] };
+
+    $("[data-stamp]").innerHTML = `<b>${FUNDS.length} fonder</b> · Avkastning per <b>${AS_OF}</b> · Avgifter från Finansinspektionen, <b>${FI_PERIOD}</b>`;
+    $("[data-cats]").innerHTML = `<button type="button" class="chip" data-cat="" aria-pressed="true">Alla <span>${FUNDS.length}</span></button>` +
+      CAT_ORDER.filter(c => counts[c]).map(c => `<button type="button" class="chip" data-cat="${c}" aria-pressed="false">${CAT_PLURAL[c]} <span>${counts[c]}</span></button>`).join("");
+
+    function render() {
+      const q = norm(st.q.trim());
+      const list = FUNDS.filter(f => (!q || norm(f.n).includes(q) || f.i.toLowerCase().includes(q)) && (!st.cats.size || st.cats.has(f.c)));
+      // dir: -1 = fallande. Namn sorteras A–Ö när dir = 1.
+      const rows = (() => {
+        const { key, dir } = st;
+        return [...list].sort((a, b) => {
+          if (key === "n") return dir * a.n.localeCompare(b.n, "sv");
+          const av = a[key], bv = b[key];
+          if (av == null && bv == null) return a.n.localeCompare(b.n, "sv");
+          if (av == null) return 1; if (bv == null) return -1;
+          return dir * (av - bv) || a.n.localeCompare(b.n, "sv");
+        });
+      })();
+      const filtered = st.q || st.cats.size;
+      $("[data-count]").innerHTML = filtered
+        ? `Visar <b>${rows.length}</b> av ${FUNDS.length} fonder · <button type="button" class="linkbtn" data-clear>Rensa filter</button>`
+        : `Visar alla <b>${FUNDS.length}</b> fonder`;
+      $("[data-rows]").innerHTML = rows.length ? rows.map(f => {
+        const on = st.sel.includes(f.s);
+        return `<div class="lr${on ? " sel" : ""}" role="row">
+          <span class="fname" role="cell"><a class="rowlink" href="#"><b>${esc(f.n)}</b></a><small><span class="isin">${f.i}</span> · ${f.c}</small><small class="mcol">Avgift ${fee(f.fee)} <span class="badge ${f.src}">${f.src === "fi" ? "FI" : "Manuell"}</span></small></span>
+          <span class="num" role="cell"><small class="mcol">1 år</small><span class="val ${cls(f.r1)}">${pct(f.r1)}</span></span>
+          <span class="num" role="cell"><small class="mcol">3 år</small><span class="val ${cls(f.r3)}">${pct(f.r3)}</span></span>
+          <span class="num col-fee" role="cell"><span class="fee">${fee(f.fee)} <span class="badge ${f.src}">${f.src === "fi" ? "FI" : "Man."}</span></span></span>
+          <button type="button" class="add" data-add="${f.s}" aria-pressed="${on}" aria-label="${on ? "Ta bort" : "Lägg till"} ${esc(f.n)} ${on ? "från" : "i"} jämförelsen">${on ? check : plus}</button>
+        </div>`; }).join("")
+        : `<div class="empty"><b>Inga fonder matchar</b><span>Prova ett annat sökord eller ta bort ett filter.</span><button type="button" class="linkbtn" data-clear>Rensa filter</button></div>`;
+      $$("[data-cats] .chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.cat ? st.cats.has(c.dataset.cat) : !st.cats.size));
+      $$(".lh button").forEach(b => { const on = b.dataset.k === st.key; b.toggleAttribute("data-on", on); b.querySelector(".dir").textContent = on && st.dir === 1 ? "↑" : "↓"; });
+      $$("[data-msort] button").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === st.key));
+      const tray = $("[data-tray]");
+      tray.hidden = !st.sel.length;
+      $("[data-tray-list]").innerHTML = st.sel.map(s => { const f = FUNDS.find(x => x.s === s); return `<span class="tray-item">${esc(f.n)}<button type="button" data-rm="${s}" aria-label="Ta bort ${esc(f.n)}">×</button></span>`; }).join("");
+      $("[data-tray-count]").textContent = `${st.sel.length} av ${MAX_SEL} valda`;
+    }
+
+    $("[data-q]").addEventListener("input", e => { st.q = e.target.value; render(); });
+    root.addEventListener("click", e => {
+      const t = e.target.closest("button, a"); if (!t) return;
+      if (t.matches(".chip")) { const c = t.dataset.cat; if (!c) st.cats.clear(); else st.cats.has(c) ? st.cats.delete(c) : st.cats.add(c); }
+      else if (t.hasAttribute("data-filter")) return; // innehållet byggs i nästa steg
+      else if (t.dataset.k) {
+        if (st.key === t.dataset.k && t.closest(".lh")) st.dir *= -1;
+        else { st.key = t.dataset.k; st.dir = t.dataset.k === "fee" || t.dataset.k === "n" ? 1 : -1; }
+      }
+      else if (t.dataset.add) { e.preventDefault(); const s = t.dataset.add; const i = st.sel.indexOf(s); if (i >= 0) st.sel.splice(i, 1); else if (st.sel.length < MAX_SEL) st.sel.push(s); }
+      else if (t.dataset.rm) st.sel = st.sel.filter(s => s !== t.dataset.rm);
+      else if (t.hasAttribute("data-clear")) { st.q = ""; st.cats.clear(); $("[data-q]").value = ""; }
+      else { if (t.getAttribute("href") === "#") e.preventDefault(); return; }
+      render();
+    });
+    render();
+  }
+  mount("desk"); mount("mob");
+})();
+</script>
