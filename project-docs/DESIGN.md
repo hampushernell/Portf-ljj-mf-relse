@@ -293,7 +293,7 @@ matchning på namnprefix vid körning. Övriga linjer, rutnät, nollinje och
 etiketter följer grafens vanliga färger. Ett test fallerar om en fond saknar ett
 bolag med färg.
 
-**Medvetet undantag från kontrastregeln:** flera bolagsfärger (Nordea, SEB, AMF
+**Medvetet undantag från kontrastregeln:** flera bolagsfärger (AMF, Aktiespararna
 m.fl.) ligger under 3:1 mot bakgrunden. Det är accepterat just här, så att
 fonden känns igen på bolagets färg. "Fixa" inte färgerna. Undantaget gäller
 bara den här grafen. Appens grafer, accenter och text följer kontrastreglerna

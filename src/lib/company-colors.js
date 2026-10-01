@@ -17,7 +17,7 @@ export const COMPANY_COLORS = {
   "Länsförsäkringar": "#FF020C",
   "Lysa": "#254DE9",
   "MetaSpace": "#FFFFFF",
-  "Nordea": "#0000A0",
+  "Nordea": "#2248FA",
   "Nordnet": "#FFFFFF",
   "PLUS": "#E97116",
   "Proethos": "#FFFFFF",
