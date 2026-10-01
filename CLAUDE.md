@@ -125,6 +125,7 @@ Yahoo råpriser
 | `FundReturnChart.jsx` | Fondgraf (Fondläge) |
 | `SVGChart.jsx` | SVG-baserad grafkomponent (portfölj) |
 | `FundSVGChart.jsx` | SVG-baserad grafkomponent (fonder) |
+| `ChartRefLabels.jsx` | Y-axelns referensetiketter som HTML-overlay över graf-SVG:n (delas av SVGChart och FundSVGChart) |
 | `FundRow.jsx` | En fondrad med badge, avgift och allokeringsslider |
 | `FundSearch.jsx` | Enkel inline-sökkomponent (används inuti FundSearchModal) |
 | `FundSearchModal.jsx` | Sökmodal med kategorifilter (multi-select dropdown) — primär ingång till fondsökning |

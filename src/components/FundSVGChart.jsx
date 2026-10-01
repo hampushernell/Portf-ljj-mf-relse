@@ -2,7 +2,8 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { fmtPct } from "../lib/utils";
 import { COLOR, FONT, SHADOW, CHART } from "../lib/tokens";
 import useBreakpoint from "../hooks/useBreakpoint";
-import { referenceTicks, returnExtent, formatTickLabel } from "../lib/chartTicks";
+import { referenceTicks, returnExtent, zeroLabelSide, withLabelSides } from "../lib/chartTicks";
+import ChartRefLabels from "./ChartRefLabels";
 
 const getSVGX = (e, svgEl) => {
   const rect = svgEl.getBoundingClientRect();
@@ -133,6 +134,7 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
   const drawnVals = showPortfolioLine ? allVals : [...lines.flatMap(l => l.series.map(d => d.value)), ...benchmarkSeries.map(d => d.value)];
   const { maxRet, minRet } = returnExtent(drawnVals);
   const refTicks = referenceTicks(maxRet, minRet, toY);
+  const refLabels = withLabelSides(refTicks, zeroLabelSide([...lines.map(l => l.series), ...(showPortfolioLine ? [portfolioSeries] : []), benchmarkSeries]));
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
@@ -163,15 +165,11 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
             opacity="1" vectorEffect="non-scaling-stroke"
           />
         )}
-        {refTicks.map(({ ret, y, kind }) => (
-          <text key={ret} x={8} y={y + C.axisDy} textAnchor="start" fill={COLOR.text.axis} fontSize={C.axis} fontWeight={kind === "zero" ? 600 : undefined} fontFamily={FONT.family.body}>
-            {formatTickLabel(ret)}
-          </text>
-        ))}
         {tooltip && (
           <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth={C.grid} vectorEffect="non-scaling-stroke"/>
         )}
       </svg>
+      <ChartRefLabels ticks={refLabels} height={H} />
       {tooltip && (
         <div style={{
           position: "absolute",

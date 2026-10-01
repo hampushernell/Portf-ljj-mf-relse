@@ -249,20 +249,31 @@ All modals share a consistent overlay pattern: `position: fixed`, `inset: 0`, `z
 Transparent background, `1px solid rgba(255,255,255,0.10)` border, 14px radius, `overflow: hidden`. Header (titel, Dela-knapp, legend) har intern padding `22px 24px 16px` desktop / `14px 16px 16px` mobil — rubrikraden är alltid `flexDirection: row` med Dela i högerkanten, även på mobil. SVG-grafen blöder kant-till-kant utan horisontell padding. Footer (kontrollrad med span-knappar och Index, datumrad, jämförelsebar) har padding `10px 24px 22px` desktop. Kontrollraden ligger överst i footern, direkt under grafen. Animation: `scaleIn 0.3s ease` on mount.
 
 **SVG:** Geometri och strecktjocklek kommer från `CHART` i `tokens.js`.
-Desktop: `viewBox="0 0 800 330"`, strokeWidth 1.5, axeltext 12.
-Mobil: `viewBox="0 0 360 300"`, strokeWidth 1.75, axeltext 11 — mobilens
+Desktop: `viewBox="0 0 800 330"`, strokeWidth 1.5.
+Mobil: `viewBox="0 0 360 300"`, strokeWidth 1.75 — mobilens
 viewBox är avsiktligt ungefär lika bred som grafkortet så att en viewBox-enhet
 motsvarar en CSS-pixel. Alla `<path>` och `<line>` har
 `vectorEffect="non-scaling-stroke"`, så strokeWidth är fasta CSS-pixlar på
 båda brytpunkterna oavsett kortbredd. Hårdkodade strokeWidth- och
 fontSize-värden i grafkomponenterna är förbjudna: skalfaktorn gör dem
 missvisande.
-`PL=PR=0` — linjer och stödlinjer löper från x=0 till x=W. Y-axeletiketter
-inuti grafen (`x=8`, `y + C.axisDy`, `COLOR.text.axis`, `C.axis`) — under linjen.
+`PL=PR=0` — linjer och stödlinjer löper från x=0 till x=W.
+
+**Y-axeletiketter är HTML-overlay, inte SVG-text** (`ChartRefLabels.jsx`), så de
+inte skalas med viewBoxen. Absolut positionerade i grafens wrapper
+(`position: relative`): `left: 8px`, `top: y / H * 100 %`, under linjen
+`translateY(3px)`, ovanför `translateY(calc(-100% - 3px))`. 11px
+(`FONT.size.xs`), font-weight 400 för alla (även nollan), `COLOR.text.axis`,
+`FONT.family.body`, tabular-nums, line-height 1 — samma på mobil och desktop.
 
 **Referenslinjer (y-axel):** Inga jämnt fördelade gridlinjer. Logiken ligger i
 `lib/chartTicks.js` (`referenceTicks()`), komponenterna ritar bara resultatet:
-- **0 %** alltid — etikett vid den streckade nollinjen, font-weight 600.
+- **0 %** alltid — etikett vid den streckade nollinjen. Placering via
+  `zeroLabelSide()`: tittar på de första 10 % av varje synlig serie (där
+  etiketten står); ligger majoriteten av punkterna under 100 hamnar etiketten
+  ovanför linjen, annars under (oavgjort → under).
+- Stödlinjen uppåt har etiketten under linjen, stödlinjen nedåt ovanför — båda
+  står alltid mellan sin linje och nollan.
 - **En stödlinje uppåt** på största "jämna" värde (5, 10, 15, 20, 25, 30, 40,
   50, 60, 75, 100, 125, 150, 200, 250, 300, 400, 500, 750, 1000) som är ≤
   högsta avkastningen bland synliga serier (inkl. index).

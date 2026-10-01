@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { referenceTicks, returnExtent, formatTickLabel } from "../chartTicks.js";
+import { referenceTicks, returnExtent, formatTickLabel, zeroLabelSide, withLabelSides } from "../chartTicks.js";
 import { CHART } from "../tokens.js";
 
 // Speglar y-domänen i SVGChart/FundSVGChart (desktop-geometri, 12 % padding).
@@ -51,5 +51,37 @@ describe("formatTickLabel", () => {
     expect(formatTickLabel(150)).toBe("+150 %");
     expect(formatTickLabel(0)).toBe("0 %");
     expect(formatTickLabel(-30)).toBe("−30 %");
+  });
+});
+
+const series = values => values.map(value => ({ value }));
+const ramp = (n, step) => series(Array.from({ length: n }, (_, i) => 100 + i * step));
+
+describe("zeroLabelSide", () => {
+  it("serie som stiger direkt → below", () => {
+    expect(zeroLabelSide([ramp(100, 0.5)])).toBe("below");
+  });
+
+  it("serie som faller direkt → above", () => {
+    expect(zeroLabelSide([ramp(100, -0.5)])).toBe("above");
+  });
+
+  it("A stiger och B faller lika mycket → below", () => {
+    expect(zeroLabelSide([ramp(100, 0.5), ramp(100, -0.5)])).toBe("below");
+  });
+
+  it("tom lista → below", () => {
+    expect(zeroLabelSide([])).toBe("below");
+  });
+});
+
+describe("withLabelSides", () => {
+  it("nollan följer zeroSide, uppåt-linje under, nedåt-linje över", () => {
+    const ticks = [
+      { ret: 0, y: 200, kind: "zero" },
+      { ret: 50, y: 80, kind: "ref" },
+      { ret: -20, y: 280, kind: "ref" },
+    ];
+    expect(withLabelSides(ticks, "above").map(t => t.side)).toEqual(["above", "below", "above"]);
   });
 });

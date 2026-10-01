@@ -31,6 +31,30 @@ export function referenceTicks(maxRet, minRet, toY) {
   return ticks;
 }
 
+// Var ska 0 %-etiketten stå? Tittar på de första 10 % av varje synlig serie
+// (där etiketten ligger). Ligger majoriteten av punkterna under 100 → "above".
+// seriesList: arrayer av { value } (indexvärden, start 100).
+export function zeroLabelSide(seriesList, window = 0.10) {
+  let below = 0, total = 0;
+  for (const s of seriesList) {
+    const n = Math.max(2, Math.ceil(s.length * window));
+    for (let i = 1; i < Math.min(n, s.length); i++) {
+      total++;
+      if (s[i].value < 100) below++;
+    }
+  }
+  return total && below / total > 0.5 ? "above" : "below";
+}
+
+// Lägger till etikettsida per tick: stödlinjen uppåt får etiketten under linjen,
+// stödlinjen nedåt ovanför — båda hamnar mellan linjen och nollan.
+export function withLabelSides(ticks, zeroSide) {
+  return ticks.map(t => ({
+    ...t,
+    side: t.kind === "zero" ? zeroSide : t.ret > 0 ? "below" : "above",
+  }));
+}
+
 // "+150 %", "0 %", "−30 %" (riktigt minustecken).
 export function formatTickLabel(ret) {
   if (ret === 0) return "0 %";
