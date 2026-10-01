@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { fmtFee } from "../lib/utils";
+import { MAX_FUNDS_PER_PORTFOLIO } from "../lib/compareSelection";
 import { COLOR, FONT } from "../lib/tokens";
 import { ANIM, anim } from "../lib/animations";
 import ManualFundModal from "./ManualFundModal";
@@ -51,6 +52,8 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
   const [filterOpen, setFilterOpen] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
   const [hoveredId, setHoveredId] = useState(null);
+  // Lägg till är avstängt vid taket; borttagning fungerar alltid.
+  const full = excluded.length >= MAX_FUNDS_PER_PORTFOLIO;
   const searchRef = useRef(null);
   const filterRef = useRef(null);
 
@@ -253,13 +256,14 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
             scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.15) transparent",
           }}>
             <div
-              onClick={() => setShowManualModal(true)}
-              onMouseEnter={e => e.currentTarget.style.background = COLOR.surface.hover}
-              onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+              onClick={full ? undefined : () => setShowManualModal(true)}
+              onMouseEnter={full ? undefined : e => e.currentTarget.style.background = COLOR.surface.hover}
+              onMouseLeave={full ? undefined : e => e.currentTarget.style.background = "transparent"}
+              aria-disabled={full || undefined}
               style={{
                 padding: "8px 10px", borderRadius: "9px",
                 display: "flex", alignItems: "center", gap: "8px",
-                cursor: "pointer", transition: anim(ANIM.hover),
+                cursor: full ? "not-allowed" : "pointer", opacity: full ? 0.45 : 1, transition: anim(ANIM.hover),
               }}
             >
               <div style={{
@@ -275,11 +279,13 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
 
             {filtered.map(f => {
               const added = excluded.includes(f.id);
+              const blocked = full && !added;
               return (
                 <div
                   key={f.id}
-                  onClick={added ? () => onRemove(f.id) : () => onAdd(f)}
-                  onMouseEnter={added ? e => {
+                  onClick={added ? () => onRemove(f.id) : blocked ? undefined : () => onAdd(f)}
+                  aria-disabled={blocked || undefined}
+                  onMouseEnter={blocked ? undefined : added ? e => {
                     setHoveredId(f.id);
                     e.currentTarget.style.background = "rgba(248,113,113,0.07)";
                     e.currentTarget.style.borderColor = "rgba(248,113,113,0.15)";
@@ -287,7 +293,7 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                     e.currentTarget.style.background = COLOR.surface.hover;
                     e.currentTarget.style.borderColor = COLOR.border.subtle;
                   }}
-                  onMouseLeave={added ? e => {
+                  onMouseLeave={blocked ? undefined : added ? e => {
                     setHoveredId(null);
                     e.currentTarget.style.background = "transparent";
                     e.currentTarget.style.borderColor = "transparent";
@@ -299,8 +305,8 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
                     padding: "8px 10px", borderRadius: "9px",
                     display: "flex", alignItems: "center", gap: "8px",
                     border: "1px solid transparent",
-                    cursor: "pointer",
-                    opacity: added ? 0.45 : 1,
+                    cursor: blocked ? "not-allowed" : "pointer",
+                    opacity: added || blocked ? 0.45 : 1,
                     transition: anim(ANIM.allFast),
                   }}
                 >
@@ -354,7 +360,9 @@ export default function FundSearchModal({ isOpen, onClose, onAdd, onRemove, excl
           display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
           <span style={{ fontSize: FONT.size.sm, color: COLOR.text.secondary, fontFamily: FONT.family.display }}>
-            {excluded.length} {excluded.length === 1 ? "fond vald" : "fonder valda"}
+            {full
+              ? `${excluded.length} av ${MAX_FUNDS_PER_PORTFOLIO} fonder valda — portföljen är full`
+              : `${excluded.length} ${excluded.length === 1 ? "fond vald" : "fonder valda"}`}
           </span>
           <button
             onClick={onClose}

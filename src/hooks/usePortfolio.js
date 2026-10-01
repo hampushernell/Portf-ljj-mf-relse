@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MAX_FUNDS_PER_PORTFOLIO, isEvenWeights } from "../lib/compareSelection";
 
 export default function usePortfolio(_manualFundsDb) {
   const [funds, setFunds]               = useState([]);
@@ -8,6 +9,7 @@ export default function usePortfolio(_manualFundsDb) {
   const [hasManualEdit, setHasManualEdit] = useState(false);
 
   const addFund = f => {
+    if (funds.length >= MAX_FUNDS_PER_PORTFOLIO || funds.some(x => x.id === f.id)) return;
     const newFunds = [...funds, f];
     setFunds(newFunds);
     if (inputMode === "pct") {
@@ -46,7 +48,9 @@ export default function usePortfolio(_manualFundsDb) {
     const newAllocs = {};
     fundsWithPcts.forEach(({ fund, pct }) => { newAllocs[fund.id] = { pct }; });
     setAllocs(newAllocs);
-    if (fundsWithPcts.length > 0) setHasManualEdit(true);
+    // Ojämna vikter (t.ex. från fondlistan eller en delad länk) är egna vikter —
+    // annars fördelas de om vid nästa addFund.
+    setHasManualEdit(!isEvenWeights(fundsWithPcts.map(x => x.pct)));
   };
 
   return {

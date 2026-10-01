@@ -27,6 +27,10 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { FUNDS_REGISTRY } from "../src/lib/funds-registry.js";
 import { getCompanyColor } from "../src/lib/company-colors.js";
+import {
+  MAX_FUNDS_PER_PORTFOLIO, equalWeights, isEvenWeights,
+  addFundToSelection, removeFundFromSelection, readSelectionParam, writeSelectionParam,
+} from "../src/lib/compareSelection.js";
 import { renderCategoryChart, CHART_CSS } from "./seo-chart.mjs";
 import { fmtSignedPct, fmtDateSv, categoryPlural } from "./seo-format.mjs";
 
@@ -171,12 +175,6 @@ function categoryStats(categoryFunds) {
   const feeAvg = feeSum / categoryFunds.length;
 
   return { total, ranked, best3y, worst3y, gap3y, best1y, cheapest, mostExpensive, feeMin: cheapest.fee, feeMax: mostExpensive.fee, feeAvg };
-}
-
-function equalWeights(n) {
-  const base = Math.floor(100 / n);
-  const remainder = 100 - base * n;
-  return Array.from({ length: n }, (_, i) => base + (i < remainder ? 1 : 0));
 }
 
 // ─── FAQ — en källa, återanvänd i både synlig HTML och FAQPage JSON-LD ─────────
@@ -933,12 +931,6 @@ function renderOmPage(markdownPath) {
 // produktion än. FONDLISTA_FILTER=1 npm run build visar den lokalt.
 const SHOW_FUND_FILTER = process.env.FONDLISTA_FILTER === "1";
 
-// Tak för jämförelsefältet = det Fondläget i verktyget visar läsbart. Fondläget
-// har inget hårt tak, men FUND_COLORS (src/lib/utils.js) har bara fem färger som
-// skiljer sig tydligt från varandra och från semantiska färger; från sjätte
-// linjen (grå ≈ label, mint ≈ positiv, blush ≈ rosa) går linjerna i varandra.
-const MAX_COMPARE = 5;
-
 // Sortering — delas av servern (startordning) och skriptet. dir -1 = fallande.
 // Saknat värde hamnar alltid sist oavsett riktning; lika värden sorteras A–Ö.
 function compareFundRows(a, b, key, dir) {
@@ -1138,16 +1130,59 @@ function renderFundsIndexPage(funds, fiMeta, asOf) {
 <script>
 (() => {
   const FUNDS = ${json};
-  const MAX = ${MAX_COMPARE};
+  const MAX_FUNDS_PER_PORTFOLIO = ${MAX_FUNDS_PER_PORTFOLIO};
+  const MAX = MAX_FUNDS_PER_PORTFOLIO;
+  const APP_PATH = ${JSON.stringify(APP_PATH)};
   ${escapeHtml}
   ${fmtSignedPct}
   ${fmtFeePct}
   ${equalWeights}
+  ${isEvenWeights}
+  ${addFundToSelection}
+  ${removeFundFromSelection}
+  ${readSelectionParam}
+  ${writeSelectionParam}
   ${compareFundRows}
   ${fundListRow}
   const byId = new Map(FUNDS.map(f => [f.id, f]));
   const norm = s => s.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "");
-  const st = { q: "", cats: new Set(), key: "r3", dir: -1, sel: [] };
+  const st = { q: "", cats: new Set(), key: "r3", dir: -1, sel: [], a: [], query: null };
+
+  // Valet delas med verktyget via dess sparade läge (src/hooks/useUrlSync.js):
+  // listan speglar Portfölj A, dvs. a-parametern. Fungerar inte lagringen (privat
+  // läge, blockerad site data) lever valet bara på sidan, som tidigare.
+  const QUERY_KEY = "lastCompareQuery";
+  let storageOk = true;
+  function loadSaved() {
+    try {
+      st.query = sessionStorage.getItem(QUERY_KEY);
+    } catch {
+      storageOk = false;
+      return;
+    }
+    st.a = readSelectionParam(st.query);
+    st.sel = st.a.map(x => x.id).filter(id => byId.has(id));
+  }
+  function saveSelection() {
+    if (!storageOk) return;
+    // Inget sparat läge alls → verktyget ska öppna i fondläget.
+    const base = st.query ? st.query : (st.a.length ? "mode=fund" : "");
+    const next = writeSelectionParam(base, st.a);
+    try {
+      sessionStorage.setItem(QUERY_KEY, next);
+      st.query = next;
+    } catch {
+      storageOk = false;
+    }
+  }
+  function toggle(id) {
+    if (st.a.some(x => x.id === id)) st.a = removeFundFromSelection(st.a, id);
+    else if (st.a.length < MAX) st.a = addFundToSelection(st.a, id);
+    else return false;
+    st.sel = st.a.map(x => x.id).filter(id => byId.has(id));
+    saveSelection();
+    return true;
+  }
   const root = document.querySelector(".fl");
   const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
 
@@ -1156,7 +1191,7 @@ function renderFundsIndexPage(funds, fiMeta, asOf) {
     const rows = FUNDS
       .filter(f => (!q || norm(f.n).includes(q) || f.i.toLowerCase().includes(q)) && (!st.cats.size || st.cats.has(f.c)))
       .sort((a, b) => compareFundRows(a, b, st.key, st.dir));
-    const full = st.sel.length >= MAX;
+    const full = st.a.length >= MAX;
     $("[data-count]").innerHTML = st.q || st.cats.size
       ? \`Visar <b>\${rows.length}</b> av \${FUNDS.length} fonder · <button type="button" class="linkbtn" data-clear>Rensa filter</button>\`
       : \`Visar alla <b>\${FUNDS.length}</b> fonder\`;
@@ -1178,8 +1213,12 @@ function renderFundsIndexPage(funds, fiMeta, asOf) {
       return \`<span class="tray-item">\${name}<button type="button" data-rm="\${id}" aria-label="Ta bort \${name} från jämförelsen">×</button></span>\`;
     }).join("");
     $("[data-tray-count]").textContent = \`\${st.sel.length} av \${MAX} valda\`;
-    const weights = equalWeights(st.sel.length);
-    $("[data-compare]").href = "${APP_PATH}?a=" + st.sel.map((id, i) => id + ":" + weights[i]).join(",") + "&mode=fund";
+    if (storageOk) {
+      $("[data-compare]").href = APP_PATH + "?" + (st.query ?? "");
+    } else {
+      const weights = equalWeights(st.sel.length);
+      $("[data-compare]").href = APP_PATH + "?a=" + st.sel.map((id, i) => id + ":" + weights[i]).join(",") + "&mode=fund";
+    }
     if (refocus) { const el = $(refocus); if (el) el.focus(); }
   }
 
@@ -1194,17 +1233,27 @@ function renderFundsIndexPage(funds, fiMeta, asOf) {
       if (st.key === t.dataset.k && t.closest(".lh")) st.dir *= -1;
       else { st.key = t.dataset.k; st.dir = st.key === "fee" || st.key === "n" ? 1 : -1; }
     } else if (t.dataset.add) {
-      const id = Number(t.dataset.add), i = st.sel.indexOf(id);
-      if (i >= 0) st.sel.splice(i, 1); else if (st.sel.length < MAX) st.sel.push(id); else return;
+      const id = Number(t.dataset.add);
+      if (!toggle(id)) return;
       refocus = \`[data-add="\${id}"]\`;
     } else if (t.dataset.rm) {
-      st.sel = st.sel.filter(id => id !== Number(t.dataset.rm));
+      toggle(Number(t.dataset.rm));
       refocus = st.sel.length ? "[data-tray-list] button" : "[data-q]";
     } else if (t.hasAttribute("data-clear")) {
       st.q = ""; st.cats.clear(); $("[data-q]").value = ""; refocus = "[data-q]";
     } else return; // t.ex. Filter — innehållet byggs i ett senare steg
     render(refocus);
   });
+
+  // Sparat val visas direkt vid laddning, utan fältets inglidning.
+  const tray = $("[data-tray]");
+  tray.style.transition = "none";
+  loadSaved();
+  render();
+  tray.offsetHeight; // eslint-disable-line no-unused-expressions
+  tray.style.transition = "";
+  // Bakåt från verktyget kan visa sidan ur bfcache — läs om det sparade läget.
+  window.addEventListener("pageshow", e => { if (e.persisted) { loadSaved(); render(); } });
 })();
 </script>`;
 
@@ -1252,7 +1301,7 @@ function renderFundsIndexPage(funds, fiMeta, asOf) {
   <div class="tray" data-tray hidden>
     <div class="tray-list" data-tray-list></div>
     <span class="tray-count" data-tray-count></span>
-    <a class="btn btn-accent" data-compare href="${APP_PATH}">Jämför i verktyget →</a>
+    <a class="btn btn-accent" data-compare href="${APP_PATH}">Till jämförelsen →</a>
   </div>
   ${script}`;
 
