@@ -124,4 +124,11 @@ export const FUNDS_REGISTRY = [
   { id: 98, ticker: "0P00000F5G.ST", isin: "SE0000735375", name: "Handelsbanken Hälsovård Tema A1",      category: "Temafond",          fallbackFee: 1.50, slug: "handelsbanken-halsovard-tema-a1" }, // ej FI-täckning, källa: Morningstar
   { id: 99, ticker: "0P0001C96Y.ST", isin: "SE0010547778", name: "Proethos Fond",                        category: "Globalfond",        fallbackFee: 0.85, slug: "proethos-fond" }, // ej FI-täckning, källa: proethos.se
   { id: 100, ticker: "0P00000L2Y.ST", isin: "SE0000837296", name: "Länsförsäkringar Japan Index",       category: "Japanfond",         fallbackFee: 0.20, slug: "lansforsakringar-japan-index" }, // ej FI-täckning, källa: lf.fondlista.se
+  // SEB, AuAg (tillägg)
+  { id: 101, ticker: "0P00000LJZ.ST", isin: "LU0047322432", name: "SEB Sweden Equity C",                  category: "Sverigefond",       fallbackFee: 1.25, slug: "seb-sweden-equity-c" }, // LU-fond, ej FI-täckning, källa: dnb.no
+  { id: 102, ticker: "0P00000LRR.ST", isin: "SE0000984114", name: "SEB Teknologifond A",                  category: "Temafond",          fallbackFee: 1.50, slug: "seb-teknologifond-a" }, // ej FI-täckning, källa: fondmarknaden.se
+  { id: 103, ticker: "0P00000LR2.ST", isin: "SE0000434151", name: "SEB Global Aktiefond A",               category: "Globalfond",        fallbackFee: 1.30, slug: "seb-global-aktiefond-a" }, // ej FI-täckning, sänkt 2024-06-01, källa: sebgroup.com
+  { id: 104, ticker: "0P00000LJK.ST", isin: "SE0000434201", name: "SEB Sverigefond Småbolag Chans/Risk A", category: "Småbolagsfond",     fallbackFee: 1.50, slug: "seb-sverigefond-smabolag-chans-risk-a" }, // ej FI-täckning, källa: fondbolagets faktablad
+  { id: 105, ticker: "0P0001Q7VH.ST", isin: "SE0019175563", name: "AuAg Essential Metals A",              category: "Temafond",          fallbackFee: 1.40, slug: "auag-essential-metals-a" }, // ej FI-täckning, källa: auagfunds.com
+  { id: 106, ticker: "0P0001R7BB.ST", isin: "LU2602444262", name: "SEB Artificial Intelligence C",        category: "Temafond",          fallbackFee: 1.50, slug: "seb-artificial-intelligence-c" }, // LU-fond, ej FI-täckning, källa: seb.se
 ];
