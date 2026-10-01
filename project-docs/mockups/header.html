@@ -1,0 +1,183 @@
+<title>Gemensam header minportfölj.se</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap">
+<style>
+  /* Layout: tre sidtyper i desktop (1180px) och mobil (375px). Samma header överallt; bara aktiv länk och höger plats skiljer. */
+  :root {
+    --bg-base: #0a0f1c;
+    --bg-elevated: #141a2b;
+    --surface-panel: rgba(255,255,255,0.04);
+    --surface-tab: rgba(255,255,255,0.07);
+    --border-edge: rgba(255,255,255,0.34);
+    --border-soft: rgba(255,255,255,0.20);
+    --border-hairline: rgba(255,255,255,0.12);
+    --text-primary: #f0ede8;
+    --text-secondary: #cbd5e6;
+    --text-label: #a9b6cc;
+    --accent-a: #0018f5;
+    --accent-a-light: #7891ff;
+    --note: #fbbf24;
+    --tint-note: rgba(251,191,36,0.08);
+    --font-display: 'Syne', 'Trebuchet MS', sans-serif;
+    --font-body: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg-base); color: var(--text-primary); font-family: var(--font-body); font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent-a-light); outline-offset: 2px; border-radius: 4px; }
+  code { font-size: 12px; background: var(--surface-tab); padding: 1px 5px; border-radius: 4px; }
+
+  .doc { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; display: flex; flex-direction: column; gap: 36px; }
+  .doc-head { display: flex; flex-direction: column; gap: 12px; max-width: 72ch; }
+  .eyebrow { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent-a-light); margin: 0; }
+  .doc-title { font-family: var(--font-display); font-size: 28px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0; }
+  .doc-lede { margin: 0; color: var(--text-secondary); }
+  h2.sec { font-family: var(--font-display); font-size: 17px; font-weight: 700; margin: 0 0 12px; }
+  .stack { display: flex; flex-direction: column; gap: 20px; }
+  .label { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-label); margin: 0 0 8px; }
+  .scroller { overflow-x: auto; border-radius: 12px; }
+  .browser { width: 1180px; border: 1px solid var(--border-edge); border-radius: 12px; overflow: hidden; background: var(--bg-base); }
+  .browser-bar { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-bottom: 1px solid var(--border-hairline); background: var(--bg-elevated); }
+  .browser-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--border-soft); }
+  .browser-bar span { margin-left: 12px; font-size: 12px; color: var(--text-label); background: var(--surface-panel); padding: 2px 12px; border-radius: 6px; }
+  .phones { display: flex; gap: 20px; flex-wrap: wrap; }
+  .phone { width: 375px; max-width: 100%; border: 1px solid var(--border-edge); border-radius: 24px; overflow: hidden; background: var(--bg-base); }
+  .phone .cap { padding: 10px 16px 0; font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-label); }
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  .note { background: var(--surface-panel); border: 1px solid var(--border-soft); border-radius: 9px; padding: 14px 16px; min-width: 0; }
+  .note h3 { font-family: var(--font-display); font-size: 13px; font-weight: 700; margin: 0 0 6px; }
+  .note p, .note li { margin: 0; color: var(--text-secondary); font-size: 13px; }
+  .note ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+  .note.decide { background: var(--tint-note); border-color: rgba(251,191,36,0.45); }
+  .note.decide h3 { color: var(--note); }
+
+  /* ── Headern ── */
+  .site { container-type: inline-size; }
+  .hdr { display: flex; align-items: center; gap: 36px; height: 64px; padding-inline: 36px; border-bottom: 1px solid var(--border-hairline); }
+  .logo { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.02em; text-decoration: none; white-space: nowrap; }
+  .logo .mark { width: 24px; height: 22px; display: block; flex-shrink: 0; }
+  .links { display: flex; gap: 4px; height: 100%; }
+  .links a { position: relative; display: flex; align-items: center; padding-inline: 12px; font-family: var(--font-display); font-size: 13px; font-weight: 600; text-decoration: none; color: var(--text-label); transition: color .15s; }
+  .links a:hover { color: var(--text-primary); }
+  .links a[aria-current="page"] { color: var(--text-primary); }
+  .links a[aria-current="page"]::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 2px; border-radius: 2px 2px 0 0; background: var(--accent-a); }
+  .right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 600; font-size: 13px; text-decoration: none; border-radius: 8px; padding: 8px 14px; white-space: nowrap; transition: background .15s; }
+  .btn-accent { color: var(--text-primary); background: rgba(0,24,245,0.16); border: 1px solid var(--accent-a); }
+  .btn-accent:hover { background: rgba(0,24,245,0.26); }
+  .btn-quiet { color: var(--text-secondary); border: 1px solid var(--border-soft); }
+  .btn-quiet:hover { color: var(--text-primary); border-color: var(--border-edge); }
+  .btn svg { width: 14px; height: 14px; margin-right: 6px; }
+
+  .omchip { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; background: var(--surface-tab); border: 1px solid rgba(255,255,255,0.14); border-radius: 20px; padding: 5px 14px; transition: border-color .15s; }
+  .omchip:hover { border-color: var(--border-edge); }
+  .omchip span { font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  /* sidinnehåll antytt under headern */
+  .ctx { padding: 24px 36px 28px; display: flex; flex-direction: column; gap: 10px; }
+  .ctx .crumbs { font-size: 12px; color: var(--text-label); }
+  .ctx .crumbs a { text-decoration: none; border-bottom: 1px solid var(--border-hairline); }
+  .ctx h1 { font-family: var(--font-display); font-weight: 800; font-size: 28px; letter-spacing: -0.02em; line-height: 1.1; margin: 0; }
+  .ghost { height: 44px; border-radius: 10px; border: 1px dashed var(--border-soft); display: flex; align-items: center; padding-inline: 14px; font-size: 12px; color: var(--text-label); }
+
+  @container (max-width: 767px) {
+    .hdr { height: 56px; padding-inline: 16px; gap: 12px; }
+    .logo { font-size: 17px; gap: 8px; }
+    .logo .mark { width: 20px; height: 18px; }
+    .links { margin-left: auto; gap: 0; }
+    .links a { padding-inline: 8px; font-size: 13px; }
+    .links a[aria-current="page"]::after { left: 8px; right: 8px; }
+    .right .btn { display: none; }
+    .right { margin-left: 4px; }
+    .links { margin-left: auto; }
+    .ctx { padding: 18px 16px 22px; }
+    .ctx h1 { font-size: 24px; }
+  }
+</style>
+
+<main class="doc">
+  <header class="doc-head">
+    <p class="eyebrow">Mockup · Header · alla sidor</p>
+    <h1 class="doc-title">En header för hela sajten</h1>
+    <p class="doc-lede">Idag har appen en egen rubrik med en "Om"-knapp, fondsidor och kategorisidor har ingen meny alls, och bara nya fondlistan har en nav. Förslaget är en och samma header överallt: logga, tre länkar och en plats till höger som skiljer sig per sidtyp.</p>
+  </header>
+
+  <section>
+    <h2 class="sec">Desktop</h2>
+    <div class="stack" data-desk></div>
+  </section>
+
+  <section>
+    <h2 class="sec">Mobil · 375 px</h2>
+    <div class="phones" data-mob></div>
+  </section>
+
+  <section class="notes">
+    <div class="note"><h3>Uppbyggnad</h3>
+      <ul>
+        <li>Logga till vänster: samma märke som i dagens "Om"-chip (två staplar), följt av "MinPortfölj" i Syne 800. Länken går till startsidan.</li>
+        <li>Länkarna ligger direkt efter loggan: <b>Jämför</b> och <b>Fonder</b>. De står på samma plats på varje sida, så inget hoppar när man byter sida.</li>
+        <li>Aktiv sida: vit text och en 2 px linje i Electric Cobalt mot headerns underkant.</li>
+        <li>Höger plats: Om-chipet som idag, på alla sidor. På de statiska sidorna följs det av "Börja jämföra". I verktyget står chipet ensamt.</li>
+        <li>Höjd 64 px desktop, 56 px mobil, en hårlinje under.</li>
+      </ul>
+    </div>
+    <div class="note"><h3>Om-chipet</h3><p>Samma chip som idag men utan märket, eftersom det redan står i loggan. I verktyget öppnar det Om-modalen som idag. På de statiska sidorna finns ingen modal, så där länkar samma chip till /om.</p></div>
+    <div class="note"><h3>Mobil</h3>
+      <p>Två länkar och Om-chipet ryms på 375 px utan hamburgermeny. "Börja jämföra" tas bort på mobil; "Jämför" i menyn gör samma jobb.</p>
+    </div>
+    <div class="note decide"><h3>Att notera</h3>
+      <ul>
+        
+        <li><b>Undertiteln</b> "Jämför avgifter &amp; historisk avkastning" i appen försvinner.</li>
+        <li><b>Jämför-länken</b> går till <code>/</code> tills landningssidan finns, sedan till <code>/jamfor</code>.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<template id="hdr-tpl">
+  <div class="site">
+    <header class="hdr">
+      <a class="logo" href="#"><svg class="mark" viewBox="0 0 44 40" aria-hidden="true"><rect x="0" y="0" width="16" height="40" rx="5" fill="#5a6e8a"/><rect x="20" y="0" width="24" height="40" rx="6" fill="#94a3b8"/></svg><span>MinPortfölj</span></a>
+      <nav class="links" aria-label="Huvudmeny"><a href="#" data-k="jamfor">Jämför</a><a href="#" data-k="fonder">Fonder</a></nav>
+      <div class="right" data-right></div>
+    </header>
+    <div class="ctx" data-ctx></div>
+  </div>
+</template>
+
+<script>
+(() => {
+  const chip = '<a class="omchip" href="#"><span>Om</span></a>';
+  const cta = '<a class="btn btn-accent" href="#">Börja jämföra</a>';
+  const PAGES = [
+    { label: "Verktyget", url: "minportfolj.se", active: "jamfor", right: chip,
+      ctx: '<div class="ghost">Portfölj A · Portfölj B · graf (oförändrat)</div>' },
+    { label: "Fondlistan", url: "minportfolj.se/fonder/", active: "fonder", right: chip + cta,
+      ctx: '<h1>Alla fonder</h1><div class="ghost">Sök · kategorier · lista</div>' },
+    { label: "Fondsida", url: "minportfolj.se/fond/avanza-global", active: "fonder", right: chip + cta,
+      ctx: '<span class="crumbs"><a href="#">Fonder</a> › <a href="#">Globalfonder</a> › Avanza Global</span><h1>Avanza Global</h1>' },
+  ];
+  const tpl = document.getElementById("hdr-tpl");
+  const make = p => {
+    const n = tpl.content.cloneNode(true);
+    n.querySelector(`[data-k="${p.active}"]`).setAttribute("aria-current", "page");
+    n.querySelector("[data-right]").innerHTML = p.right;
+    n.querySelector("[data-ctx]").innerHTML = p.ctx;
+    return n;
+  };
+  const desk = document.querySelector("[data-desk]"), mob = document.querySelector("[data-mob]");
+  PAGES.forEach(p => {
+    const wrap = document.createElement("div");
+    wrap.innerHTML = `<p class="label">${p.label}</p><div class="scroller"><div class="browser"><div class="browser-bar"><i></i><i></i><i></i><span>${p.url}</span></div></div></div>`;
+    wrap.querySelector(".browser").appendChild(make(p));
+    desk.appendChild(wrap);
+    const ph = document.createElement("div");
+    ph.className = "phone";
+    ph.innerHTML = `<div class="cap">${p.label}</div>`;
+    ph.appendChild(make(p));
+    mob.appendChild(ph);
+  });
+  document.addEventListener("click", e => { if (e.target.closest('a[href="#"]')) e.preventDefault(); });
+})();
+</script>

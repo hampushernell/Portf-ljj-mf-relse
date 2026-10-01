@@ -27,6 +27,7 @@ import FundReturnChart from "./components/FundReturnChart";
 import CAGRTable from "./components/CAGRTable";
 import RiskPanel from "./components/RiskPanel";
 import AboutModal from "./components/AboutModal";
+import SiteHeader from "./components/SiteHeader";
 import { parseUrl, serializeUrl } from "./hooks/useUrlSync";
 
 export default function App() {
@@ -173,32 +174,7 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", background: COLOR.bg.base, color: COLOR.text.primary, fontFamily: FONT.family.body }}>
-      {/* ── Header ── */}
-      <div style={{ padding: isMobile ? "12px 16px 10px" : "26px 36px 18px", borderBottom: `1px solid ${COLOR.border.subtle}`, display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-          <div>
-            <h1 style={{ fontFamily: FONT.family.display, fontSize: FONT.size["4xl"], fontWeight: 800, lineHeight: 1.1, margin: 0, letterSpacing: "-0.02em", color: COLOR.text.primary }}>MinPortfölj</h1>
-            <p style={{ margin: "3px 0 0", fontSize: FONT.size.sm, color: COLOR.text.secondary }}>Jämför avgifter & historisk avkastning</p>
-          </div>
-        </div>
-        <span
-          onClick={() => setShowAbout(true)}
-          style={{
-            display: "flex", alignItems: "center", gap: "7px",
-            background: COLOR.surface.tab,
-            border: `1px solid ${COLOR.border.card}`,
-            borderRadius: "20px", padding: "5px 11px 5px 12px", cursor: "pointer",
-            marginLeft: "auto",
-          }}
-        >
-          <span style={{ fontFamily: FONT.family.display, fontSize: FONT.size.sm, fontWeight: 600, color: COLOR.text.muted }}>Om</span>
-          <span style={{ width: "1px", height: "11px", background: "rgba(255,255,255,0.15)" }} />
-          <svg width="24" height="18" viewBox="0 0 44 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect x="0" y="0" width="16" height="40" rx="5" fill="#5a6e8a"/>
-            <rect x="20" y="0" width="24" height="40" rx="6" fill="#94a3b8"/>
-          </svg>
-        </span>
-      </div>
+      <SiteHeader active="jamfor" onOpenAbout={() => setShowAbout(true)} />
 
       <div style={{ padding: isMobile ? "12px 14px" : "22px 36px", display: "flex", flexDirection: "column", gap: isMobile ? "12px" : "18px" }}>
 

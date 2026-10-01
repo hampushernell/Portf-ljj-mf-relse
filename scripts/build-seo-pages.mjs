@@ -309,7 +309,49 @@ const PAGE_CSS = `
   }
 `;
 
-function pageShell({ title, description, canonical, jsonLd, bodyHtml, css = PAGE_CSS, wrapClass = "wrap" }) {
+// ─── Gemensam header — samma som src/components/SiteHeader.jsx ─────────────────
+// Se project-docs/mockups/header.html. Markupen finns bara här; pageShell lägger
+// den överst på varje statisk sida. active: "jamfor" | "fonder" | null (t.ex. /om).
+// Klasserna har prefixet sh- så att de inte krockar med sidornas egen CSS.
+
+const SITE_HEADER_CSS = `
+  .sh { display: flex; align-items: center; gap: 36px; height: 64px; padding-inline: 36px; border-bottom: 1px solid rgba(255,255,255,0.12); font-family: 'Syne', 'Trebuchet MS', sans-serif; }
+  .sh-logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: #f0ede8; text-decoration: none; white-space: nowrap; }
+  .sh-mark { width: 24px; height: 22px; display: block; flex-shrink: 0; }
+  .sh-links { display: flex; gap: 4px; height: 100%; }
+  .sh-links a { position: relative; display: flex; align-items: center; padding-inline: 12px; font-size: 13px; font-weight: 600; text-decoration: none; color: #a9b6cc; transition: color .15s; }
+  .sh-links a:hover, .sh-links a[aria-current="page"] { color: #f0ede8; }
+  .sh-links a[aria-current="page"]::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 2px; border-radius: 2px 2px 0 0; background: #0018f5; }
+  .sh-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .sh-om { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; color: #cbd5e6; text-decoration: none; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); border-radius: 20px; padding: 5px 14px; transition: border-color .15s; }
+  .sh-om:hover { border-color: rgba(255,255,255,0.34); }
+  .sh-cta { display: inline-flex; align-items: center; font-size: 13px; font-weight: 600; color: #f0ede8; text-decoration: none; white-space: nowrap; background: rgba(0,24,245,0.16); border: 1px solid #0018f5; border-radius: 8px; padding: 8px 14px; transition: background .15s; }
+  .sh-cta:hover { background: rgba(0,24,245,0.26); }
+  .sh a:focus-visible { outline: 2px solid #7891ff; outline-offset: 2px; border-radius: 4px; }
+  @media (max-width: 767px) {
+    .sh { height: 56px; padding-inline: 16px; gap: 8px; }
+    .sh-logo { font-size: 15px; gap: 7px; }
+    .sh-mark { width: 18px; height: 16px; }
+    .sh-links { margin-left: auto; gap: 0; }
+    .sh-links a { padding-inline: 6px; }
+    .sh-links a[aria-current="page"]::after { left: 6px; right: 6px; }
+    .sh-om { padding-inline: 10px; }
+    .sh-right { margin-left: 4px; }
+    .sh-cta { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .sh * { transition: none !important; } }
+`;
+
+function siteHeader(active) {
+  const link = (key, href, label) => `<a href="${href}"${key === active ? ' aria-current="page"' : ""}>${label}</a>`;
+  return `<header class="sh">
+  <a class="sh-logo" href="/"><svg class="sh-mark" viewBox="0 0 44 40" aria-hidden="true"><rect x="0" y="0" width="16" height="40" rx="5" fill="#5a6e8a"/><rect x="20" y="0" width="24" height="40" rx="6" fill="#94a3b8"/></svg><span>MinPortfölj</span></a>
+  <nav class="sh-links" aria-label="Huvudmeny">${link("jamfor", "/", "Jämför")}${link("fonder", "/fonder/", "Fonder")}</nav>
+  <div class="sh-right"><a class="sh-om" href="/om">Om</a><a class="sh-cta" href="/">Börja jämföra</a></div>
+</header>`;
+}
+
+function pageShell({ title, description, canonical, jsonLd, bodyHtml, css = PAGE_CSS, wrapClass = "wrap", active = "fonder" }) {
   return `<!doctype html>
 <html lang="sv">
 <head>
@@ -331,9 +373,10 @@ function pageShell({ title, description, canonical, jsonLd, bodyHtml, css = PAGE
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 ${jsonLd.map(obj => `<script type="application/ld+json">\n${JSON.stringify(obj, null, 2)}\n</script>`).join("\n")}
-<style>${css}</style>
+<style>${css}${SITE_HEADER_CSS}</style>
 </head>
 <body>
+${siteHeader(active)}
 <div class="${wrapClass}">
 ${bodyHtml}
 </div>
@@ -760,7 +803,7 @@ function renderOmPage(markdownPath) {
   <h1>${mdInline(h1)}</h1>
   ${bodyHtml}`;
 
-  return { html: pageShell({ title, description, canonical, jsonLd: [], bodyHtml: body }), title, description, canonical };
+  return { html: pageShell({ title, description, canonical, jsonLd: [], bodyHtml: body, active: null }), title, description, canonical };
 }
 
 // ─── /fonder/ — fondlistan, project-docs/FONDLISTA.md ──────────────────────────
@@ -834,12 +877,6 @@ const FUND_LIST_CSS = `
   :focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; border-radius: 4px; }
 
   .fl { max-width: 1120px; margin: 0 auto; padding: 0 40px 112px; }
-  .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 20px; }
-  .logo { font-family: var(--font-display); font-weight: 800; font-size: 19px; letter-spacing: -0.02em; text-decoration: none; }
-  .logo b { color: var(--accent-light); font-weight: 800; }
-  .nav-links { display: flex; gap: 28px; font-family: var(--font-display); font-size: 13px; font-weight: 600; }
-  .nav-links a { text-decoration: none; color: var(--text-secondary); }
-  .nav-links a:hover, .nav-links a[aria-current] { color: var(--text-primary); }
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-display); font-weight: 600; font-size: 13px; text-decoration: none; border-radius: 8px; padding: 9px 16px; white-space: nowrap; cursor: pointer; transition: background .15s; }
   .btn-accent { color: var(--text-primary); background: var(--tint-sel); border: 1px solid var(--accent-a); }
   .btn-accent:hover { background: var(--tint-sel-hover); }
@@ -931,9 +968,6 @@ const FUND_LIST_CSS = `
 
   @media (max-width: 767px) {
     .fl { padding-inline: 16px; padding-bottom: 96px; }
-    .nav { padding-block: 14px; }
-    .nav-links { display: none; }
-    .btn-nav { padding: 7px 12px; font-size: 12px; }
     .page-head { padding-block: 16px; }
     .page-head h1 { font-size: 28px; }
     .filter-btn { padding-inline: 12px; }
@@ -1062,12 +1096,6 @@ function renderFundsIndexPage(funds, fiMeta, asOf) {
 </script>`;
 
   const body = `
-  <nav class="nav" aria-label="Huvudmeny">
-    <a class="logo" href="/">minportfölj<b>.se</b></a>
-    <div class="nav-links"><a href="/">Jämför</a><a href="/fonder/" aria-current="page">Fonder</a><a href="/om">Om sajten</a></div>
-    <a class="btn btn-accent btn-nav" href="/">Börja jämföra</a>
-  </nav>
-
   <main>
     <header class="page-head">
       <h1>Alla fonder</h1>
