@@ -26,6 +26,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { FUNDS_REGISTRY } from "../src/lib/funds-registry.js";
+import { getCompanyColor } from "../src/lib/company-colors.js";
 import { renderCategoryChart, CHART_CSS } from "./seo-chart.mjs";
 import { fmtSignedPct, fmtDateSv, categoryPlural } from "./seo-format.mjs";
 
@@ -118,6 +119,7 @@ function buildFunds(registry, fiFees, snapshot) {
       id: f.id,
       slug: f.slug,
       name: f.name,
+      company: f.company,
       isin: f.isin,
       category: f.category,
       categoryMeta: meta,
@@ -758,7 +760,7 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
       <h2 id="chart-h">Bland ${categoryFunds.length} ${plural}</h2>
       ${tabs}
     </div>
-    <div class="legend"><span><i style="background:#7891ff"></i>${name}</span><span><i style="background:rgba(203,213,230,0.35)"></i>Övriga ${plural}</span></div>
+    <div class="legend"><span><i style="background:${getCompanyColor(fund)}"></i>${name}</span><span><i style="background:rgba(203,213,230,0.35)"></i>Övriga ${plural}</span></div>
     ${chart1}${chart3}
     <p class="chart-foot">Utveckling t.o.m. ${fmtDateSv(asOf)}</p>
   </section>` : "";

@@ -285,6 +285,20 @@ inte skalas med viewBoxen. Absolut positionerade i grafens wrapper
 - Y-domänen (12 % padding) påverkas inte. Inga värden kopplas till en enskild
   fond/portfölj och inga slutvärdesetiketter vid linjernas slut.
 
+### Kategorigraf på fondsidan (statisk, /fond/<slug>)
+Fondens linje, slutpunkt och legendmarkering ritas i **fondbolagets färg**. Källan är
+`COMPANY_COLORS` i `src/lib/company-colors.js`, och fältet `company` på varje fond
+i `funds-registry.js` styr vilken färg som används (`getCompanyColor()`). Ingen
+matchning på namnprefix vid körning. Övriga linjer, rutnät, nollinje och
+etiketter följer grafens vanliga färger. Ett test fallerar om en fond saknar ett
+bolag med färg.
+
+**Medvetet undantag från kontrastregeln:** flera bolagsfärger (Nordea, SEB, AMF
+m.fl.) ligger under 3:1 mot bakgrunden. Det är accepterat just här, så att
+fonden känns igen på bolagets färg. "Fixa" inte färgerna. Undantaget gäller
+bara den här grafen. Appens grafer, accenter och text följer kontrastreglerna
+som vanligt.
+
 ## 6. Animation System
 
 All animation and transition values are defined in `src/lib/animations.js`. **Never hardcode duration strings or keyframe names in component files.**

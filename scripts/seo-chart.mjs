@@ -17,13 +17,13 @@
  */
 
 import { fmtSignedPct, fmtMonthYear, categoryPlural } from "./seo-format.mjs";
+import { getCompanyColor } from "../src/lib/company-colors.js";
 
 const VB_W = 800;
 const VB_H = 280;
 const PAD_Y = 12;          // luft över/under extremvärdena, i viewBox-enheter
 const DAY_MS = 86400000;
 
-const FUND_STROKE = "#7891ff";
 const OTHER_STROKE = "rgba(203,213,230,0.20)";
 const GRID_STROKE = "rgba(255,255,255,0.08)";
 const ZERO_STROKE = "rgba(255,255,255,0.34)";
@@ -104,11 +104,12 @@ export function renderCategoryChart(fund, categoryFunds, span, asOf) {
   const toPath = l => pathData(l.dates.map(toX), l.values.map(v => toY(v - 100)));
   const otherPaths = lines.slice(0, -1).map(toPath).join("");
   const fundLine = lines[lines.length - 1];
+  const fundColor = getCompanyColor(fund); // bolagsfärg, se DESIGN.md
 
   const svg = `<svg viewBox="0 0 ${VB_W} ${VB_H}" preserveAspectRatio="none" aria-hidden="true" focusable="false">`
     + grid
     + (otherPaths ? `<path d="${otherPaths}" fill="none" stroke="${OTHER_STROKE}" stroke-width="1" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>` : "")
-    + `<path d="${toPath(fundLine)}" fill="none" stroke="${FUND_STROKE}" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`
+    + `<path d="${toPath(fundLine)}" fill="none" stroke="${fundColor}" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`
     + `</svg>`;
 
   // ── HTML-overlay: etiketter och slutpunkt, positionerade i % av plottytan ──
@@ -136,7 +137,7 @@ export function renderCategoryChart(fund, categoryFunds, span, asOf) {
   return `<div class="sc sc-${span}">
       <div class="sc-plot" role="img" aria-label="${label.replace(/"/g, "&quot;")}">
         ${svg}
-        <div aria-hidden="true">${yLabels}${xLabels}<span class="sc-dot" style="top:${endTop}"></span><span class="sc-end" style="top:${endTop}">${fmtSignedPct(endReturn)}</span></div>
+        <div aria-hidden="true">${yLabels}${xLabels}<span class="sc-dot" style="top:${endTop};background:${fundColor}"></span><span class="sc-end" style="top:${endTop}">${fmtSignedPct(endReturn)}</span></div>
       </div>${note}
     </div>`;
 }
@@ -150,7 +151,7 @@ export const CHART_CSS = `
   .sc-x-first { transform: none; }
   .sc-x-last { transform: translateX(-100%); }
   .sc-end { left: calc(100% + 12px); transform: translateY(-50%); font-size: 12px; font-weight: 700; color: var(--text-primary); }
-  .sc-dot { position: absolute; left: 100%; width: 9px; height: 9px; border-radius: 50%; background: #7891ff; box-shadow: 0 0 0 2px var(--bg-base); transform: translate(-50%, -50%); }
+  .sc-dot { position: absolute; left: 100%; width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 2px var(--bg-base); transform: translate(-50%, -50%); }
   .sc-note { margin: 0; font-size: 12px; color: var(--text-label); }
   @media (max-width: 767px) {
     .sc-plot { height: 220px; margin: 8px 58px 26px 38px; }

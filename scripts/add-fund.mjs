@@ -114,7 +114,7 @@ function formatEntry(id, ticker, isin, name, fee, feeSource) {
     ? `// avgift från FI – uppdateras automatiskt`
     : `// avgift: verifiera mot Morningstar/fondbolaget`;
   const slug = slugify(name);
-  return `  { id: ${id}, ticker: "${ticker}", isin: "${isin}", name: "${name}", category: "???", fallbackFee: ${fee}, slug: "${slug}" }, ${feeComment}`;
+  return `  { id: ${id}, ticker: "${ticker}", isin: "${isin}", name: "${name}", company: "???", category: "???", fallbackFee: ${fee}, slug: "${slug}" }, ${feeComment}`;
 }
 
 // ─── Input-parsning ─────────────────────────────────────────────────────────
@@ -272,7 +272,7 @@ async function main() {
     ok.forEach(r => console.log(r.entry));
 
     console.log("\n📝 Nästa steg:");
-    console.log("   1. Byt ut category: \"???\" mot rätt kategori för varje ny rad");
+    console.log("   1. Byt ut category: \"???\" mot rätt kategori och company: \"???\" mot fondbolaget (måste finnas i src/lib/company-colors.js)");
     const needsFee = ok.some(r => !r.inFi);
     if (needsFee) {
       console.log("   2. Sätt rätt fallbackFee (avgift i %) för fonder utan FI-täckning, se länkar ovan");
