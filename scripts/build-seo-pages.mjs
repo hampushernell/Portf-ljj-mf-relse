@@ -325,8 +325,6 @@ const SITE_HEADER_CSS = `
   .sh-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
   .sh-om { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; color: #cbd5e6; text-decoration: none; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); border-radius: 20px; padding: 5px 14px; transition: border-color .15s; }
   .sh-om:hover { border-color: rgba(255,255,255,0.34); }
-  .sh-cta { display: inline-flex; align-items: center; font-size: 13px; font-weight: 600; color: #f0ede8; text-decoration: none; white-space: nowrap; background: rgba(0,24,245,0.16); border: 1px solid #0018f5; border-radius: 8px; padding: 8px 14px; transition: background .15s; }
-  .sh-cta:hover { background: rgba(0,24,245,0.26); }
   .sh a:focus-visible { outline: 2px solid #7891ff; outline-offset: 2px; border-radius: 4px; }
   @media (max-width: 767px) {
     .sh { height: 56px; padding-inline: 16px; gap: 8px; }
@@ -337,7 +335,6 @@ const SITE_HEADER_CSS = `
     .sh-links a[aria-current="page"]::after { left: 6px; right: 6px; }
     .sh-om { padding-inline: 10px; }
     .sh-right { margin-left: 4px; }
-    .sh-cta { display: none; }
   }
   @media (prefers-reduced-motion: reduce) { .sh * { transition: none !important; } }
 `;
@@ -347,7 +344,7 @@ function siteHeader(active) {
   return `<header class="sh">
   <a class="sh-logo" href="/"><svg class="sh-mark" viewBox="0 0 44 40" aria-hidden="true"><rect x="0" y="0" width="16" height="40" rx="5" fill="#5a6e8a"/><rect x="20" y="0" width="24" height="40" rx="6" fill="#94a3b8"/></svg><span>MinPortfölj</span></a>
   <nav class="sh-links" aria-label="Huvudmeny">${link("jamfor", "/", "Jämför")}${link("fonder", "/fonder/", "Fonder")}</nav>
-  <div class="sh-right"><a class="sh-om" href="/om">Om</a><a class="sh-cta" href="/">Börja jämföra</a></div>
+  <div class="sh-right"><a class="sh-om" href="/om">Om</a></div>
 </header>`;
 }
 
