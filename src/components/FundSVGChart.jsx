@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { fmtPct } from "../lib/utils";
 import { COLOR, FONT, SHADOW, CHART } from "../lib/tokens";
 import useBreakpoint from "../hooks/useBreakpoint";
+import { referenceTicks, returnExtent, formatTickLabel } from "../lib/chartTicks";
 
 const getSVGX = (e, svgEl) => {
   const rect = svgEl.getBoundingClientRect();
@@ -129,7 +130,9 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
   const makePath = s => s.map((d, i) => `${i === 0 ? "M" : "L"}${toX(i, s.length).toFixed(1)},${toY(d.value).toFixed(1)}`).join(" ");
 
   const baselineY = toY(100);
-  const yTicks = Array.from({ length: 5 }, (_, i) => ({ v: yMin + (i / 4) * (yMax - yMin) })).map(t => ({ ...t, y: toY(t.v) }));
+  const drawnVals = showPortfolioLine ? allVals : [...lines.flatMap(l => l.series.map(d => d.value)), ...benchmarkSeries.map(d => d.value)];
+  const { maxRet, minRet } = returnExtent(drawnVals);
+  const refTicks = referenceTicks(maxRet, minRet, toY);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
@@ -138,8 +141,8 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
         onTouchMove={e => { e.preventDefault(); handleMouseMove(e); }}
         onTouchEnd={() => setTooltip(null)}>
 
-        {yTicks.map(({ y }, i) => (
-          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth={C.grid} vectorEffect="non-scaling-stroke"/>
+        {refTicks.filter(t => t.kind === "ref").map(({ ret, y }) => (
+          <line key={ret} x1={0} y1={y} x2={W} y2={y} stroke={CHART.refLine} strokeWidth={C.grid} vectorEffect="non-scaling-stroke"/>
         ))}
         <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth={C.grid} strokeDasharray={C.dash} vectorEffect="non-scaling-stroke"/>
         {benchmarkSeries.length > 1 && (
@@ -160,8 +163,10 @@ export default function FundSVGChart({ lines, portfolioSeries, showPortfolioLine
             opacity="1" vectorEffect="non-scaling-stroke"
           />
         )}
-        {yTicks.map(({ v, y }, i) => (
-          <text key={i} x={8} y={y + C.axisDy} textAnchor="start" fill={COLOR.text.axis} fontSize={C.axis} fontFamily={FONT.family.body}>{`${(v - 100).toFixed(0)}%`}</text>
+        {refTicks.map(({ ret, y, kind }) => (
+          <text key={ret} x={8} y={y + C.axisDy} textAnchor="start" fill={COLOR.text.axis} fontSize={C.axis} fontWeight={kind === "zero" ? 600 : undefined} fontFamily={FONT.family.body}>
+            {formatTickLabel(ret)}
+          </text>
         ))}
         {tooltip && (
           <line x1={tooltip.x} y1={PT} x2={tooltip.x} y2={H - PB} stroke="rgba(255,255,255,0.15)" strokeWidth={C.grid} vectorEffect="non-scaling-stroke"/>

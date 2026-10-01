@@ -257,8 +257,22 @@ motsvarar en CSS-pixel. Alla `<path>` och `<line>` har
 båda brytpunkterna oavsett kortbredd. Hårdkodade strokeWidth- och
 fontSize-värden i grafkomponenterna är förbjudna: skalfaktorn gör dem
 missvisande.
-`PL=PR=0` — linjer och gridlinjer löper från x=0 till x=W. Y-axeletiketter
-inuti grafen (`x=8`, under gridlinjen).
+`PL=PR=0` — linjer och stödlinjer löper från x=0 till x=W. Y-axeletiketter
+inuti grafen (`x=8`, `y + C.axisDy`, `COLOR.text.axis`, `C.axis`) — under linjen.
+
+**Referenslinjer (y-axel):** Inga jämnt fördelade gridlinjer. Logiken ligger i
+`lib/chartTicks.js` (`referenceTicks()`), komponenterna ritar bara resultatet:
+- **0 %** alltid — etikett vid den streckade nollinjen, font-weight 600.
+- **En stödlinje uppåt** på största "jämna" värde (5, 10, 15, 20, 25, 30, 40,
+  50, 60, 75, 100, 125, 150, 200, 250, 300, 400, 500, 750, 1000) som är ≤
+  högsta avkastningen bland synliga serier (inkl. index).
+- **En stödlinje nedåt** enligt samma regel, bara om någon serie når −5 % eller lägre.
+- Ingen stödlinje under 5 %, och ingen närmare nollinjen än `CHART.refMinGap`
+  (32 viewBox-enheter) — då krockar etiketterna.
+- Solid, `CHART.refLine` (`rgba(255,255,255,0.11)`), `C.grid`, non-scaling-stroke.
+- Etiketter: `"+150 %"`, `"0 %"`, `"−30 %"` — riktigt minustecken, mellanslag före %.
+- Y-domänen (12 % padding) påverkas inte. Inga värden kopplas till en enskild
+  fond/portfölj och inga slutvärdesetiketter vid linjernas slut.
 
 ## 6. Animation System
 

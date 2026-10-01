@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { ACCENT_A, ACCENT_B, formatKr, fmtPct } from "../lib/utils";
 import { COLOR, FONT, SHADOW, CHART } from "../lib/tokens";
 import useBreakpoint from "../hooks/useBreakpoint";
+import { referenceTicks, returnExtent, formatTickLabel } from "../lib/chartTicks";
 
 const getSVGX = (e, svgEl) => {
   const rect = svgEl.getBoundingClientRect();
@@ -114,10 +115,8 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB, benc
   const pathB = showB && seriesB.length > 1 ? makePath(downsampleForRender(seriesB)) : null;
   const pathBenchmark = benchmarkSeries.length > 1 ? makePath(downsampleForRender(benchmarkSeries)) : null;
 
-  const yTicks = Array.from({ length: 5 }, (_, i) => {
-    const v = yMin + (i / 4) * (yMax - yMin);
-    return { v, y: toY(v) };
-  });
+  const { maxRet, minRet } = returnExtent(allVals);
+  const refTicks = referenceTicks(maxRet, minRet, toY);
 
   const baselineY = toY(100);
 
@@ -127,16 +126,16 @@ export default function SVGChart({ seriesA, seriesB, showB, totalA, totalB, benc
         onMouseMove={handleMouseMove} onMouseLeave={isMobile ? () => setTooltip(null) : undefined}
         onTouchMove={e => { e.preventDefault(); handleMouseMove(e); }}
         onTouchEnd={() => setTooltip(null)}>
-        {yTicks.map(({ y }, i) => (
-          <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth={C.grid} vectorEffect="non-scaling-stroke"/>
+        {refTicks.filter(t => t.kind === "ref").map(({ ret, y }) => (
+          <line key={ret} x1={0} y1={y} x2={W} y2={y} stroke={CHART.refLine} strokeWidth={C.grid} vectorEffect="non-scaling-stroke"/>
         ))}
         <line x1={0} y1={baselineY} x2={W} y2={baselineY} stroke="rgba(255,255,255,0.24)" strokeWidth={C.grid} strokeDasharray={C.dash} vectorEffect="non-scaling-stroke"/>
         {pathBenchmark && <path d={pathBenchmark} fill="none" stroke={COLOR.text.label} strokeWidth={C.stroke} strokeDasharray={C.dash} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"/>}
         {pathA && <path d={pathA} fill="none" stroke={ACCENT_A} strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"/>}
         {pathB && <path d={pathB} fill="none" stroke={ACCENT_B} strokeWidth={C.stroke} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"/>}
-        {yTicks.map(({ v, y }, i) => (
-          <text key={i} x={8} y={y + C.axisDy} textAnchor="start" fill={COLOR.text.axis} fontSize={C.axis} fontFamily={FONT.family.body}>
-            {`${(v - 100).toFixed(0)}%`}
+        {refTicks.map(({ ret, y, kind }) => (
+          <text key={ret} x={8} y={y + C.axisDy} textAnchor="start" fill={COLOR.text.axis} fontSize={C.axis} fontWeight={kind === "zero" ? 600 : undefined} fontFamily={FONT.family.body}>
+            {formatTickLabel(ret)}
           </text>
         ))}
         {tooltip && (
