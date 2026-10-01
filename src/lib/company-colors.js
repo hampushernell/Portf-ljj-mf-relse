@@ -21,7 +21,7 @@ export const COMPANY_COLORS = {
   "Nordnet": "#FFFFFF",
   "PLUS": "#E97116",
   "Proethos": "#FFFFFF",
-  "SEB": "#003824",
+  "SEB": "#007048",
   "Skandia": "#019676",
   "Söderberg & Partners": "#008ECC",
   "Spiltan": "#B8253D",
