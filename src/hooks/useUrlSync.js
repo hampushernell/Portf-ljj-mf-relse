@@ -5,18 +5,49 @@ const SPAN_TO_URL = { "1 mån": "1m", "3 mån": "3m", "1 år": "1y", "3 år": "3
 const URL_TO_SPAN = Object.fromEntries(Object.entries(SPAN_TO_URL).map(([k, v]) => [v, k]));
 const REGISTRY_BY_ID = Object.fromEntries(FUNDS_REGISTRY.map(f => [String(f.id), f]));
 const BENCHMARK_IDS = new Set(BENCHMARKS.map(b => b.id));
+const URL_KEYS = ["a", "b", "span", "mode", "idx"];
+
+// Senaste query-strängen sparas i sessionStorage så att jämförelsen finns kvar när
+// användaren går till /fonder/ och tillbaka via "Jämför" i headern (utan parametrar).
+export const LAST_QUERY_KEY = "lastCompareQuery";
+
+const hasUrlParams = params => URL_KEYS.some(k => params.get(k));
+
+// Lagring kan kasta (privat läge, blockerad site data) — då finns inget sparat läge.
+function readSavedQuery() {
+  try {
+    return sessionStorage.getItem(LAST_QUERY_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function writeSavedQuery(query) {
+  try {
+    sessionStorage.setItem(LAST_QUERY_KEY, query);
+  } catch {
+    // Ignoreras — återställningen är en bekvämlighet, inte ett krav.
+  }
+}
 
 // Returns { fundsA: [{id, pct}], fundsB: [{id, pct}], span, mode, idx: [id] } or null.
 // Called once at mount — does not depend on allFunds (price data not yet loaded).
+// URL-parametrar har alltid företräde; saknas alla läses sparat läge från sessionStorage
+// och adressfältet uppdateras så att delningslänken matchar det som visas.
 export function parseUrl() {
-  const params = new URLSearchParams(window.location.search);
+  let params = new URLSearchParams(window.location.search);
+  if (!hasUrlParams(params)) {
+    const saved = new URLSearchParams(readSavedQuery());
+    if (!hasUrlParams(saved)) return null;
+    params = saved;
+    history.replaceState(null, "", `?${saved.toString()}`);
+  }
+
   const aStr   = params.get("a");
   const bStr   = params.get("b");
   const spanStr = params.get("span");
   const modeStr = params.get("mode");
   const idxStr  = params.get("idx");
-
-  if (!aStr && !bStr && !spanStr && !modeStr && !idxStr) return null;
 
   const parseFundList = str => {
     if (!str) return [];
@@ -68,5 +99,6 @@ export function serializeUrl(portfolioA, portfolioB, span, viewMode, activeIdx =
   if (activeIdx.length) params.set("idx", activeIdx.join(","));
 
   const query = params.toString();
+  writeSavedQuery(query);
   history.replaceState(null, "", query ? `?${query}` : window.location.pathname);
 }
