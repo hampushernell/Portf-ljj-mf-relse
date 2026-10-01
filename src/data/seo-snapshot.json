@@ -1,9 +1,9 @@
 {
   "_meta": {
     "asOf": "2026-09-29",
-    "generatedAt": "2026-10-01T05:18:06.375Z",
-    "fundsTotal": 106,
-    "fundsOk": 106,
+    "generatedAt": "2026-10-01T14:40:52.398Z",
+    "fundsTotal": 108,
+    "fundsOk": 108,
     "fundsStale": 0,
     "fundsFailed": 0
   },
@@ -538,7 +538,7 @@
     },
     "23": {
       "isin": "IE00BMTD2G30",
-      "dataFrom": "2021-09-30",
+      "dataFrom": "2021-10-01",
       "dataTo": "2026-09-29",
       "oneYear": {
         "return": 22.5,
@@ -553,16 +553,16 @@
         "volatility": 11.8
       },
       "sinceStart": {
-        "return": 96.4,
-        "cagr": 14.5,
+        "return": 94.7,
+        "cagr": 14.3,
         "maxDrawdown": -24.4,
-        "years": 5
+        "years": 4.99
       },
       "stale": false
     },
     "24": {
       "isin": "IE00BMTD2V80",
-      "dataFrom": "2021-09-30",
+      "dataFrom": "2021-10-01",
       "dataTo": "2026-09-29",
       "oneYear": {
         "return": 24,
@@ -577,10 +577,10 @@
         "volatility": 14.4
       },
       "sinceStart": {
-        "return": 118,
-        "cagr": 16.9,
+        "return": 114.9,
+        "cagr": 16.6,
         "maxDrawdown": -26.3,
-        "years": 5
+        "years": 4.99
       },
       "stale": false
     },
@@ -2040,7 +2040,7 @@
     },
     "86": {
       "isin": "IE00BNNLSK63",
-      "dataFrom": "2021-09-30",
+      "dataFrom": "2021-10-01",
       "dataTo": "2026-09-29",
       "oneYear": {
         "return": 41.4,
@@ -2055,10 +2055,10 @@
         "volatility": 20
       },
       "sinceStart": {
-        "return": 189.9,
-        "cagr": 23.7,
+        "return": 186.4,
+        "cagr": 23.5,
         "maxDrawdown": -32.5,
-        "years": 5
+        "years": 4.99
       },
       "stale": false
     },
@@ -2184,7 +2184,7 @@
     },
     "92": {
       "isin": "LU1822851538",
-      "dataFrom": "2021-09-30",
+      "dataFrom": "2021-10-01",
       "dataTo": "2026-09-29",
       "oneYear": {
         "return": -4.7,
@@ -2199,10 +2199,10 @@
         "volatility": 16
       },
       "sinceStart": {
-        "return": 155.8,
-        "cagr": 20.7,
+        "return": 152.7,
+        "cagr": 20.4,
         "maxDrawdown": -18,
-        "years": 5
+        "years": 4.99
       },
       "stale": false
     },
@@ -2539,6 +2539,54 @@
         "cagr": 27.2,
         "maxDrawdown": -31.7,
         "years": 3.25
+      },
+      "stale": false
+    },
+    "107": {
+      "isin": "LU2181417226",
+      "dataFrom": "2022-03-08",
+      "dataTo": "2026-09-29",
+      "oneYear": {
+        "return": 6.8,
+        "cagr": 6.7,
+        "maxDrawdown": -2.3,
+        "volatility": 3
+      },
+      "threeYear": {
+        "return": 15.1,
+        "cagr": 4.8,
+        "maxDrawdown": -8.5,
+        "volatility": 3.2
+      },
+      "sinceStart": {
+        "return": 7.1,
+        "cagr": 1.5,
+        "maxDrawdown": -10.2,
+        "years": 4.56
+      },
+      "stale": false
+    },
+    "108": {
+      "isin": "LU2181417143",
+      "dataFrom": "2022-03-08",
+      "dataTo": "2026-09-29",
+      "oneYear": {
+        "return": 19.5,
+        "cagr": 19.6,
+        "maxDrawdown": -5.1,
+        "volatility": 7.3
+      },
+      "threeYear": {
+        "return": 39.6,
+        "cagr": 11.8,
+        "maxDrawdown": -20.7,
+        "volatility": 8
+      },
+      "sinceStart": {
+        "return": 32.3,
+        "cagr": 6.3,
+        "maxDrawdown": -20.7,
+        "years": 4.56
       },
       "stale": false
     }

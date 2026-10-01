@@ -131,4 +131,7 @@ export const FUNDS_REGISTRY = [
   { id: 104, ticker: "0P00000LJK.ST", isin: "SE0000434201", name: "SEB Sverigefond Småbolag Chans/Risk A", category: "Småbolagsfond",     fallbackFee: 1.50, slug: "seb-sverigefond-smabolag-chans-risk-a" }, // ej FI-täckning, källa: fondbolagets faktablad
   { id: 105, ticker: "0P0001Q7VH.ST", isin: "SE0019175563", name: "AuAg Essential Metals A",              category: "Temafond",          fallbackFee: 1.40, slug: "auag-essential-metals-a" }, // ej FI-täckning, källa: auagfunds.com
   { id: 106, ticker: "0P0001R7BB.ST", isin: "LU2602444262", name: "SEB Artificial Intelligence C",        category: "Temafond",          fallbackFee: 1.50, slug: "seb-artificial-intelligence-c" }, // LU-fond, ej FI-täckning, källa: seb.se
+  // Söderberg & Partners (tillägg)
+  { id: 107, ticker: "0P0001K2MX.ST", isin: "LU2181417226", name: "Söderberg & Partners Alternative R2 D", category: "Blandfond",       fallbackFee: 1.17, slug: "soderberg-partners-alternative-r2-d" }, // LU-fond, ej FI-täckning, löpande avgift inkl. underliggande, källa: KID 2026-01-26 soderbergpartners.lu
+  { id: 108, ticker: "0P0001K2MW.ST", isin: "LU2181417143", name: "Söderberg & Partners Alternative R5 D", category: "Blandfond",       fallbackFee: 1.49, slug: "soderberg-partners-alternative-r5-d" }, // LU-fond, ej FI-täckning, löpande avgift inkl. underliggande, källa: KID 2026-01-26 soderbergpartners.lu
 ];
