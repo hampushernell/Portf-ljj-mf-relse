@@ -28,3 +28,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# FI-provdata för lokal utveckling (stor, laddas ner från fi.se)
+project-docs/fi-sample/
