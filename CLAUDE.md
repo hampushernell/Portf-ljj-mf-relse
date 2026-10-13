@@ -67,6 +67,9 @@ api/
 
 scripts/
   fetch-fi-fees.mjs   Skrapar fi.se och uppdaterar fi-fees.json
+  fetch-fi-holdings.mjs  Läser samma FI-ZIP och skriver fi-holdings.json (innehav för fondsidorna, se HOLDINGS.md). --from <zip|mapp> för lokal källa
+  lib/fi-zip.mjs      Delad nedladdning, uppackning och XML-parsning av FI:s kvartals-ZIP
+  seo-holdings.mjs    Sektionen "Vad fonden äger" på de statiska fondsidorna
   add-fund.mjs        Halvautomatiserat fondläggningsflöde — tar ISIN, slår upp Yahoo-ticker, validerar prisdata, kollar FI-täckning och skriver ut färdigt registry-objekt
 
 project-docs/
@@ -143,7 +146,7 @@ Yahoo råpriser
 1. `feeSource: "fi"` — Finansinspektionen, juridiskt bindande, uppdateras månadsvis via GitHub Actions
 2. `feeSource: "fallback"` — hårdkodad i `funds-registry.js` (fältet `fallbackFee`)
 
-**Automatisk uppdatering:** `.github/workflows/update-fi-fees.yml` — körs 1:a varje månad 06:00 UTC.
+**Automatisk uppdatering:** `.github/workflows/update-fi-data.yml` — körs 1:a varje månad 06:00 UTC och uppdaterar även `fi-holdings.json` (innehav, se HOLDINGS.md).
 **Format:** `src/data/fi-fees.json` med `_meta`-objekt (source, period, published, retrievedAt).
 
 **Fondsupport:**

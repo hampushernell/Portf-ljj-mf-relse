@@ -24,7 +24,7 @@ tillgänglig och aldrig visa en avgift utan att ange varifrån den kommer.
 
 ## Automatisk uppdatering
 
-**Fil:** `.github/workflows/update-fi-fees.yml`
+**Fil:** `.github/workflows/update-fi-data.yml`
 **Schema:** 1:a varje månad, 06:00 UTC
 **Trigger:** Kan köras manuellt via workflow_dispatch i GitHub Actions
 

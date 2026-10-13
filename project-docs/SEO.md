@@ -202,7 +202,7 @@ Sidorna behöver avkastningssiffror vid byggtid. Lös det med en snapshot:
 1. Nytt skript `scripts/build-seo-snapshot.mjs` — hämtar prishistorik för alla 52 fonder,
    beräknar CAGR/drawdown/volatilitet via befintliga funktioner i `src/lib/calculations.js`,
    skriver `src/data/seo-snapshot.json`.
-2. GitHub Action kör det veckovis (samma mönster som `update-fi-fees.yml`) och committar.
+2. GitHub Action kör det veckovis (samma mönster som `update-fi-data.yml`) och committar.
 3. `scripts/build-seo-pages.mjs` läser registry + fi-fees + snapshot och skriver HTML till `dist/`.
 4. `package.json`: `"build": "vite build && node scripts/build-seo-pages.mjs"`.
 5. Sitemap genereras i samma skript, med `lastmod` från snapshotens datum.
@@ -339,7 +339,7 @@ Hämtningen sker sekventiellt med kort paus mellan anropen (samma försiktighet 
 ### Körning
 
 - `npm run build-snapshot` för manuell körning
-- GitHub Action veckovis efter mönstret i `.github/workflows/update-fi-fees.yml`, committar filen
+- GitHub Action veckovis efter mönstret i `.github/workflows/update-fi-data.yml`, committar filen
 - Filen committas till repot, så bygget aldrig är beroende av att Yahoo svarar
 
 ## 7. Teknisk hygien i `index.html`

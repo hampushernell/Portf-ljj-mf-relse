@@ -1,4 +1,8 @@
-name: Update FI Fund Fees
+name: Update FI Data
+
+# Avgifter (fi-fees.json) och innehav (fi-holdings.json) från FI:s kvartals-ZIP.
+# Körs månadsvis så att nya kvartal fångas upp automatiskt. En commit per datafil
+# som ändrats; oförändrade filer committas inte.
 
 on:
   schedule:
@@ -6,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-fees:
+  update-fi-data:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -27,15 +31,31 @@ jobs:
       - name: Hämta FI-avgifter
         run: node --max-old-space-size=512 scripts/fetch-fi-fees.mjs
 
-      - name: Committa om fi-fees.json ändrades
+      - name: Hämta FI-innehav
+        run: node --max-old-space-size=1024 scripts/fetch-fi-holdings.mjs
+
+      - name: Committa ändrade datafiler
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          CHANGED=0
+
           if git diff --quiet src/data/fi-fees.json; then
             echo "Ingen ändring i fi-fees.json – hoppar över commit"
           else
             PERIOD=$(jq -r '._meta.period // ""' src/data/fi-fees.json)
             git add src/data/fi-fees.json
             git commit -m "chore: update FI fund fees ${PERIOD}"
-            git push
+            CHANGED=1
           fi
+
+          if git diff --quiet src/data/fi-holdings.json; then
+            echo "Ingen ändring i fi-holdings.json – hoppar över commit"
+          else
+            PERIOD=$(jq -r '._meta.period // ""' src/data/fi-holdings.json)
+            git add src/data/fi-holdings.json
+            git commit -m "chore: update FI fund holdings ${PERIOD}"
+            CHANGED=1
+          fi
+
+          if [ "$CHANGED" = "1" ]; then git push; fi
