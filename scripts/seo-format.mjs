@@ -11,6 +11,16 @@ export function fmtSignedPct(v) {
   return `${sign}${Math.abs(v).toFixed(1).replace(".", ",")} %`;
 }
 
+export function fmtPlainPct(v) {
+  if (v === null || v === undefined) return "–";
+  const sign = v < 0 ? "−" : "";
+  return `${sign}${Math.abs(v).toFixed(1).replace(".", ",")} %`;
+}
+
+export function escapeHtml(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 // "2022-03-07" → "7 mar 2022"
 export function fmtDateSv(iso) {
   const d = new Date(`${iso}T00:00:00Z`);

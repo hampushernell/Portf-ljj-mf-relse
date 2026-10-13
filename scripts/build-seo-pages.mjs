@@ -32,7 +32,8 @@ import {
   addFundToSelection, removeFundFromSelection, readSelectionParam, writeSelectionParam,
 } from "../src/lib/compareSelection.js";
 import { renderCategoryChart, CHART_CSS } from "./seo-chart.mjs";
-import { fmtSignedPct, fmtDateSv, categoryPlural } from "./seo-format.mjs";
+import { renderHoldingsSection, categorySectorAverage, HOLDINGS_CSS } from "./seo-holdings.mjs";
+import { fmtSignedPct, fmtPlainPct, fmtDateSv, categoryPlural, escapeHtml } from "./seo-format.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -68,12 +69,6 @@ const CATEGORY_META = {
 
 // ─── Formattering — Swedish decimalkomma, tusentalsavskiljare, tecken ──────────
 
-function fmtPlainPct(v) {
-  if (v === null || v === undefined) return "–";
-  const sign = v < 0 ? "−" : "";
-  return `${sign}${Math.abs(v).toFixed(1).replace(".", ",")} %`;
-}
-
 function fmtFeePct(v) {
   return `${v.toFixed(2).replace(".", ",")} %`;
 }
@@ -95,16 +90,17 @@ function fmtPpFee(v) {
   return Math.abs(v).toFixed(2).replace(".", ",");
 }
 
-function escapeHtml(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
-
 // ─── Data — registret berikat med avgift och snapshot ──────────────────────────
 
 function loadFiFees() {
   const raw = JSON.parse(readFileSync(join(ROOT, "src/data/fi-fees.json"), "utf8"));
   const { _meta, ...fees } = raw;
   return { fees, meta: _meta };
+}
+
+// Läses bara här — fi-holdings.json får aldrig importeras i src/-bundlen (HOLDINGS.md §4).
+function loadHoldings() {
+  return JSON.parse(readFileSync(join(ROOT, "src/data/fi-holdings.json"), "utf8"));
 }
 
 function loadSnapshot() {
@@ -729,7 +725,7 @@ function rankingRows(fund, categoryFunds) {
   return html;
 }
 
-function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
+function renderFundPage(fund, categoryFunds, fiMeta, asOf, holdings) {
   const meta = fund.categoryMeta;
   const plural = categoryPlural(meta);
   const total = categoryFunds.__ranked.length;
@@ -780,10 +776,14 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
   const krSorted = categoryFunds.filter(f => f[krKey]).sort((a, b) => b[krKey].return - a[krKey].return);
   const krLabel = fund.threeYear ? "100 000 kr för tre år sedan" : "100 000 kr för ett år sedan";
 
+  // ── 4b. Vad fonden äger ──
+  const holdingsSection = renderHoldingsSection(fund, holdings, categoryFunds.sectorAvgCache);
+  const hasFiHoldings = ["ok", "no-sector", "fund-of-funds"].includes(holdings.funds[fund.slug]?.status);
+
   const appLink = `${APP_PATH}?a=${fund.id}:100&amp;mode=fund`;
-  const feeSourceText = fund.feeSource === "fi"
-    ? `Finansinspektionens öppna register (${fiMeta.period})`
-    : "fondbolagets publika information";
+  const sourceText = fund.feeSource === "fi"
+    ? `avgift${hasFiHoldings ? " och innehav" : ""} från Finansinspektionens öppna register (${fiMeta.period})`
+    : `avgift från fondbolagets publika information${hasFiHoldings ? ", innehav från Finansinspektionens öppna register" : ""}`;
 
   const body = `
   <div class="fp-head">
@@ -807,6 +807,7 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
       ${periodRows}
     </div>
   </section>
+  ${holdingsSection}
 
   <section class="fp-sec">
     <h2>Finns det något bättre?</h2>
@@ -832,7 +833,7 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
     <p>Lägg ${name} bredvid valfri fond i samma graf, eller bygg en portfölj.</p>
   </section>
 
-  <p class="fp-foot">All avkastning är efter avgift. Prisdata från Yahoo Finance, avgift från ${feeSourceText}. Historisk avkastning är ingen garanti för framtida avkastning. <a href="/om">Om datakällorna</a></p>`;
+  <p class="fp-foot">All avkastning är efter avgift. Prisdata från Yahoo Finance, ${sourceText}. Historisk avkastning är ingen garanti för framtida avkastning. <a href="/om">Om datakällorna</a></p>`;
 
   const canonical = `${BASE_URL}/fond/${fund.slug}`;
   const title = `${fund.name} – avgift ${fmtFeePct(fund.fee)} och historisk avkastning | MinPortfölj`;
@@ -869,7 +870,7 @@ function renderFundPage(fund, categoryFunds, fiMeta, asOf) {
       title, description, canonical,
       jsonLd: [financialProduct, breadcrumbs],
       bodyHtml: body,
-      css: PAGE_CSS + CHART_CSS + FUND_PAGE_CSS,
+      css: PAGE_CSS + CHART_CSS + FUND_PAGE_CSS + HOLDINGS_CSS,
       wrapClass: "wrap fp",
     }),
     title, description, canonical,
@@ -1339,9 +1340,18 @@ function countIndexHtmlFiles(dir) {
   return count;
 }
 
+// Alla .js/.jsx-filer under dir, rekursivt — för kontrollen att fi-holdings.json inte importeras i appen.
+function listSourceFiles(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) return listSourceFiles(full);
+    return /\.(js|jsx|mjs)$/.test(entry.name) ? [full] : [];
+  });
+}
+
 // ─── Verifiering — körs sist, avslutar med felkod om något brister ─────────────
 
-function verifyBuild(pages, funds) {
+function verifyBuild(pages, funds, holdings) {
   console.log("─────────────────────────────────────────────────────");
   console.log("🔎 Verifiering\n");
   let ok = true;
@@ -1426,6 +1436,56 @@ function verifyBuild(pages, funds) {
     console.log(`  ✓ Alla veckoserier börjar på 100 och slutar på fönstrets avkastning (±0,05)`);
   }
 
+  // 6. Innehav (HOLDINGS.md §6): varje fondsida med status ok har sektionen
+  // "Vad fonden äger" med alla tre kort, och alloc summerar till 100 ± 0,5.
+  const ALLOC_KEYS = ["aktier", "rantor", "fondandelar", "likvida", "ovrigtNetto"];
+  const htmlByPath = new Map(pages.map(p => [p.path, p.html]));
+  const okFunds = funds.filter(f => holdings.funds[f.slug]?.status === "ok");
+  const missingSection = [];
+  const badAlloc = [];
+  for (const f of okFunds) {
+    const h = holdings.funds[f.slug];
+    const html = htmlByPath.get(`fond/${f.slug}`) ?? "";
+    const hasCards = html.includes('<section class="hs"') && html.includes("Tillgångsfördelning")
+      && html.includes("Största innehav") && (!Object.keys(h.sectors).length || html.includes("hs-sectors"));
+    if (!hasCards) missingSection.push(f.name);
+    const sum = ALLOC_KEYS.reduce((s, k) => s + h.alloc[k], 0);
+    if (!Number.isFinite(sum) || Math.abs(sum - 100) > 0.5) badAlloc.push(`${f.name} (${Number.isFinite(sum) ? sum.toFixed(2) : "saknar fält"})`);
+  }
+  if (missingSection.length || badAlloc.length) {
+    ok = false;
+    if (missingSection.length) console.log(`  ✗ ${missingSection.length} fondsidor med status ok saknar innehavssektionen: ${missingSection.join(", ")}`);
+    if (badAlloc.length) console.log(`  ✗ Tillgångsfördelningen summerar inte till 100 ± 0,5: ${badAlloc.join(", ")}`);
+  } else {
+    console.log(`  ✓ Alla ${okFunds.length} fondsidor med status ok har innehavssektionen, och alloc summerar till 100 ± 0,5`);
+  }
+
+  // Varningar — stoppar inte bygget. En nyligen tillagd fond visas som missing
+  // tills fetch-fi-holdings.mjs körts; stort övrigt netto betyder att fördelningen
+  // inte syns fullt ut (derivat, skulder) och är värt en titt.
+  const OVRIGT_WARN = 3;
+  const notInHoldings = funds.filter(f => !holdings.funds[f.slug]).map(f => f.name);
+  if (notInHoldings.length) {
+    console.log(`  ⚠ ${notInHoldings.length} fonder saknas i fi-holdings.json och visas som missing (kör fetch-fi-holdings.mjs): ${notInHoldings.join(", ")}`);
+  }
+  const bigNet = okFunds
+    .filter(f => Math.abs(holdings.funds[f.slug].alloc.ovrigtNetto) > OVRIGT_WARN)
+    .map(f => `${f.name} (${fmtPlainPct(holdings.funds[f.slug].alloc.ovrigtNetto)})`);
+  if (bigNet.length) {
+    console.log(`  ⚠ ${bigNet.length} fonder med status ok har |övrigt netto| > ${OVRIGT_WARN} %: ${bigNet.join(", ")}`);
+  }
+
+  // 7. fi-holdings.json läses bara av generatorn — aldrig importerad i appens bundle (HOLDINGS.md §4).
+  const srcImports = listSourceFiles(join(ROOT, "src"))
+    .filter(file => readFileSync(file, "utf8").includes("fi-holdings"))
+    .map(file => file.slice(ROOT.length + 1));
+  if (srcImports.length) {
+    ok = false;
+    console.log(`  ✗ fi-holdings.json refereras i src/: ${srcImports.join(", ")}`);
+  } else {
+    console.log(`  ✓ fi-holdings.json refereras inte i src/`);
+  }
+
   console.log(ok ? "\n✅ Verifiering godkänd\n" : "\n❌ Verifiering misslyckades\n");
   console.log("─────────────────────────────────────────────────────\n");
   return ok;
@@ -1436,6 +1496,7 @@ function verifyBuild(pages, funds) {
 function main() {
   const fiFees = loadFiFees();
   const snapshot = loadSnapshot();
+  const holdings = loadHoldings();
   const asOf = snapshot._meta.asOf;
   const funds = buildFunds(FUNDS_REGISTRY, fiFees, snapshot);
   const byCategory = groupByCategory(funds);
@@ -1444,6 +1505,7 @@ function main() {
   for (const [, list] of byCategory) {
     const sum = list.reduce((s, f) => s + f.fee, 0);
     list.feeAvgCache = sum / list.length;
+    list.sectorAvgCache = categorySectorAverage(list, holdings);
   }
 
   console.log(`\n🏗️  Bygger hela sajten — ${byCategory.size} kategorier, ${funds.length} fonder, /fonder/, /om\n`);
@@ -1465,7 +1527,7 @@ function main() {
 
   for (const fund of funds) {
     const categoryFunds = byCategory.get(fund.category);
-    writePage(`fond/${fund.slug}`, renderFundPage(fund, categoryFunds, fiFees.meta, asOf));
+    writePage(`fond/${fund.slug}`, renderFundPage(fund, categoryFunds, fiFees.meta, asOf, holdings));
   }
   console.log(`  ✓ ${funds.length} fondsidor`);
 
@@ -1485,7 +1547,7 @@ function main() {
   writeFileSync(join(DIST, "sitemap.xml"), sitemapXml);
   console.log(`🗺️  sitemap.xml skriven med ${sitemapEntries.length} URL:er (lastmod ${asOf})\n`);
 
-  const ok = verifyBuild(pages, funds);
+  const ok = verifyBuild(pages, funds, holdings);
   if (!ok) process.exitCode = 1;
 }
 
