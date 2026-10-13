@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>Fondbolagsfärg i staplarna</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&amp;family=DM+Sans:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0a0f1c}
+</style>
+</helmet>
+<div style="width: 1280px; height: 560px; box-sizing: border-box; padding: 36px 40px; background: #0a0f1c; color: #f0ede8; font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 22px;">
+  <h1 style="margin: 0; font-family: Syne, sans-serif; font-size: 20px; font-weight: 700;">Fondbolagsfärg i staplarna – samma data, fem bolag</h1>
+  <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px;">
+    <sc-for list="{{brands}}" as="b" hint-placeholder-count="5">
+      <div style="border: 1px solid rgba(255,255,255,0.34); border-radius: 12px; padding: 14px 14px 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+        <div style="display: flex; align-items: center; gap: 8px; font-family: Syne, sans-serif; font-weight: 700; font-size: 14px;"><span style="width: 18px; height: 3px; border-radius: 2px; background: {{b.line}};"></span>{{b.name}}</div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-family: Syne, sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #a9b6cc;">Aktiefond</span>
+          <div style="display: flex; gap: 2px; height: 10px; border-radius: 5px; overflow: hidden; background: rgba(255,255,255,0.06);">
+            <span style="width: 98.9%; background: {{b.a1}};"></span><span style="width: 1.2%; background: {{b.a2}};"></span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-family: Syne, sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #a9b6cc;">Blandfond</span>
+          <div style="display: flex; gap: 2px; height: 10px; border-radius: 5px; overflow: hidden; background: rgba(255,255,255,0.06);">
+            <span style="width: 64%; background: {{b.a1}};"></span><span style="width: 33.6%; background: {{b.a2}};"></span><span style="width: 2.4%; background: {{b.a3}};"></span>
+          </div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: #cbd5e6;">
+            <span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 2px; background: {{b.a1}};"></span>Aktier 64</span>
+            <span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 2px; background: {{b.a2}};"></span>Räntor 34</span>
+            <span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 2px; background: {{b.a3}};"></span>Kassa 2</span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-family: Syne, sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #a9b6cc;">Sektorer</span>
+          <sc-for list="{{sectors}}" as="s" hint-placeholder-count="4">
+            <div style="display: grid; grid-template-columns: 74px minmax(0, 1fr) 40px; gap: 8px; align-items: center; font-size: 12px;">
+              <span style="color: #cbd5e6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{s.name}}</span>
+              <span style="position: relative; height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px;">
+                <span style="position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; width: {{s.w}}%; background: {{b.bar}};"></span>
+                <span style="position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px; background: #f0ede8; left: {{s.avg}}%;"></span>
+              </span>
+              <span style="text-align: right; font-family: Syne, sans-serif; font-weight: 600;">{{s.val}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var rgba = function (h, a) { var n = parseInt(h.slice(1), 16); return 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')'; };
+    var list = [['Avanza', '#17B582'], ['Länsförsäkringar', '#FF020C'], ['SEB', '#007048'], ['Handelsbanken', '#005C9D'], ['Nordnet (ingen färg)', '#FFFFFF']];
+    var brands = list.map(function (b) {
+      var neutral = b[1] === '#FFFFFF';
+      var base = neutral ? '#cbd5e6' : b[1];
+      return { name: b[0], line: b[1], bar: neutral ? '#8494ad' : b[1], a1: rgba(base, 1), a2: rgba(base, 0.5), a3: rgba(base, 0.28) };
+    });
+    var S = [['IT', 38.1, 32.2], ['Finans', 15.8, 14.9], ['Industri', 9.6, 14.1], ['Hälsovård', 9.4, 8.4]];
+    var sectors = S.map(function (s) { return { name: s[0], val: s[1].toFixed(1).replace('.', ','), w: (s[1] / 45 * 100).toFixed(1), avg: (s[2] / 45 * 100).toFixed(1) }; });
+    return { brands: brands, sectors: sectors };
+  }
+}
+</script>
+</body>
+</html>

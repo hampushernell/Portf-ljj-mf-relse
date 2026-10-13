@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>När innehavsdata saknas</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&amp;family=DM+Sans:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#0a0f1c}
+</style>
+</helmet>
+<div style="width: 1280px; height: 460px; box-sizing: border-box; padding: 40px; background: #0a0f1c; color: #f0ede8; font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start;">
+
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <span style="font-family: Syne, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #a9b6cc;">Utländsk fond · 22 fonder</span>
+    <section style="border: 1px solid rgba(255,255,255,0.34); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px;">
+      <h2 style="margin: 0; font-family: Syne, sans-serif; font-size: 17px; font-weight: 700;">Vad fonden äger</h2>
+      <p style="margin: 0; color: #cbd5e6;">Nordea Global Index Select är registrerad i Finland. Finansinspektionen publicerar innehav bara för fonder registrerade i Sverige.</p>
+    </section>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <span style="font-family: Syne, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #a9b6cc;">Fondandelsfond · 7 fonder</span>
+    <section style="border: 1px solid rgba(255,255,255,0.34); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap;">
+        <h2 style="margin: 0; font-family: Syne, sans-serif; font-size: 17px; font-weight: 700;">Vad fonden äger</h2>
+        <span style="font-size: 12px; color: #a9b6cc; display: inline-flex; align-items: center; gap: 6px;">Per 30 jun 2026 <span style="font-family: Syne, sans-serif; font-size: 10px; font-weight: 700; color: #3a9aa8; background: rgba(58,154,168,0.12); border-radius: 4px; padding: 1px 5px;">FI</span></span>
+      </div>
+      <p style="margin: 0; color: #cbd5e6;">Lysa Emerging Markets Equity Broad placerar i en annan fond:</p>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; background: rgba(255,255,255,0.03); border-radius: 9px; font-size: 13px;">
+        <span>Emerging Markets Stock Index Fund</span>
+        <span style="font-family: Syne, sans-serif; font-weight: 600;">100 %</span>
+      </div>
+    </section>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <span style="font-family: Syne, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #a9b6cc;">Sektor saknas · 5 fonder</span>
+    <section style="border: 1px solid rgba(255,255,255,0.34); border-radius: 12px; padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 8px;">
+      <span style="font-family: Syne, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #a9b6cc;">Sektorer</span>
+      <p style="margin: 0; color: #cbd5e6;">Fondbolaget rapporterar inte sektor till Finansinspektionen.</p>
+    </section>
+    <span style="font-size: 12px; color: #a9b6cc;">Ersätter bara sektorkortet. Fördelning, regioner och största innehav visas som vanligt.</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":460}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
