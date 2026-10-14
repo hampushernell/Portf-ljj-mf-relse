@@ -266,7 +266,7 @@ const PAGE_CSS = `
   .badge { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; padding: 2px 7px; border-radius: 20px; vertical-align: 1px; }
   .badge.fi { color: var(--fi); background: var(--tint-fi); border: 1px solid rgba(58,154,168,0.45); }
   .badge.man { color: var(--fallback); background: var(--tint-fallback); border: 1px solid rgba(148,163,184,0.42); }
-  .inline-link { color: var(--accent-light); text-decoration: none; border-bottom: 1px solid rgba(120,145,255,0.45); }
+  .inline-link { color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.45); }
   .datawindow { font-size: 12.5px; color: var(--text-label); margin: 0; max-width: 66ch; border-left: 2px solid var(--border-soft); padding-left: 14px; }
   .verdictline { margin: 0; font-size: 13px; color: var(--text-secondary); background: var(--surface-card); border: 1px solid var(--border-soft); border-radius: 9px; padding: 12px 14px; }
   .verdictline b { color: var(--text-primary); font-weight: 500; }
