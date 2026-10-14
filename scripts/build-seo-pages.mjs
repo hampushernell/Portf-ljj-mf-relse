@@ -230,6 +230,7 @@ const PAGE_CSS = `
     --text-primary: #f0ede8; --text-secondary: #cbd5e6; --text-label: #a9b6cc;
     ${ACCENT_TOKENS} --accent-b: #38bdf8;
     --surface-tab: rgba(255,255,255,0.07); --surface-active: rgba(255,255,255,0.13);
+    --surface-me: rgba(255,255,255,0.09); --surface-hover: rgba(255,255,255,0.06);
     --positive: #56ec8d; --negative: #f87171; --warning: #fbbf24;
     --fi: #3a9aa8; --fallback: #94a3b8;
     --tint-fi: rgba(58,154,168,0.12); --tint-fallback: rgba(148,163,184,0.12);
@@ -595,19 +596,19 @@ const FUND_PAGE_CSS = `
 
   .kr { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .kr > div { background: var(--surface-panel); border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-  .kr > div.me { border-color: var(--accent-a); background: var(--tint-sel); }
+  .kr > div.me { border-color: var(--border-edge); background: var(--surface-me); }
   .kr .v { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
   .kr .who { font-size: 12px; color: var(--text-secondary); overflow-wrap: anywhere; }
   .fp-aside { font-size: 13px; color: var(--text-secondary); border-left: 2px solid var(--border-soft); padding-left: 12px; margin: 0; max-width: 64ch; }
 
   .rank { display: flex; flex-direction: column; }
   .rrow { display: grid; grid-template-columns: 28px 1fr 84px 60px; gap: 10px; padding: 10px 12px; align-items: center; border-radius: 8px; text-decoration: none; color: inherit; }
-  a.rrow:not(.me):hover { background: var(--tint-row); }
+  a.rrow:not(.me):hover { background: var(--surface-hover); }
   .rrow.head { padding-block: 4px; }
   .rrow .r { color: var(--text-label); font-family: var(--font-display); font-weight: 600; font-size: 12px; }
   .rrow .n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rrow > :nth-child(3), .rrow > :nth-child(4) { text-align: right; }
-  .rrow.me { background: var(--tint-sel); box-shadow: inset 0 0 0 1px var(--accent-a); }
+  .rrow.me { background: var(--surface-me); box-shadow: inset 0 0 0 1px var(--border-edge); }
   .rrow.me .n { font-weight: 500; }
   .rrow.gap { padding-block: 0; color: var(--text-label); }
   .rank-foot { padding: 8px 12px 0; font-size: 13px; margin: 0; }
