@@ -3,8 +3,8 @@
     "source": "Finansinspektionen, fondinnehav per kvartal",
     "asOf": "2026-06-30",
     "period": "2026Q2",
-    "published": "2026-10-12",
-    "retrievedAt": "2026-10-13T19:23:13.587Z"
+    "published": "2026-10-14",
+    "retrievedAt": "2026-11-01T12:56:42.004Z"
   },
   "funds": {
     "avanza-global": {"status":"ok","fiName":"Avanza Global","holdingsCount":976,"alloc":{"aktier":98.93,"rantor":0,"fondandelar":0,"likvida":1.23,"ovrigtNetto":-0.15},"sectors":{"10":0.11,"15":3.45,"20":9.56,"25":9.79,"30":5.92,"35":9.41,"40":15.84,"45":38.06,"50":3.05,"55":1.44,"60":2.28},"top":[["Apple",5.23],["Nvidia",5.18],["Microsoft",3.48],["Amazon.com",3.27],["Alphabet A",2.64],["Alphabet C",2.1],["Micron Technology",1.87],["Tesla",1.77],["Broadcom",1.7],["Advanced Micro Devices",1.66],["Meta Platforms",1.55],["ASML Holding",1.19],["Johnson & Johnson",1.1],["Lam Research",0.93],["Applied Materials",0.92],["Cisco Systems",0.83],["Visa",0.83],["Walmart",0.81],["Procter & Gamble",0.72],["Home Depot",0.69],["Coca-Cola",0.64],["Merck & Co",0.62],["KLA",0.61],["Eli Lilly",0.58],["Mastercard",0.57]],"countries":{"US":69.25,"JP":5.97,"CA":2.99,"GB":2.91,"CH":2.57,"NL":2.16,"DE":1.88,"FR":1.83,"IE":1.78,"AU":1.53,"SE":1.09,"ES":0.99,"IT":0.73,"DK":0.63,"HK":0.53,"SG":0.42,"FI":0.38,"BE":0.25,"AT":0.14,"NO":0.14,"KY":0.12,"BM":0.12,"IL":0.12,"NZ":0.11,"LR":0.11,"PL":0.08,"JE":0.07,"PT":0.02}},
